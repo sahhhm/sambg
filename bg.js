@@ -35,7 +35,6 @@ var selectedColor = "#00ff00";
 var barSelected = false;
 
 
-
 function Player(num, color, bRow, bColumn, homeMinNum, homeMaxNum, oppMinNum, oppMaxNum) {
   this.num = num;
   this.color = color;
@@ -170,28 +169,22 @@ function updateBar(dumTriangle) {
   
   if (to.num >= fromPlayer.oppMinNum && to.num <= fromPlayer.oppMaxNum) {
     if (to.numCheckers == 0) {
-      to.numCheckers += 1;
-	  gSelectedBarNumber = -1;
-	  fromBar.numCheckers -= 1;
+	  isValid = true;
       to.player = fromBar.player;
     } else if (to.numCheckers == 1) {
 	  if (fromBar.player == to.player) {
-	    fromBar.numCheckers -= 1;
-		to.numCheckers += 1;
-        gSelectedBarNumber = -1;
+		isValid = true;
 	  } else {
 	    /* player hit */
 		console.log("Player " + fromBar.player + " hit Player " + to.player + " from the bar");
-	    fromBar.numCheckers -= 1;
 		gPlayers[to.player-1].bar.numCheckers += 1;
+		to.numCheckers -= 1;
 		to.player = fromBar.player;
-        gSelectedBarNumber = -1;
+		isValid = true;
 	  }
 	} else {
 	  if (fromBar.player == to.player) {
-	    fromBar.numCheckers -= 1;
-		to.numCheckers += 1;
-        gSelectedBarNumber = -1;
+		isValid = true;
 	  } else {
 	    console.log("Player " + fromBar.player + " cannot move form the bar to triangle " + to.num + " because Player " + to.player + " is occupying the triangle");
 	  }
@@ -200,6 +193,17 @@ function updateBar(dumTriangle) {
     console.log("Player " + fromBar.player + " tried to move from the bar to triangle " + to.num);
     gSelectedBarNumber = -1;
   }
+  
+  /* move if valid */
+  if (isValid) move(fromBar, to);
+}
+
+function move(from, to) {
+  from.numCheckers -= 1;
+  to.numCheckers += 1;
+  gSelectedBarNumber = -1;
+  gSelectedTriNumber = -1;
+  console.log("Moved from " + from.num + " to " + to.num);
 }
 
 function updateTriangle(triangle) {
@@ -236,18 +240,7 @@ function updateTriangle(triangle) {
 		    /* player has been hit */
 			to.numCheckers -= 1;
 			gPlayers[to.player-1].bar.numCheckers += 1;
-			console.log("Player " + to.player + " hit at Triangle " + to.num);
-			/*
-			if (to.player == player1.num) {
-			  player1.bar.numCheckers += 1;
-              console.log("Player 1 hit");			  
-			} else if (to.player == player2.num) {
-              player2.bar.numCheckers += 1;
-			  console.log("Player 2 hit");
-            } else {
-              console.error("Hit an invalid player? Player " + to.player);
-            }
-            */			
+			console.log("Player " + to.player + " hit at Triangle " + to.num);		
 			to.player = from.player;
 		  }
 		  isValid = true;
@@ -265,10 +258,7 @@ function updateTriangle(triangle) {
 	}
   }
   if (isValid) {
-    from.numCheckers -= 1;
- 	to.numCheckers += 1;
-	console.log("Moved from " + gSelectedTriNumber + " to " + triangle.num);
-	gSelectedTriNumber = -1;
+    move(from, to);
   }  
 }
 
