@@ -28,14 +28,122 @@ var gMoveCount;
 //var gMoveCountElem;
 var gGameInProgress;
 
+var originalDiceElement;
+var currentDiceElement;
+
 var player1Color = "#ff0000";
 var player2Color = "#0000ff";
 var selectedColor = "#00ff00";
 
 var barSelected = false;
 
+var dice;
 
-function Player(num, color, bRow, bColumn, homeMinNum, homeMaxNum, oppMinNum, oppMaxNum) {
+function Dice() {
+  this.dice = new Array();
+  this.diceCopy = new Array();
+  this.roll = function() {
+    // use a RNG eventually
+	this.dice = new Array();
+	this.diceCopy = new Array();
+	this.dice.push(Math.floor(Math.random()*6) + 1);
+	this.dice.push(Math.floor(Math.random()*6) + 1);
+	if (this.isDouble()) {
+      this.dice.push(this.dice[0]);
+	  this.dice.push(this.dice[0]);
+	}
+	this.diceCopy = this.dice.slice(0);
+	var text = "Dice Rolled: ";
+	for (var i = 0; i < this.dice.length; i++) {
+	  text += this.dice[i] + " - ";
+	}
+	console.log(text);
+  }
+  this.isDouble = function() { return this.dice[0] == this.dice[1]; }
+  this.directMoves = new Array();
+  this.combinedMoves = new Array();
+  this.findPotentialMoves = function(from) {
+    var temp;
+	var i;
+	var curSum;
+	var curDie;
+    var player = gPlayers[from.player-1];
+	this.directMoves = new Array();
+	this.combinedMoves = new Array();
+	if (validMove(from, gTriangles[from.num + (this.dice[0] * player.direction)-1])) {
+	  curDie = [this.dice[0]];	
+	  this.directMoves.push([gTriangles[from.num + (this.dice[0] * player.direction)-1], curDie.slice(0)]);
+	  curSum = this.dice[0];	  
+      for (i = 0; i < this.dice.length; i++) {
+	    if (i != 0) {
+	      if (validMove(from, gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1])) {
+		    curDie.push(this.dice[i]);
+	        this.combinedMoves.push([gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1], curDie.slice(0)]);
+			curSum += this.dice[i];			
+	      } else {
+            break;
+          }	
+        }		
+	  }
+	}
+	if (validMove(from, gTriangles[from.num + (this.dice[1] * player.direction)-1])) {
+	  curDie = [this.dice[1]];  
+	  this.directMoves.push([gTriangles[from.num + (this.dice[1] * player.direction)-1], curDie.slice(0)]);
+	  curSum = this.dice[1];	
+      for (i = 0; i < this.dice.length; i++) {
+	    if (i != 1) {
+	      if (validMove(from, gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1])) {
+		    curDie.push(this.dice[i]);			
+	        this.combinedMoves.push([gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1], curDie.slice(0)]);
+			curSum += this.dice[i];
+	      } else {
+            break;
+          }
+        }		
+	  } 
+	} 
+	return this.directMoves.concat(this.combinedMoves);
+  }
+  this.updateDiceOnMove = function(from, to) {
+    var i, j;
+	var potentials = this.findPotentialMoves(from);
+	for (i = 0; i < potentials.length; i++) {
+	  if (potentials[i][0].num == to.num) {
+	    for (j = 0; j < potentials[i][1].length; j++) {
+	      console.log("**removing " + potentials[i][1][j]);
+		  this.dice = removeSubsetFromArray(potentials[i][1], this.dice);
+		}
+		break;
+	  }
+	}
+  }
+}
+
+function removeSubsetFromArray(subset, array) {
+  var newArr = new Array();
+  for (var i = 0; i < array.length; i++) {
+    var flagged = false;
+	for (var j = 0; j < subset.length; j++) {
+	  if (subset[j] == array[i]) { flagged = true; break; }
+	}
+	if (!flagged) newArr.push(array[i]); 
+  }
+  return newArr;
+}
+
+function validMove(from, to) {
+  var isValid = false;
+  if (to) {
+    if (to.numCheckers == 0) isValid = true;
+    if (to.numCheckers == 1) isValid = true;
+    if (to.numCheckers >= 2) {
+      if (from.player == to.player) isValid = true;
+    }
+  }
+  return isValid;
+}
+
+function Player(num, color, bRow, bColumn, homeMinNum, homeMaxNum, oppMinNum, oppMaxNum, direction) {
   this.num = num;
   this.color = color;
   this.bar = new Bar(num, bRow, bColumn, 0); 
@@ -44,6 +152,7 @@ function Player(num, color, bRow, bColumn, homeMinNum, homeMaxNum, oppMinNum, op
   this.homeMaxNum = homeMaxNum;
   this.oppMinNum = oppMinNum;
   this.oppMaxNum = oppMaxNum;
+  this.direction = direction;
 }
 
 function Triangle(num, column, player, numCheckers) {
@@ -55,6 +164,20 @@ function Triangle(num, column, player, numCheckers) {
   this.numCheckers = numCheckers;
   this.player = player;
   this.isTop = function() { return this.num <= 12; }
+}
+
+function updateText() {
+  var i;
+  var text = "";
+  for (var i = 0; i < dice.diceCopy.length; i++) {
+    text += dice.diceCopy[i] + " - ";
+  }
+  originalDiceElement.innerHTML = text;
+  text = "";  
+  for (var i = 0; i < dice.dice.length; i++) {
+    text += dice.dice[i] + " - ";
+  }
+  currentDiceElement.innerHTML = text;
 }
 
 function Bar(player, row, column, numCheckers) {
@@ -159,6 +282,7 @@ function bgOnClick(e) {
   }
   
   drawBoard();
+  updateText();
 }
 
 function updateBar(dumTriangle) {
@@ -214,52 +338,69 @@ function updateTriangle(triangle) {
   } else {
     var from = gTriangles[gSelectedTriNumber-1];
 	var to = gTriangles[triangle.num-1];
-    /* try to move */
-	if (from.numCheckers) {
-	  /* make sure player is moving in the right direction */
-	  if (from.player == 1 && from.num > to.num) {
-	    console.log("Player 1 trying to move backwards from " + from.num + " to " + to.num);
-	    gSelectedTriNumber = -1;
-	  } else if (from.player == 2 && from.num < to.num) {
-	    console.log("Player 2 trying to move backwards from " + from.num + " to " + to.num);	  
-	    gSelectedTriNumber = -1;
-	  } else if (gPlayers[from.player-1].isHit()) {
-	    //alert("Player " + from.player + " needs to move off the bar");
-		console.log("Player " + from.player + " needs to move off the bar");
-		gSelectedTriNumber = -1;
-	  } else if (from.num == to.num) {
-        console.log("Clicked on the same triangle");
-      } else {
-	    if (to.numCheckers == 0) {
-	      /* need to assign new player to empty triangle */
-	      console.log("Moving from " + gSelectedTriNumber + " to " + triangle.num + " (an empty triangle)");
-	      to.player = from.player;
-		  isValid = true;
-	    } else if (to.numCheckers == 1) {
-		  if (from.player != to.player) {
-		    /* player has been hit */
-			to.numCheckers -= 1;
-			gPlayers[to.player-1].bar.numCheckers += 1;
-			console.log("Player " + to.player + " hit at Triangle " + to.num);		
-			to.player = from.player;
-		  }
-		  isValid = true;
-		} else if (to.numCheckers > 1) {
-		  if (from.player != to.player) {
-		    console.error("Trying to move to a triangle occupied by another player - from " + from.num + " to " + to.num + "(" + to.numCheckers + " checkers)");              
-		  } else {
+	//if ((to.num == from.num + (dice.dice[0] * gPlayers[from.player-1].direction)) || (to.num == from.num + (dice.dice[1] * gPlayers[from.player-1].direction))) {
+    if (validDiceMove(from, to)) {    
+	/* try to move */
+	  if (from.numCheckers) {
+	    /* make sure player is moving in the right direction */
+	    if (from.player == 1 && from.num > to.num) {
+	      console.log("Player 1 trying to move backwards from " + from.num + " to " + to.num);
+	      gSelectedTriNumber = -1;
+	    } else if (from.player == 2 && from.num < to.num) {
+	      console.log("Player 2 trying to move backwards from " + from.num + " to " + to.num);	  
+	      gSelectedTriNumber = -1;
+	    } else if (gPlayers[from.player-1].isHit()) {
+	      //alert("Player " + from.player + " needs to move off the bar");
+		  console.log("Player " + from.player + " needs to move off the bar");
+		  gSelectedTriNumber = -1;
+	    } else if (from.num == to.num) {
+          console.log("Clicked on the same triangle");
+        } else {
+	      if (to.numCheckers == 0) {
+	        /* need to assign new player to empty triangle */
+	        console.log("Moving from " + gSelectedTriNumber + " to " + triangle.num + " (an empty triangle)");
+	        to.player = from.player;
 		    isValid = true;
-		  } 
-		}
+	      } else if (to.numCheckers == 1) {
+		    isValid = true;		  
+		    if (from.player != to.player) {
+		      /* player has been hit */
+			  to.numCheckers -= 1;
+			  gPlayers[to.player-1].bar.numCheckers += 1;
+			  console.log("Player " + to.player + " hit at Triangle " + to.num);		
+			  to.player = from.player;
+		    }
+		  } else if (to.numCheckers > 1) {
+		    if (from.player != to.player) {
+		      console.error("Trying to move to a triangle occupied by another player - from " + from.num + " to " + to.num + "(" + to.numCheckers + " checkers)");              
+		    } else {
+		      isValid = true;
+		    }  
+		  }
+	    }
+	  } else {
+	    gSelectedTriNumber = -1;
+	    console.log("ERROR - Trying to move from triangle with no checkers");
 	  }
 	} else {
+	  console.log("not proper dice");
 	  gSelectedTriNumber = -1;
-	  console.log("ERROR - Trying to move from triangle with no checkers");
 	}
   }
   if (isValid) {
     move(from, to);
+	dice.updateDiceOnMove(from, to);
   }  
+}
+
+function validDiceMove(from, to) {
+  var isValid = false;
+  var i;
+  var potentials = dice.findPotentialMoves(from);
+  for (i = 0; i < potentials.length; i++) {
+    if (potentials[i][0].num == to.num) isValid = true;
+  }
+  return isValid;
 }
 
 function drawBoard() {
@@ -321,8 +462,10 @@ function drawBoard() {
 	  gDrawingContext.lineWidth = 3;
 	  gDrawingContext.strokeStyle = "#00ff00";
       gDrawingContext.stroke();
-
+	  
+	  highlightPotentialMoves();
 	}
+	
 	/* highlight selected bar */
 	if (gSelectedBarNumber != -1) {
 	  var bar = gPlayers[gSelectedBarNumber-1].bar;
@@ -343,6 +486,56 @@ function drawBoard() {
 	}
 
     saveGameState();
+}
+
+function highlightPotentialMoves() {
+  dice.findPotentialMoves(gTriangles[gSelectedTriNumber-1]);
+  var directs = dice.directMoves;
+  var combined = dice.combinedMoves;
+  var i;
+  var text;
+  text = "Directs: ";
+  for (i = 0; i < directs.length; i++) {
+    text += directs[i][0].num;
+	text += "(";
+	for (j=0; j < directs[i][1].length; j++) {
+	  text += directs[i][1][j] + ",";
+	}
+	text += ")"
+	text += " - ";
+  }  
+  console.log(text);
+  text = "Combined: ";
+  for (i = 0; i < combined.length; i++) {
+    text += combined[i][0].num;
+	text += "(";
+	for (j=0; j < combined[i][1].length; j++) {
+	  text += combined[i][1][j] + ",";
+	}
+	text += ")"
+	text += " - ";
+  }
+  console.log(text);
+
+  var potentials = directs.concat(combined);
+  for (i = 0; i < potentials.length; i++) {
+      //copy of highlight
+	  var tri = potentials[i][0];
+	  var tx = tri.column * kPieceWidth;
+	  var height = 0;
+	  if (!tri.isTop()) height = kPixelHeight - height;
+	  var base = tri.isTop() ? 0 : kPixelHeight;
+
+	  gDrawingContext.beginPath();
+	  gDrawingContext.moveTo(0.5 + tx, base);
+	  gDrawingContext.lineTo(0.5 + tx, height);
+	  gDrawingContext.lineTo(0.5 + tx + kPieceWidth, height);
+	  gDrawingContext.lineTo(0.5 + tx + kPieceWidth, base);
+  
+	  gDrawingContext.lineWidth = 3;
+	  gDrawingContext.strokeStyle = "#a020f0";
+      gDrawingContext.stroke();    
+  }
 }
 
 function drawTriangle(t) {
@@ -422,10 +615,11 @@ function newGame() {
 				  new Triangle(22, kBoardWidth-3,  0, 0),
 				  new Triangle(23, kBoardWidth-2,  0, 0),
 				  new Triangle(24, kBoardWidth-1,  2, 2)];
-    gPlayers = [new Player(1, "#ff0000", 0, barColumn, 19, 24, 1, 6),
-	            new Player(2, "#0000ff", kBoardHeight - 1, barColumn, 1, 6, 19, 24)]
+    gPlayers = [new Player(1, "#ff0000", 0, barColumn, 19, 24, 1, 6, 1),
+	            new Player(2, "#0000ff", kBoardHeight - 1, barColumn, 1, 6, 19, 24, -1)]
 	player1 = gPlayers[0]; 
 	player2 = gPlayers[1];
+	dice = new Dice(); dice.roll();
 	gNumTriangles = gTriangles.length;
     gSelectedPieceHasMoved = false;
     gMoveCount = 0;
@@ -443,6 +637,10 @@ function initGame(canvasElement) {
 	canvasElement.id = "bg_canvas";
 	document.body.appendChild(canvasElement);
     }
+	
+    originalDiceElement = document.getElementById('original-dice');
+	currentDiceElement = document.getElementById('current-dice');
+
     gCanvasElement = canvasElement;
     gCanvasElement.width = kPixelWidth;
     gCanvasElement.height = kPixelHeight;
