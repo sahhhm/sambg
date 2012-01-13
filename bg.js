@@ -70,6 +70,28 @@ function Dice() {
     var player = gPlayers[from.player-1];
 	this.directMoves = new Array();
 	this.combinedMoves = new Array();
+	
+	/*
+	for (var t = 0; t < 2; t++) {
+	  if (validMove(from, gTriangles[from.num + (this.dice[t] * player.direction)-1])) {
+	    curDie = [this.dice[t]];	
+	    this.directMoves.push([gTriangles[from.num + (this.dice[t] * player.direction)-1], curDie.slice(0)]);
+	    curSum = this.dice[t];	  
+        for (i = 0; i < this.dice.length; i++) {
+	      if (i != t) {
+	        if (validMove(from, gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1])) {
+		      curDie.push(this.dice[i]);
+	          this.combinedMoves.push([gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1], curDie.slice(0)]);
+			  curSum += this.dice[i];			
+	        } else {
+              break;
+            }	
+          }		
+	    }
+	  }	
+	}
+	*/
+	
 	if (validMove(from, gTriangles[from.num + (this.dice[0] * player.direction)-1])) {
 	  curDie = [this.dice[0]];	
 	  this.directMoves.push([gTriangles[from.num + (this.dice[0] * player.direction)-1], curDie.slice(0)]);
@@ -102,6 +124,7 @@ function Dice() {
         }		
 	  } 
 	} 
+	
 	return this.directMoves.concat(this.combinedMoves);
   }
   this.updateDiceOnMove = function(from, to) {
