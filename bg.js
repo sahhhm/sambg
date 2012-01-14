@@ -28,7 +28,6 @@ var gMoveCount;
 //var gMoveCountElem;
 var gGameInProgress;
 
-var originalDiceElement;
 var currentDiceElement;
 
 var player1Color = "#ff0000";
@@ -70,8 +69,6 @@ function Dice() {
     var player = gPlayers[from.player-1];
 	this.directMoves = new Array();
 	this.combinedMoves = new Array();
-	
-	/*
 	for (var t = 0; t < 2; t++) {
 	  if (validMove(from, gTriangles[from.num + (this.dice[t] * player.direction)-1])) {
 	    curDie = [this.dice[t]];	
@@ -90,41 +87,6 @@ function Dice() {
 	    }
 	  }	
 	}
-	*/
-	
-	if (validMove(from, gTriangles[from.num + (this.dice[0] * player.direction)-1])) {
-	  curDie = [this.dice[0]];	
-	  this.directMoves.push([gTriangles[from.num + (this.dice[0] * player.direction)-1], curDie.slice(0)]);
-	  curSum = this.dice[0];	  
-      for (i = 0; i < this.dice.length; i++) {
-	    if (i != 0) {
-	      if (validMove(from, gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1])) {
-		    curDie.push(this.dice[i]);
-	        this.combinedMoves.push([gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1], curDie.slice(0)]);
-			curSum += this.dice[i];			
-	      } else {
-            break;
-          }	
-        }		
-	  }
-	}
-	if (validMove(from, gTriangles[from.num + (this.dice[1] * player.direction)-1])) {
-	  curDie = [this.dice[1]];  
-	  this.directMoves.push([gTriangles[from.num + (this.dice[1] * player.direction)-1], curDie.slice(0)]);
-	  curSum = this.dice[1];	
-      for (i = 0; i < this.dice.length; i++) {
-	    if (i != 1) {
-	      if (validMove(from, gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1])) {
-		    curDie.push(this.dice[i]);			
-	        this.combinedMoves.push([gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1], curDie.slice(0)]);
-			curSum += this.dice[i];
-	      } else {
-            break;
-          }
-        }		
-	  } 
-	} 
-	
 	return this.directMoves.concat(this.combinedMoves);
   }
   this.updateDiceOnMove = function(from, to) {
@@ -132,11 +94,8 @@ function Dice() {
 	var potentials = this.findPotentialMoves(from);
 	for (i = 0; i < potentials.length; i++) {
 	  if (potentials[i][0].num == to.num) {
-	    for (j = 0; j < potentials[i][1].length; j++) {
-	      console.log("**removing " + potentials[i][1][j]);
-		  this.dice = removeSubsetFromArray(potentials[i][1], this.dice);
-		}
-		break;
+        this.dice = removeSubsetFromArray(potentials[i][1], this.dice);
+        break;
 	  }
 	}
   }
@@ -146,10 +105,15 @@ function removeSubsetFromArray(subset, array) {
   var newArr = new Array();
   for (var i = 0; i < array.length; i++) {
     var flagged = false;
-	for (var j = 0; j < subset.length; j++) {
-	  if (subset[j] == array[i]) { flagged = true; break; }
+	if (i < subset.length) {
+	  for (var j = 0; j < subset.length; j++) {
+	    if (subset[j] == array[i]) { 
+		  flagged = true; 
+		  break; 
+	    }
+	  }
 	}
-	if (!flagged) newArr.push(array[i]); 
+	if (!flagged) newArr.push(array[i]);
   }
   return newArr;
 }
@@ -192,14 +156,12 @@ function Triangle(num, column, player, numCheckers) {
 function updateText() {
   var i;
   var text = "";
-  for (var i = 0; i < dice.diceCopy.length; i++) {
-    text += dice.diceCopy[i] + " - ";
-  }
-  originalDiceElement.innerHTML = text;
-  text = "";  
-  for (var i = 0; i < dice.dice.length; i++) {
-    text += dice.dice[i] + " - ";
-  }
+  for (var i = 0; i < dice.dice.length; i++)
+    i == dice.diceCopy.length -1 ? text += dice.diceCopy[i]  : text += dice.diceCopy[i] + " - ";
+  text += " [ ";
+  for (var i = 0; i < dice.diceCopy.length; i++) 
+    i == dice.diceCopy.length -1 ? text += dice.diceCopy[i]  : text += dice.diceCopy[i] + " - ";
+  text += " ]";
   currentDiceElement.innerHTML = text;
 }
 
@@ -661,7 +623,6 @@ function initGame(canvasElement) {
 	document.body.appendChild(canvasElement);
     }
 	
-    originalDiceElement = document.getElementById('original-dice');
 	currentDiceElement = document.getElementById('current-dice');
 
     gCanvasElement = canvasElement;
