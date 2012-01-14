@@ -25,7 +25,6 @@ var gSelectedTriNumber = -1;
 var gSelectedBarNumber = -1;
 var gSelectedPieceHasMoved;
 var gMoveCount;
-//var gMoveCountElem;
 var gGameInProgress;
 
 var currentDiceElement;
@@ -433,42 +432,13 @@ function drawBoard() {
 
 	/* highlight selected triangle */
 	if (gSelectedTriNumber != -1) {
-	  var tri = gTriangles[gSelectedTriNumber-1];
-	  var tx = tri.column * kPieceWidth;
-	  var height = tri.numCheckers * kPieceHeight;
-	  if (!tri.isTop()) height = kPixelHeight - height;
-	  var base = tri.isTop() ? 0 : kPixelHeight;
-
-	  gDrawingContext.beginPath();
-	  gDrawingContext.moveTo(0.5 + tx, base);
-	  gDrawingContext.lineTo(0.5 + tx, height);
-	  gDrawingContext.lineTo(0.5 + tx + kPieceWidth, height);
-	  gDrawingContext.lineTo(0.5 + tx + kPieceWidth, base);
-  
-	  gDrawingContext.lineWidth = 3;
-	  gDrawingContext.strokeStyle = "#00ff00";
-      gDrawingContext.stroke();
-	  
+      highlight(gTriangles[gSelectedTriNumber-1], "#00ff00", 3, false);	
 	  highlightPotentialMoves();
 	}
 	
 	/* highlight selected bar */
 	if (gSelectedBarNumber != -1) {
-	  var bar = gPlayers[gSelectedBarNumber-1].bar;
-	  var tx = bar.column * kPieceWidth;
-	  var height = bar.numCheckers * kPieceHeight;
-	  if (!bar.isTop()) height = kPixelHeight - height;
-	  var base = bar.isTop() ? 0 : kPixelHeight;
-
-
-	  gDrawingContext.beginPath();
-	  gDrawingContext.moveTo(0.5 + tx, base);
-	  gDrawingContext.lineTo(0.5 + tx, height);
-	  gDrawingContext.lineTo(0.5 + tx + kPieceWidth, height);
-	  gDrawingContext.lineTo(0.5 + tx + kPieceWidth, base);	  
-	  gDrawingContext.lineWidth = 3;
-	  gDrawingContext.strokeStyle = "#00ff00";
-      gDrawingContext.stroke();
+      highlight(gPlayers[gSelectedBarNumber-1].bar, "#00ff00", 3, false);
 	}
 
     saveGameState();
@@ -504,11 +474,13 @@ function highlightPotentialMoves() {
   console.log(text);
 
   var potentials = directs.concat(combined);
-  for (i = 0; i < potentials.length; i++) {
-      //copy of highlight
-	  var tri = potentials[i][0];
+  for (i = 0; i < potentials.length; i++) highlight(potentials[i][0], "#a020f0", 3, true)
+
+}
+
+function highlight(tri, color, width, isPotential) {
 	  var tx = tri.column * kPieceWidth;
-	  var height = 0;
+	  var height = isPotential ? 0 : tri.numCheckers * kPieceHeight;
 	  if (!tri.isTop()) height = kPixelHeight - height;
 	  var base = tri.isTop() ? 0 : kPixelHeight;
 
@@ -518,10 +490,9 @@ function highlightPotentialMoves() {
 	  gDrawingContext.lineTo(0.5 + tx + kPieceWidth, height);
 	  gDrawingContext.lineTo(0.5 + tx + kPieceWidth, base);
   
-	  gDrawingContext.lineWidth = 3;
-	  gDrawingContext.strokeStyle = "#a020f0";
-      gDrawingContext.stroke();    
-  }
+	  gDrawingContext.lineWidth = width;
+	  gDrawingContext.strokeStyle = color;
+      gDrawingContext.stroke();      
 }
 
 function drawTriangle(t) {
