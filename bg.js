@@ -45,9 +45,8 @@ function Dice() {
     // use a RNG eventually
 	this.dice = new Array();
 	this.diceCopy = new Array();
-	//this.dice.push(Math.floor(Math.random()*6) + 1);
-	//this.dice.push(Math.floor(Math.random()*6) + 1);
-	this.dice.push(2); this.dice.push(2);
+	this.dice.push(Math.floor(Math.random()*6) + 1);
+	this.dice.push(Math.floor(Math.random()*6) + 1);
 	if (this.isDouble()) {
       this.dice.push(this.dice[0]);
 	  this.dice.push(this.dice[0]);
@@ -104,7 +103,7 @@ function Dice() {
 
 function removeSubsetFromArray(subset, array) {
   var newArr = new Array();
-  var limit = dice.isDouble ? subset.length : subset.length + 1;
+  var limit = dice.isDouble() ? subset.length : subset.length + 1;
   for (var i = 0; i < array.length; i++) {
     var flagged = false;
 	if (i < limit) {
@@ -606,12 +605,14 @@ function newGame() {
 	            new Player(2, "#0000ff", kBoardHeight - 1, barColumn, 1, 6, 19, 24, -1)]
 	player1 = gPlayers[0]; 
 	player2 = gPlayers[1];
-	dice = new Dice(); dice.roll();
+	dice = new Dice(); 
+	dice.roll();
 	gNumTriangles = gTriangles.length;
     gSelectedPieceHasMoved = false;
     gMoveCount = 0;
     gGameInProgress = true;
     drawBoard();
+	updateText();
 }
 
 function endGame() {
