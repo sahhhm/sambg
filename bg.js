@@ -157,12 +157,12 @@ function Triangle(num, column, player, numCheckers) {
 function updateText() {
   var i;
   var text = "";
-  for (var i = 0; i < dice.dice.length; i++)
-    i == dice.diceCopy.length -1 ? text += dice.diceCopy[i]  : text += dice.diceCopy[i] + " - ";
   text += " [ ";
   for (var i = 0; i < dice.diceCopy.length; i++) 
     i == dice.diceCopy.length -1 ? text += dice.diceCopy[i]  : text += dice.diceCopy[i] + " - ";
-  text += " ]";
+  text += " ] ";
+    for (var i = 0; i < dice.dice.length; i++)
+    i == dice.dice.length -1 ? text += dice.dice[i]  : text += dice.dice[i] + " - ";
   currentDiceElement.innerHTML = text;
 }
 
