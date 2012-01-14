@@ -45,8 +45,9 @@ function Dice() {
     // use a RNG eventually
 	this.dice = new Array();
 	this.diceCopy = new Array();
-	this.dice.push(Math.floor(Math.random()*6) + 1);
-	this.dice.push(Math.floor(Math.random()*6) + 1);
+	//this.dice.push(Math.floor(Math.random()*6) + 1);
+	//this.dice.push(Math.floor(Math.random()*6) + 1);
+	this.dice.push(2); this.dice.push(2);
 	if (this.isDouble()) {
       this.dice.push(this.dice[0]);
 	  this.dice.push(this.dice[0]);
@@ -103,9 +104,10 @@ function Dice() {
 
 function removeSubsetFromArray(subset, array) {
   var newArr = new Array();
+  var limit = dice.isDouble ? subset.length : subset.length + 1;
   for (var i = 0; i < array.length; i++) {
     var flagged = false;
-	if (i < subset.length) {
+	if (i < limit) {
 	  for (var j = 0; j < subset.length; j++) {
 	    if (subset[j] == array[i]) { 
 		  flagged = true; 
