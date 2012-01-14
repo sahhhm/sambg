@@ -11,9 +11,6 @@ var totalTriangles = 24;
 var maxPiecesPerTriangle = 5;
 var barColumn = 6;
 
-var player1;
-var player2;
-
 var gCanvasElement;
 var gDrawingContext;
 
@@ -28,12 +25,6 @@ var gMoveCount;
 var gGameInProgress;
 
 var currentDiceElement;
-
-var player1Color = "#ff0000";
-var player2Color = "#0000ff";
-var selectedColor = "#00ff00";
-
-var barSelected = false;
 
 var dice;
 
@@ -61,10 +52,7 @@ function Dice() {
   this.directMoves = new Array();
   this.combinedMoves = new Array();
   this.findPotentialMoves = function(from) {
-    var temp;
-	var i;
-	var curSum;
-	var curDie;
+    var temp, i, curSum, curDie;
     var player = gPlayers[from.player-1];
 	this.directMoves = new Array();
 	this.combinedMoves = new Array();
@@ -445,7 +433,7 @@ function drawBoard() {
 }
 
 function highlightPotentialMoves() {
-  dice.findPotentialMoves(gTriangles[gSelectedTriNumber-1]);
+  var potentials = dice.findPotentialMoves(gTriangles[gSelectedTriNumber-1]);
   var directs = dice.directMoves;
   var combined = dice.combinedMoves;
   var i;
@@ -473,9 +461,7 @@ function highlightPotentialMoves() {
   }
   console.log(text);
 
-  var potentials = directs.concat(combined);
   for (i = 0; i < potentials.length; i++) highlight(potentials[i][0], "#a020f0", 3, true)
-
 }
 
 function highlight(tri, color, width, isPotential) {
@@ -496,45 +482,29 @@ function highlight(tri, color, width, isPotential) {
 }
 
 function drawTriangle(t) {
-    var column = t.column;
-    var isTop = t.isTop();
-	var numCheckers = t.numCheckers;
-	var player = t.player;
-	
-	for (var i = 0; i < numCheckers; i++) {
-	  if (isTop) {
-	    drawPiece(new Checker(i, column, t.player), false);
-	  } else {
-	    drawPiece(new Checker(kBoardHeight - i - 1, column, t.player), false);
-	  }
-	}
+  for (var i = 0; i < t.numCheckers; i++) {
+	  t.isTop() ? drawPiece(new Checker(i, t.column, t.player), false) :
+                  drawPiece(new Checker(kBoardHeight - i - 1, t.column, t.player), false);
+  }
 }
 
 function drawBarForPlayer(p) {
   for (var k = 0; k < p.bar.numCheckers; k++) {
-    if (p.bar.isTop()) {
-	  drawPiece(new Checker(k, p.bar.column, p.num), false);
-    } else {
-      drawPiece(new Checker(kBoardHeight - k - 1, p.bar.column, p.num), false);
-    }
+	p.bar.isTop() ? drawPiece(new Checker(k, p.bar.column, p.num), false) :
+                    drawPiece(new Checker(kBoardHeight - k - 1, p.bar.column, p.num), false);	
   }
 }
 
 function drawPiece(p, selected) {
-    var column = p.column;
-    var row = p.row;
-    var x = (column * kPieceWidth) + (kPieceWidth/2);
-    var y = (row * kPieceHeight) + (kPieceHeight/2);
+    var x = (p.column * kPieceWidth) + (kPieceWidth/2);
+    var y = (p.row * kPieceHeight) + (kPieceHeight/2);
     var radius = (kPieceWidth/2) - (kPieceWidth/10);
     gDrawingContext.beginPath();
     gDrawingContext.arc(x, y, radius, 0, Math.PI*2, false);
     gDrawingContext.closePath();
     gDrawingContext.strokeStyle = "#000";
     gDrawingContext.stroke();
-    if (selected) gDrawingContext.fillStyle = selectedColor;
-	else if (p.player == 1) gDrawingContext.fillStyle = player1Color;
-	else if (p.player == 2) gDrawingContext.fillStyle = player2Color;
-	else console.error("Invalid Player (" + p.player + ") at [" + row + ", " + column + "]");
+	gDrawingContext.fillStyle = gPlayers[p.player-1].color;
 	gDrawingContext.fill();   
 }
 
@@ -574,8 +544,6 @@ function newGame() {
 				  new Triangle(24, kBoardWidth-1,  2, 2)];
     gPlayers = [new Player(1, "#ff0000", 0, barColumn, 19, 24, 1, 6, 1),
 	            new Player(2, "#0000ff", kBoardHeight - 1, barColumn, 1, 6, 19, 24, -1)]
-	player1 = gPlayers[0]; 
-	player2 = gPlayers[1];
 	dice = new Dice(); 
 	dice.roll();
 	gNumTriangles = gTriangles.length;
