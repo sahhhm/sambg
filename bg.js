@@ -49,23 +49,23 @@ function Dice() {
 	console.log(text);
   }
   this.isDouble = function() { return this.dice[0] == this.dice[1]; }
-  this.directMoves = new Array();
-  this.combinedMoves = new Array();
-  this.findPotentialMoves = function(from) {
+  this.directTriMoves = new Array();
+  this.combinedTriMoves = new Array();
+  this.findPotentialTriMoves = function(from) {
     var temp, i, curSum, curDie;
     var player = gPlayers[from.player-1];
-	this.directMoves = new Array();
-	this.combinedMoves = new Array();
+	this.directTriMoves = new Array();
+	this.combinedTriMoves = new Array();
 	for (var t = 0; t < 2; t++) {
 	  if (validMove(from, gTriangles[from.num + (this.dice[t] * player.direction)-1])) {
 	    curDie = [this.dice[t]];	
-	    this.directMoves.push([gTriangles[from.num + (this.dice[t] * player.direction)-1], curDie.slice(0)]);
+	    this.directTriMoves.push([gTriangles[from.num + (this.dice[t] * player.direction)-1], curDie.slice(0)]);
 	    curSum = this.dice[t];	  
         for (i = 0; i < this.dice.length; i++) {
 	      if (i != t) {
 	        if (validMove(from, gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1])) {
 		      curDie.push(this.dice[i]);
-	          this.combinedMoves.push([gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1], curDie.slice(0)]);
+	          this.combinedTriMoves.push([gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1], curDie.slice(0)]);
 			  curSum += this.dice[i];			
 	        } else {
               break;
@@ -74,11 +74,11 @@ function Dice() {
 	    }
 	  }	
 	}
-	return this.directMoves.concat(this.combinedMoves);
+	return this.directTriMoves.concat(this.combinedTriMoves);
   }
   this.updateDiceOnMove = function(from, to) {
     var i, j;
-	var potentials = this.findPotentialMoves(from);
+	var potentials = this.findPotentialTriMoves(from);
 	for (i = 0; i < potentials.length; i++) {
 	  if (potentials[i][0].num == to.num) {
         this.dice = removeSubsetFromArray(potentials[i][1], this.dice);
@@ -369,7 +369,7 @@ function updateTriangle(triangle) {
 function validDiceMove(from, to) {
   var isValid = false;
   var i;
-  var potentials = dice.findPotentialMoves(from);
+  var potentials = dice.findPotentialTriMoves(from);
   for (i = 0; i < potentials.length; i++) {
     if (potentials[i][0].num == to.num) isValid = true;
   }
@@ -421,7 +421,7 @@ function drawBoard() {
 	/* highlight selected triangle */
 	if (gSelectedTriNumber != -1) {
       highlight(gTriangles[gSelectedTriNumber-1], "#00ff00", 3, false);	
-	  highlightPotentialMoves();
+	  highlightPotentialTriMoves();
 	}
 	
 	/* highlight selected bar */
@@ -432,10 +432,10 @@ function drawBoard() {
     saveGameState();
 }
 
-function highlightPotentialMoves() {
-  var potentials = dice.findPotentialMoves(gTriangles[gSelectedTriNumber-1]);
-  var directs = dice.directMoves;
-  var combined = dice.combinedMoves;
+function highlightPotentialTriMoves() {
+  var potentials = dice.findPotentialTriMoves(gTriangles[gSelectedTriNumber-1]);
+  var directs = dice.directTriMoves;
+  var combined = dice.combinedTriMoves;
   var i;
   var text;
   text = "Directs: ";
