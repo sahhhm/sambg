@@ -148,7 +148,7 @@ function Dice() {
     return directs.concat(combineds);	
   }  
   this.updateDiceOnMove = function(from, to) {
-    var i, j;
+    var i;
 	var potentials = this.findPotentialMoves(from);
 	for (i = 0; i < potentials.length; i++) {
 	  if (potentials[i][0].num == to.num) {
@@ -367,7 +367,10 @@ function updateBar(dumTriangle) {
   }
   
   /* move if valid */
-  if (isValid) move(fromBar, to);
+  if (isValid) {
+    move(fromBar, to);
+	dice.updateDiceOnMove(from, to);
+  }
 }
 
 function move(from, to) {
