@@ -24,6 +24,9 @@ var gSelectedPieceHasMoved;
 var gMoveCount;
 var gGameInProgress;
 
+var CONST_BAR = "bar";
+var CONST_TRI = "tri";
+
 var currentDiceElement;
 
 var dice;
@@ -168,6 +171,7 @@ function Triangle(num, column, player, numCheckers) {
   this.numCheckers = numCheckers;
   this.player = player;
   this.isTop = function() { return this.num <= 12; }
+  this.type = CONST_TRI;
 }
 
 function updateText() {
@@ -189,6 +193,7 @@ function Bar(player, row, column, numCheckers) {
   this.numCheckers = numCheckers;
   this.entry = this.player == 1 ? 0 : 25;
   this.isTop = function() { return row < maxPiecesPerTriangle; }
+  this.type = CONST_BAR;
 }
 
 function Checker(row, column, player) {
