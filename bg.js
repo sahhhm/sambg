@@ -38,9 +38,9 @@ function Dice() {
     // use a RNG eventually
 	this.dice = new Array();
 	this.diceCopy = new Array();
-	this.dice.push(Math.floor(Math.random()*6) + 1);
-	this.dice.push(Math.floor(Math.random()*6) + 1);
-	//this.dice.push(5); this.dice.push(5);
+	//this.dice.push(Math.floor(Math.random()*6) + 1);
+	//this.dice.push(Math.floor(Math.random()*6) + 1);
+	this.dice.push(4); this.dice.push(1);
 	if (this.isDouble()) {
       this.dice.push(this.dice[0]);
 	  this.dice.push(this.dice[0]);
@@ -81,23 +81,23 @@ function Dice() {
 	return this.directTriMoves.concat(this.combinedTriMoves);
   }
   this.directBarMoves = new Array();
-  this.combinedBarMoves = new Array();  
+  this.combinedBarMoves = new Array(); 
+  /*  
   this.findPotentialBarMoves = function(from) {
     var temp, i, curSum, curDie;
     var player = gPlayers[from.player-1];
-	var bar = player.bar;
 	this.directBarMoves = new Array();
 	this.combinedBarMoves = new Array();
 	for (var t = 0; t < 2; t++) {
-      if (validMove(bar, gTriangles[bar.entry + (this.diceCopy[t] * player.direction) - 1])) {
+      if (validMove(from, gTriangles[from.entry + (this.diceCopy[t] * player.direction) - 1])) {
         curDie = [this.diceCopy[t]];	
-        this.directBarMoves.push([gTriangles[bar.entry + (this.diceCopy[t] * player.direction) - 1], curDie.slice(0)]);
+        this.directBarMoves.push([gTriangles[from.entry + (this.diceCopy[t] * player.direction) - 1], curDie.slice(0)]);
         curSum = this.diceCopy[t];
         for (i = 0; i < this.diceCopy.length; i++) {
 	      if (i != t) {
-	        if (validMove(bar, gTriangles[bar.entry + ((curSum + this.diceCopy[i]) * player.direction) - 1])) {
+	        if (validMove(from, gTriangles[from.entry + ((curSum + this.diceCopy[i]) * player.direction) - 1])) {
 		      curDie.push(this.diceCopy[i]);
-	          this.combinedBarMoves.push([gTriangles[bar.entry + ((curSum + this.diceCopy[i]) * player.direction) - 1], curDie.slice(0)]);
+	          this.combinedBarMoves.push([gTriangles[from.entry + ((curSum + this.diceCopy[i]) * player.direction) - 1], curDie.slice(0)]);
 			  curSum += this.diceCopy[i];			
 	        } else {
               break;
@@ -107,6 +107,43 @@ function Dice() {
   	  }
 	}
 	return this.directBarMoves.concat(this.combinedBarMoves);
+  } 
+  */  
+  this.findPotentialMoves = function(from) {
+    var temp, i, curSum, curDie, directs, combineds, numeric;
+    var player = gPlayers[from.player-1];
+    if (from.type == CONST_BAR) {
+	  this.directBarMoves = new Array();
+      directs = this.directBarMoves;
+	  this.combinedBarMoves = new Array();
+	  combineds = this.combinedBarMoves;
+	  numeric = from.entry;
+    } else {
+	  this.directTriMoves = new Array();
+      directs = this.directTriMoves;
+	  this.combinedTriMoves = new Array();
+	  combineds = this.combinedTriMoves;
+      numeric = from.num;	  
+	}
+	for (var t = 0; t < 2; t++) {
+      if (validMove(from, gTriangles[numeric + (this.diceCopy[t] * player.direction) - 1])) {
+        curDie = [this.diceCopy[t]];	
+        directs.push([gTriangles[numeric + (this.diceCopy[t] * player.direction) - 1], curDie.slice(0)]);
+        curSum = this.diceCopy[t];
+        for (i = 0; i < this.diceCopy.length; i++) {
+	      if (i != t) {
+	        if (validMove(from, gTriangles[numeric + ((curSum + this.diceCopy[i]) * player.direction) - 1])) {
+		      curDie.push(this.diceCopy[i]);
+	          combineds.push([gTriangles[numeric + ((curSum + this.diceCopy[i]) * player.direction) - 1], curDie.slice(0)]);
+			  curSum += this.diceCopy[i];			
+	        } else {
+              break;
+            }
+          }
+	    }
+  	  }
+	}
+    return directs.concat(combineds);	
   }  
   this.updateDiceOnMove = function(from, to) {
     var i, j;
@@ -502,7 +539,7 @@ function highlightPotentialTriMoves() {
 
 
 function highlightPotentialBarMoves() {
-  var potentials = dice.findPotentialBarMoves(gPlayers[gSelectedBarNumber-1].bar);
+  var potentials = dice.findPotentialMoves(gPlayers[gSelectedBarNumber-1].bar);
   //var directs = dice.directTriMoves;
   //var combined = dice.combinedTriMoves;
   //var i;
