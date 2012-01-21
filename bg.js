@@ -126,7 +126,7 @@ function Dice() {
 	  this.combinedTriMoves = new Array();
 	  combineds = this.combinedTriMoves;
       numeric = from.num;	  
-	}
+	} 
 	for (var t = 0; t < 2; t++) {
       if (validMove(from, gTriangles[numeric + (this.dice[t] * player.direction) - 1])) {
         curDie = [this.dice[t]];	
@@ -338,7 +338,8 @@ function updateBar(dumTriangle) {
   var fromBar = fromPlayer.bar;
   var to = gTriangles[dumTriangle.num-1];
   
-  if (to.num >= fromPlayer.oppMinNum && to.num <= fromPlayer.oppMaxNum) {
+  //if (to.num >= fromPlayer.oppMinNum && to.num <= fromPlayer.oppMaxNum) {
+  if (validDiceMove(fromBar, to)) {
     if (to.numCheckers == 0) {
 	  isValid = true;
       to.player = fromBar.player;
