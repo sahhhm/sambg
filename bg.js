@@ -38,9 +38,9 @@ function Dice() {
     // use a RNG eventually
 	this.dice = new Array();
 	this.diceCopy = new Array();
-	//this.dice.push(Math.floor(Math.random()*6) + 1);
-	//this.dice.push(Math.floor(Math.random()*6) + 1);
-	this.dice.push(4); this.dice.push(1);
+	this.dice.push(Math.floor(Math.random()*6) + 1);
+	this.dice.push(Math.floor(Math.random()*6) + 1);
+	//this.dice.push(4); this.dice.push(1);
 	if (this.isDouble()) {
       this.dice.push(this.dice[0]);
 	  this.dice.push(this.dice[0]);
@@ -55,6 +55,7 @@ function Dice() {
   this.isDouble = function() { return this.dice[0] == this.dice[1]; }
   this.directTriMoves = new Array();
   this.combinedTriMoves = new Array();
+  /*
   this.findPotentialTriMoves = function(from) {
     var temp, i, curSum, curDie;
     var player = gPlayers[from.player-1];
@@ -80,6 +81,7 @@ function Dice() {
 	}
 	return this.directTriMoves.concat(this.combinedTriMoves);
   }
+  */
   this.directBarMoves = new Array();
   this.combinedBarMoves = new Array(); 
   /*  
@@ -126,16 +128,16 @@ function Dice() {
       numeric = from.num;	  
 	}
 	for (var t = 0; t < 2; t++) {
-      if (validMove(from, gTriangles[numeric + (this.diceCopy[t] * player.direction) - 1])) {
-        curDie = [this.diceCopy[t]];	
-        directs.push([gTriangles[numeric + (this.diceCopy[t] * player.direction) - 1], curDie.slice(0)]);
-        curSum = this.diceCopy[t];
-        for (i = 0; i < this.diceCopy.length; i++) {
+      if (validMove(from, gTriangles[numeric + (this.dice[t] * player.direction) - 1])) {
+        curDie = [this.dice[t]];	
+        directs.push([gTriangles[numeric + (this.dice[t] * player.direction) - 1], curDie.slice(0)]);
+        curSum = this.dice[t];
+        for (i = 0; i < this.dice.length; i++) {
 	      if (i != t) {
-	        if (validMove(from, gTriangles[numeric + ((curSum + this.diceCopy[i]) * player.direction) - 1])) {
-		      curDie.push(this.diceCopy[i]);
-	          combineds.push([gTriangles[numeric + ((curSum + this.diceCopy[i]) * player.direction) - 1], curDie.slice(0)]);
-			  curSum += this.diceCopy[i];			
+	        if (validMove(from, gTriangles[numeric + ((curSum + this.dice[i]) * player.direction) - 1])) {
+		      curDie.push(this.dice[i]);
+	          combineds.push([gTriangles[numeric + ((curSum + this.dice[i]) * player.direction) - 1], curDie.slice(0)]);
+			  curSum += this.dice[i];			
 	        } else {
               break;
             }
@@ -147,7 +149,7 @@ function Dice() {
   }  
   this.updateDiceOnMove = function(from, to) {
     var i, j;
-	var potentials = this.findPotentialTriMoves(from);
+	var potentials = this.findPotentialMoves(from);
 	for (i = 0; i < potentials.length; i++) {
 	  if (potentials[i][0].num == to.num) {
         this.dice = removeSubsetFromArray(potentials[i][1], this.dice);
@@ -441,7 +443,7 @@ function updateTriangle(triangle) {
 function validDiceMove(from, to) {
   var isValid = false;
   var i;
-  var potentials = dice.findPotentialTriMoves(from);
+  var potentials = dice.findPotentialMoves(from);
   for (i = 0; i < potentials.length; i++) {
     if (potentials[i][0].num == to.num) isValid = true;
   }
@@ -506,7 +508,7 @@ function drawBoard() {
 }
 
 function highlightPotentialTriMoves() {
-  var potentials = dice.findPotentialTriMoves(gTriangles[gSelectedTriNumber-1]);
+  var potentials = dice.findPotentialMoves(gTriangles[gSelectedTriNumber-1]);
   var directs = dice.directTriMoves;
   var combined = dice.combinedTriMoves;
   var i;
