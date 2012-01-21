@@ -37,6 +37,7 @@ function Dice() {
 	this.diceCopy = new Array();
 	this.dice.push(Math.floor(Math.random()*6) + 1);
 	this.dice.push(Math.floor(Math.random()*6) + 1);
+	//this.dice.push(5); this.dice.push(5);
 	if (this.isDouble()) {
       this.dice.push(this.dice[0]);
 	  this.dice.push(this.dice[0]);
@@ -76,6 +77,34 @@ function Dice() {
 	}
 	return this.directTriMoves.concat(this.combinedTriMoves);
   }
+  this.directBarMoves = new Array();
+  this.combinedBarMoves = new Array();  
+  this.findPotentialBarMoves = function(from) {
+    var temp, i, curSum, curDie;
+    var player = gPlayers[from.player-1];
+	var bar = player.bar;
+	this.directBarMoves = new Array();
+	this.combinedBarMoves = new Array();
+	for (var t = 0; t < 2; t++) {
+      if (validMove(bar, gTriangles[bar.entry + (this.diceCopy[t] * player.direction) - 1])) {
+        curDie = [this.diceCopy[t]];	
+        this.directBarMoves.push([gTriangles[bar.entry + (this.diceCopy[t] * player.direction) - 1], curDie.slice(0)]);
+        curSum = this.diceCopy[t];
+        for (i = 0; i < this.diceCopy.length; i++) {
+	      if (i != t) {
+	        if (validMove(bar, gTriangles[bar.entry + ((curSum + this.diceCopy[i]) * player.direction) - 1])) {
+		      curDie.push(this.diceCopy[i]);
+	          this.combinedBarMoves.push([gTriangles[bar.entry + ((curSum + this.diceCopy[i]) * player.direction) - 1], curDie.slice(0)]);
+			  curSum += this.diceCopy[i];			
+	        } else {
+              break;
+            }
+          }
+	    }
+  	  }
+	}
+	return this.directBarMoves.concat(this.combinedBarMoves);
+  }  
   this.updateDiceOnMove = function(from, to) {
     var i, j;
 	var potentials = this.findPotentialTriMoves(from);
@@ -158,6 +187,7 @@ function Bar(player, row, column, numCheckers) {
   this.row = row;
   this.column = column;
   this.numCheckers = numCheckers;
+  this.entry = this.player == 1 ? 0 : 25;
   this.isTop = function() { return row < maxPiecesPerTriangle; }
 }
 
@@ -427,6 +457,7 @@ function drawBoard() {
 	/* highlight selected bar */
 	if (gSelectedBarNumber != -1) {
       highlight(gPlayers[gSelectedBarNumber-1].bar, "#00ff00", 3, false);
+	  highlightPotentialBarMoves();
 	}
 
     saveGameState();
@@ -461,6 +492,17 @@ function highlightPotentialTriMoves() {
   }
   console.log(text);
 
+  for (i = 0; i < potentials.length; i++) highlight(potentials[i][0], "#a020f0", 3, true)
+}
+
+
+function highlightPotentialBarMoves() {
+  var potentials = dice.findPotentialBarMoves(gPlayers[gSelectedBarNumber-1].bar);
+  //var directs = dice.directTriMoves;
+  //var combined = dice.combinedTriMoves;
+  //var i;
+  //var text;
+  
   for (i = 0; i < potentials.length; i++) highlight(potentials[i][0], "#a020f0", 3, true)
 }
 
