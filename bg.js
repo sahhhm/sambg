@@ -28,6 +28,7 @@ var CONST_BAR = "bar";
 var CONST_TRI = "tri";
 
 var currentDiceElement;
+var confirmButtonElement;
 
 var dice;
 
@@ -369,7 +370,7 @@ function updateBar(dumTriangle) {
   /* move if valid */
   if (isValid) {
     move(fromBar, to);
-	dice.updateDiceOnMove(from, to);
+	dice.updateDiceOnMove(fromBar, to);
   }
 }
 
@@ -644,6 +645,17 @@ function newGame() {
 	updateText();
 }
 
+function confirmClick() {
+  if (!dice.dice.length) { //need to also check whether or not there is a feasible move 
+    console.log("No more moves... rolling again");  
+    dice.roll();
+    updateText();	
+  } else { 
+	console.log("There are still moves to be played with the dice");
+  }
+}
+
+
 function endGame() {
   gGameInProgress = false;
 }
@@ -656,7 +668,11 @@ function initGame(canvasElement) {
     }
 	
 	currentDiceElement = document.getElementById('current-dice');
+    confirmButtonElement = document.getElementById('confirm');	
+	
+	confirmButtonElement.addEventListener("click", confirmClick, false);
 
+	
     gCanvasElement = canvasElement;
     gCanvasElement.width = kPixelWidth;
     gCanvasElement.height = kPixelHeight;
