@@ -59,62 +59,8 @@ function Dice() {
   this.isDouble = function() { return this.dice[0] == this.dice[1]; }
   this.directTriMoves = new Array();
   this.combinedTriMoves = new Array();
-  /*
-  this.findPotentialTriMoves = function(from) {
-    var temp, i, curSum, curDie;
-    var player = gPlayers[from.player-1];
-	this.directTriMoves = new Array();
-	this.combinedTriMoves = new Array();
-	for (var t = 0; t < 2; t++) {
-	  if (validMove(from, gTriangles[from.num + (this.dice[t] * player.direction)-1])) {
-	    curDie = [this.dice[t]];	
-	    this.directTriMoves.push([gTriangles[from.num + (this.dice[t] * player.direction)-1], curDie.slice(0)]);
-	    curSum = this.dice[t];	  
-        for (i = 0; i < this.dice.length; i++) {
-	      if (i != t) {
-	        if (validMove(from, gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1])) {
-		      curDie.push(this.dice[i]);
-	          this.combinedTriMoves.push([gTriangles[(from.num + ((curSum + this.dice[i]) * player.direction))-1], curDie.slice(0)]);
-			  curSum += this.dice[i];			
-	        } else {
-              break;
-            }	
-          }		
-	    }
-	  }	
-	}
-	return this.directTriMoves.concat(this.combinedTriMoves);
-  }
-  */
   this.directBarMoves = new Array();
   this.combinedBarMoves = new Array(); 
-  /*  
-  this.findPotentialBarMoves = function(from) {
-    var temp, i, curSum, curDie;
-    var player = gPlayers[from.player-1];
-	this.directBarMoves = new Array();
-	this.combinedBarMoves = new Array();
-	for (var t = 0; t < 2; t++) {
-      if (validMove(from, gTriangles[from.entry + (this.diceCopy[t] * player.direction) - 1])) {
-        curDie = [this.diceCopy[t]];	
-        this.directBarMoves.push([gTriangles[from.entry + (this.diceCopy[t] * player.direction) - 1], curDie.slice(0)]);
-        curSum = this.diceCopy[t];
-        for (i = 0; i < this.diceCopy.length; i++) {
-	      if (i != t) {
-	        if (validMove(from, gTriangles[from.entry + ((curSum + this.diceCopy[i]) * player.direction) - 1])) {
-		      curDie.push(this.diceCopy[i]);
-	          this.combinedBarMoves.push([gTriangles[from.entry + ((curSum + this.diceCopy[i]) * player.direction) - 1], curDie.slice(0)]);
-			  curSum += this.diceCopy[i];			
-	        } else {
-              break;
-            }
-          }
-	    }
-  	  }
-	}
-	return this.directBarMoves.concat(this.combinedBarMoves);
-  } 
-  */  
   this.findPotentialMoves = function(from) {
     var temp, i, curSum, curDie, directs, combineds, numeric;
     var player = gPlayers[from.player-1];
@@ -313,9 +259,7 @@ function bgOnClick(e) {
   var triangle = info[0];
   var bar = info[1];
   
-  var fTriangle = gTriangles[triangle.num-1];
-  //var fBar = gPlayers[gSelectedBarNumber-1].bar
-  
+  var fTriangle = gTriangles[triangle.num-1];  
 
     if (bar.player >= 1) {
 	  gSelectedBarNumber = bar.player;
@@ -350,7 +294,6 @@ function updateBar(dumTriangle) {
   var fromBar = fromPlayer.bar;
   var to = gTriangles[dumTriangle.num-1];
   
-  //if (to.num >= fromPlayer.oppMinNum && to.num <= fromPlayer.oppMaxNum) {
   if (validDiceMove(fromBar, to)) {
     if (to.numCheckers == 0) {
 	  isValid = true;
@@ -378,11 +321,7 @@ function updateBar(dumTriangle) {
     gSelectedBarNumber = -1;
   }
   
-  /* move if valid */
-  if (isValid) {
-    move(fromBar, to);
-	//dice.updateDiceOnMove(fromBar, to);
-  }
+  if (isValid) move(fromBar, to);
 }
 
 function move(from, to) {
@@ -403,8 +342,6 @@ function updateTriangle(triangle) {
   } else {
     var from = gTriangles[gSelectedTriNumber-1];
 	var to = gTriangles[triangle.num-1];
-	//if ((to.num == from.num + (dice.dice[0] * gPlayers[from.player-1].direction)) || (to.num == from.num + (dice.dice[1] * gPlayers[from.player-1].direction))) {
-    //if (from.player == playerTurn()) {
       if (validDiceMove(from, to)) {    
 	  /* try to move */
 	    if (from.numCheckers) {
@@ -416,7 +353,6 @@ function updateTriangle(triangle) {
 	        console.log("Player 2 trying to move backwards from " + from.num + " to " + to.num);	  
 	        gSelectedTriNumber = -1;
 	      } else if (gPlayers[from.player-1].isHit()) {
-	        //alert("Player " + from.player + " needs to move off the bar");
 		    console.log("Player " + from.player + " needs to move off the bar");
 		    gSelectedTriNumber = -1;
 	      } else if (from.num == to.num) {
@@ -452,14 +388,9 @@ function updateTriangle(triangle) {
 	    console.log("not proper dice");
 	    gSelectedTriNumber = -1;
 	  }
-	//} else {
-	//  console.log("incorrect player trying to move. It is player " + playerTurn() + "'s turn");
-	//}
   }
-  if (isValid) {
-    move(from, to);
-	//dice.updateDiceOnMove(from, to);
-  }  
+  if (isValid) move(from, to);
+
 }
 
 function validDiceMove(from, to) {
@@ -568,11 +499,6 @@ function highlightPotentialTriMoves() {
 
 function highlightPotentialBarMoves() {
   var potentials = dice.findPotentialMoves(gPlayers[gSelectedBarNumber-1].bar);
-  //var directs = dice.directTriMoves;
-  //var combined = dice.combinedTriMoves;
-  //var i;
-  //var text;
-  
   for (i = 0; i < potentials.length; i++) highlight(potentials[i][0], "#a020f0", 3, true)
 }
 
