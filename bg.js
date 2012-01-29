@@ -1,7 +1,7 @@
 var kBoardWidth = 13;
-var kBoardHeight= 13;
-var kPieceWidth = 40;
-var kPieceHeight= 40;
+var kBoardHeight= 12;
+var kPieceWidth = 45;
+var kPieceHeight= 45;
 var kHitPieceWidth = 50;
 var kHitPieceHeight = 20;
 var kPixelWidth = 1 + (kBoardWidth * kPieceWidth);
