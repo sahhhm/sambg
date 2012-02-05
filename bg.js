@@ -1,6 +1,6 @@
 var kBoardWidth = 13;
 var kBoardHeight= 12;
-var kPieceWidth = 45;
+var kPieceWidth = 50;
 var kPieceHeight= 45;
 var kHitPieceWidth = 50;
 var kHitPieceHeight = 20;
@@ -536,7 +536,7 @@ function drawBarForPlayer(p) {
 function drawPiece(p, selected) {
     var x = (p.column * kPieceWidth) + (kPieceWidth/2);
     var y = (p.row * kPieceHeight) + (kPieceHeight/2);
-    var radius = (kPieceWidth/2) - (kPieceWidth/10);
+    var radius = (kPieceWidth/2) - (kPieceWidth/9);
     gDrawingContext.beginPath();
     gDrawingContext.arc(x, y, radius, 0, Math.PI*2, false);
     gDrawingContext.closePath();
