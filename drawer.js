@@ -3,20 +3,20 @@ function Drawer() {
 
   this.drawBoard = function(dice) {
 
-    this.drawingContext.clearRect(0, 0, kPixelWidth, kPixelHeight);
+    this.drawingContext.clearRect(0, 0, BOARD.pixelWidth(), BOARD.pixelHeight());
     this.drawingContext.beginPath();
 	this.drawingContext.lineWidth =  1;
     
     /* vertical lines */
-    for (var x = 0; x <= kPixelWidth; x += kPieceWidth) {
+    for (var x = 0; x <= BOARD.pixelWidth(); x += BOARD.pieceWidth) {
       this.drawingContext.moveTo(0.5 + x, 0);
-	  this.drawingContext.lineTo(0.5 + x, kPixelHeight);
+	  this.drawingContext.lineTo(0.5 + x, BOARD.pixelHeight());
     }
     
     /* horizontal lines */
-    for (var y = 0; y <= kPixelHeight; y += kPieceHeight) {
+    for (var y = 0; y <= BOARD.pixelHeight(); y += BOARD.pieceHeight) {
 	  this.drawingContext.moveTo(0, 0.5 + y);
-	  this.drawingContext.lineTo(kPixelWidth, 0.5 +  y);
+	  this.drawingContext.lineTo(BOARD.pixelWidth(), 0.5 +  y);
     }
     
     /* draw it! */
@@ -25,8 +25,8 @@ function Drawer() {
     
 	/* bar */
 	this.drawingContext.fillStyle = "#ccc";
-	for (var y = 0; y <= kPixelHeight; y += kPieceHeight) {
-	  this.drawingContext.fillRect(kPieceWidth * Math.floor(kBoardWidth/2), y, kPieceWidth, kPieceHeight);
+	for (var y = 0; y <= BOARD.pixelHeight(); y += BOARD.pieceHeight) {
+	  this.drawingContext.fillRect(BOARD.pieceWidth * Math.floor(BOARD.boardWidth/2), y, BOARD.pieceWidth, BOARD.pieceHeight);
 	}
 	
 	
@@ -55,16 +55,16 @@ function Drawer() {
   }
 
   this.highlight = function(tri, color, width, isPotential) {
-	  var tx = tri.column * kPieceWidth;
-	  var height = isPotential ? 0 : tri.numCheckers * kPieceHeight;
-	  if (!tri.isTop()) height = kPixelHeight - height;
-	  var base = tri.isTop() ? 0 : kPixelHeight;
+	  var tx = tri.column * BOARD.pieceWidth;
+	  var height = isPotential ? 0 : tri.numCheckers * BOARD.pieceHeight;
+	  if (!tri.isTop()) height = BOARD.pixelHeight() - height;
+	  var base = tri.isTop() ? 0 : BOARD.pixelHeight();
 
 	  this.drawingContext.beginPath();
 	  this.drawingContext.moveTo(0.5 + tx, base);
 	  this.drawingContext.lineTo(0.5 + tx, height);
-	  this.drawingContext.lineTo(0.5 + tx + kPieceWidth, height);
-	  this.drawingContext.lineTo(0.5 + tx + kPieceWidth, base);
+	  this.drawingContext.lineTo(0.5 + tx + BOARD.pieceWidth, height);
+	  this.drawingContext.lineTo(0.5 + tx + BOARD.pieceWidth, base);
   
 	  this.drawingContext.lineWidth = width;
 	  this.drawingContext.strokeStyle = color;
@@ -83,18 +83,18 @@ function Drawer() {
 
   this.drawTriangle = function(t) {
     for (var i = 0; i < t.numCheckers; i++) 
-	  t.isTop() ? this.drawPiece(new Checker(i, t.column, t.player), false) : this.drawPiece(new Checker(kBoardHeight - i - 1, t.column, t.player), false);
+	  t.isTop() ? this.drawPiece(new Checker(i, t.column, t.player), false) : this.drawPiece(new Checker(BOARD.boardHeight - i - 1, t.column, t.player), false);
   }  
 
   this.drawBarForPlayer = function(p) {
     for (var k = 0; k < p.bar.numCheckers; k++) 
-	  p.bar.isTop() ? this.drawPiece(new Checker(k, p.bar.column, p.num), false) : this.drawPiece(new Checker(kBoardHeight - k - 1, p.bar.column, p.num), false);	
+	  p.bar.isTop() ? this.drawPiece(new Checker(k, p.bar.column, p.num), false) : this.drawPiece(new Checker(BOARD.boardHeight - k - 1, p.bar.column, p.num), false);	
   }  
   
   this.drawPiece = function(p, selected) {
-    var x = (p.column * kPieceWidth) + (kPieceWidth/2);
-    var y = (p.row * kPieceHeight) + (kPieceHeight/2);
-    var radius = (kPieceWidth/2) - (kPieceWidth/9);
+    var x = (p.column * BOARD.pieceWidth) + (BOARD.pieceWidth/2);
+    var y = (p.row * BOARD.pieceHeight) + (BOARD.pieceHeight/2);
+    var radius = (BOARD.pieceWidth/2) - (BOARD.pieceWidth/9);
     this.drawingContext.beginPath();
     this.drawingContext.arc(x, y, radius, 0, Math.PI*2, false);
     this.drawingContext.closePath();
