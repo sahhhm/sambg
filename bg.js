@@ -309,7 +309,7 @@ function newGame() {
 }
 
 function confirmClick() {
-  if (!DICE.dice.length) { //need to also check whether or not there is a feasible move 
+  if (!DICE.dice.length || !anyMovesLeft()) { //need to also check whether or not there is a feasible move 
     console.log("No more moves... rolling again");  
     DICE.roll();
 	//DICE.confirmedRolls += 1;
@@ -317,6 +317,20 @@ function confirmClick() {
   } else { 
 	console.log("There are still moves to be played with the dice");
   }
+}
+
+function anyMovesLeft() {
+  var any = false;
+  var player = playerTurn();
+  for (var i = 0 ; i < gTriangles.length; i++) {
+    if (gTriangles[i].player == player && !gTriangles[i].isEmpty()) {
+	  if (DICE.findPotentialMoves(gTriangles[i]).length) {
+	    any = true;
+	    break;
+	  }
+	}
+  }
+  return any;
 }
 
 function playerTurn() {
