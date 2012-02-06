@@ -31,7 +31,7 @@ function Drawer() {
 	
 	
 	/* draw pieces in each triangle */
-    for (var i = 0; i < gNumTriangles; i++) {
+    for (var i = 0; i < BOARD.totalTriangles; i++) {
 	  this.drawTriangle(gTriangles[i]);
     }
 
