@@ -5,9 +5,6 @@ var gPlayers;
 var gSelectedTriNumber = -1;
 var gSelectedBarNumber = -1;
 
-
-var confirmedRolls;
-
 var CONST_BAR = "bar";
 var CONST_TRI = "tri";
 
@@ -153,7 +150,8 @@ function bgOnClick(e) {
 	} 
     
 	DRAWER.drawBoard(DICE);
-
+	DICE.canConfirm(confirmButtonElement);
+	
   updateText();
 }
 
@@ -309,28 +307,8 @@ function newGame() {
 }
 
 function confirmClick() {
-  if (!DICE.dice.length || !anyMovesLeft()) { //need to also check whether or not there is a feasible move 
-    console.log("No more moves... rolling again");  
-    DICE.roll();
-	//DICE.confirmedRolls += 1;
-    updateText();	
-  } else { 
-	console.log("There are still moves to be played with the dice");
-  }
-}
-
-function anyMovesLeft() {
-  var any = false;
-  var player = playerTurn();
-  for (var i = 0 ; i < gTriangles.length; i++) {
-    if (gTriangles[i].player == player && !gTriangles[i].isEmpty()) {
-	  if (DICE.findPotentialMoves(gTriangles[i]).length) {
-	    any = true;
-	    break;
-	  }
-	}
-  }
-  return any;
+  DICE.roll();
+  updateText();	
 }
 
 function playerTurn() {

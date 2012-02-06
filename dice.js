@@ -16,6 +16,7 @@ function Dice() {
 	}
 	this.diceCopy = this.dice.slice(0);
 	this.confirmedRolls += 1;
+	this.canConfirm(confirmButtonElement);
 	var text = "Dice Rolled: ";
 	for (var i = 0; i < this.dice.length; i++) {
 	  text += this.dice[i] + " - ";
@@ -81,6 +82,31 @@ function Dice() {
         break;
 	  }
 	}
+  }
+
+  this.canConfirm = function(el) {
+    (!this.dice.length || !this.anyMovesLeft()) ? el.disabled = false : el.disabled = true;   
+  }
+
+  this.anyMovesLeft = function() {
+    var any = false;
+    var player = playerTurn();
+	
+	if (gPlayers[player - 1].bar.isEmpty()) {
+      for (var i = 0 ; i < gTriangles.length; i++) {
+        if (gTriangles[i].player == player && !gTriangles[i].isEmpty()) {
+	      if (this.findPotentialMoves(gTriangles[i]).length) {
+	        any = true;
+	        break;
+	      }
+	    }
+      }	
+	} else {
+	  if (this.findPotentialMoves(gPlayers[player-1].bar).length) {
+	    any = true;
+	  }	
+	}
+    return any;
   }
   
 }
