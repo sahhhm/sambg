@@ -1,14 +1,7 @@
-
-
-
-
 var gCanvasElement;
-
 
 var gTriangles;
 var gPlayers;
-var gNumPieces;
-var gNumTriangles;
 var gSelectedTriNumber = -1;
 var gSelectedBarNumber = -1;
 
@@ -100,10 +93,10 @@ function findTriangle(aChecker) {
   var tnum = -1;
   if (x != BOARD.barColumn) { 
     if (y < BOARD.maxPiecesPerTriangle) { /* top */
-	  tnum = (gNumTriangles/2) - x + 1;
+	  tnum = (BOARD.totalTriangles/2) - x + 1;
 	  if (x < BOARD.barColumn) tnum -= 1;
 	} else if (y > BOARD.boardHeight - BOARD.maxPiecesPerTriangle - 1) { /* bottom */
-	  tnum = (gNumTriangles/2) + x + 1;
+	  tnum = (BOARD.totalTriangles/2) + x + 1;
 	  if (x > BOARD.barColumn) tnum -=1;
 	} else {
 	  tnum = -1;
@@ -311,8 +304,6 @@ function newGame() {
     gPlayers = [new Player(1, "#ff0000", 0, BOARD.barColumn, 19, 24, 1, 6, 1),
 	            new Player(2, "#0000ff", BOARD.boardHeight - 1, BOARD.barColumn, 1, 6, 19, 24, -1)]
 	DICE.roll();
-	gNumTriangles = gTriangles.length;
-	confirmedRolls = 1;
     DRAWER.drawBoard(DICE);
 	updateText();
 }
@@ -321,7 +312,7 @@ function confirmClick() {
   if (!DICE.dice.length) { //need to also check whether or not there is a feasible move 
     console.log("No more moves... rolling again");  
     DICE.roll();
-	confirmedRolls += 1;
+	//DICE.confirmedRolls += 1;
     updateText();	
   } else { 
 	console.log("There are still moves to be played with the dice");
@@ -329,7 +320,7 @@ function confirmClick() {
 }
 
 function playerTurn() {
-  return confirmedRolls % 2 ? 1: 2;
+  return DICE.confirmedRolls % 2 ? 1: 2;
 }
 
 function initGame(canvasElement) {

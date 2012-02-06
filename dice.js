@@ -15,12 +15,15 @@ function Dice() {
 	  this.dice.push(this.dice[0]);
 	}
 	this.diceCopy = this.dice.slice(0);
+	this.confirmedRolls += 1;
 	var text = "Dice Rolled: ";
 	for (var i = 0; i < this.dice.length; i++) {
 	  text += this.dice[i] + " - ";
 	}
 	console.log(text);
   }
+  
+  this.confirmedRolls = 0;
   
   this.isDouble = function() { return this.dice[0] == this.dice[1]; }
   
