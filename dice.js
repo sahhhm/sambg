@@ -38,7 +38,7 @@ function Dice() {
   
   this.findPotentialMoves = function(from) {
     var temp, i, curSum, curDie, directs, combineds, numeric;
-    var player = gPlayers[from.player-1];
+    var player = BOARD.gPlayers[from.player-1];
     if (from.type == CONST_BAR) {
 	  this.directBarMoves = new Array();
       directs = this.directBarMoves;
@@ -53,15 +53,15 @@ function Dice() {
       numeric = from.num;	  
 	} 
 	for (var t = 0; t < 2; t++) {
-      if (validMove(from, gTriangles[numeric + (this.dice[t] * player.direction) - 1])) {
+      if (validMove(from, BOARD.gTriangles[numeric + (this.dice[t] * player.direction) - 1])) {
         curDie = [this.dice[t]];	
-        directs.push([gTriangles[numeric + (this.dice[t] * player.direction) - 1], curDie.slice(0)]);
+        directs.push([BOARD.gTriangles[numeric + (this.dice[t] * player.direction) - 1], curDie.slice(0)]);
         curSum = this.dice[t];
         for (i = 0; i < this.dice.length; i++) {
 	      if (i != t) {
-	        if (validMove(from, gTriangles[numeric + ((curSum + this.dice[i]) * player.direction) - 1])) {
+	        if (validMove(from, BOARD.gTriangles[numeric + ((curSum + this.dice[i]) * player.direction) - 1])) {
 		      curDie.push(this.dice[i]);
-	          combineds.push([gTriangles[numeric + ((curSum + this.dice[i]) * player.direction) - 1], curDie.slice(0)]);
+	          combineds.push([BOARD.gTriangles[numeric + ((curSum + this.dice[i]) * player.direction) - 1], curDie.slice(0)]);
 			  curSum += this.dice[i];			
 	        } else {
               break;
@@ -92,17 +92,17 @@ function Dice() {
     var any = false;
     var player = playerTurn();
 	
-	if (gPlayers[player - 1].bar.isEmpty()) {
-      for (var i = 0 ; i < gTriangles.length; i++) {
-        if (gTriangles[i].player == player && !gTriangles[i].isEmpty()) {
-	      if (this.findPotentialMoves(gTriangles[i]).length) {
+	if (BOARD.gPlayers[player - 1].bar.isEmpty()) {
+      for (var i = 0 ; i < BOARD.gTriangles.length; i++) {
+        if (BOARD.gTriangles[i].player == player && !BOARD.gTriangles[i].isEmpty()) {
+	      if (this.findPotentialMoves(BOARD.gTriangles[i]).length) {
 	        any = true;
 	        break;
 	      }
 	    }
       }	
 	} else {
-	  if (this.findPotentialMoves(gPlayers[player-1].bar).length) {
+	  if (this.findPotentialMoves(BOARD.gPlayers[player-1].bar).length) {
 	    any = true;
 	  }	
 	}

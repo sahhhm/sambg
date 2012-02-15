@@ -1,7 +1,5 @@
 var gCanvasElement;
 
-var gTriangles;
-var gPlayers;
 var gSelectedTriNumber = -1;
 var gSelectedBarNumber = -1;
 
@@ -73,12 +71,12 @@ function getCursorPosition(e) {
   }
   x -= gCanvasElement.offsetLeft;
   y -= gCanvasElement.offsetTop;
-  x = Math.min(x, BOARD.boardWidth * BOARD.pieceWidth);
-  y = Math.min(y, BOARD.boardHeight * BOARD.pieceHeight);
+  x = Math.min(x, BOARD.specs.boardWidth * BOARD.specs.pieceWidth);
+  y = Math.min(y, BOARD.specs.boardHeight * BOARD.specs.pieceHeight);
 
-  var checker = new Checker(Math.floor(y/BOARD.pieceHeight), Math.floor(x/BOARD.pieceWidth));
-  var triangle = new Triangle(findTriangle(checker), Math.floor(x/BOARD.pieceWidth), 0, -1);
-  var bar = new Bar(findBar(checker), Math.floor(y/BOARD.pieceHeight), Math.floor(x/BOARD.pieceWidth), 0);
+  var checker = new Checker(Math.floor(y/BOARD.specs.pieceHeight), Math.floor(x/BOARD.specs.pieceWidth));
+  var triangle = new Triangle(findTriangle(checker), Math.floor(x/BOARD.specs.pieceWidth), 0, -1);
+  var bar = new Bar(findBar(checker), Math.floor(y/BOARD.specs.pieceHeight), Math.floor(x/BOARD.specs.pieceWidth), 0);
   return [triangle, bar];
 }
 
@@ -88,13 +86,13 @@ function findTriangle(aChecker) {
   var x = aChecker.column;
   var y = aChecker.row;
   var tnum = -1;
-  if (x != BOARD.barColumn) { 
-    if (y < BOARD.maxPiecesPerTriangle) { /* top */
-	  tnum = (BOARD.totalTriangles/2) - x + 1;
-	  if (x < BOARD.barColumn) tnum -= 1;
-	} else if (y > BOARD.boardHeight - BOARD.maxPiecesPerTriangle - 1) { /* bottom */
-	  tnum = (BOARD.totalTriangles/2) + x + 1;
-	  if (x > BOARD.barColumn) tnum -=1;
+  if (x != BOARD.specs.barColumn) { 
+    if (y < BOARD.specs.maxPiecesPerTriangle) { /* top */
+	  tnum = (BOARD.specs.totalTriangles/2) - x + 1;
+	  if (x < BOARD.specs.barColumn) tnum -= 1;
+	} else if (y > BOARD.specs.boardHeight - BOARD.specs.maxPiecesPerTriangle - 1) { /* bottom */
+	  tnum = (BOARD.specs.totalTriangles/2) + x + 1;
+	  if (x > BOARD.specs.barColumn) tnum -=1;
 	} else {
 	  tnum = -1;
 	} 
@@ -108,9 +106,9 @@ function findBar(aChecker) {
   var x = aChecker.column;
   var y = aChecker.row;
   var bnum = -1;
-  if (x == BOARD.barColumn) 
-    if (y < BOARD.maxPiecesPerTriangle) bnum = 1;
-	else if (y > BOARD.boardHeight - BOARD.maxPiecesPerTriangle - 1) bnum = 2;
+  if (x == BOARD.specs.barColumn) 
+    if (y < BOARD.specs.maxPiecesPerTriangle) bnum = 1;
+	else if (y > BOARD.specs.boardHeight - BOARD.specs.maxPiecesPerTriangle - 1) bnum = 2;
 	else bnum = -1;
   else bnum = -1;
   return bnum;	 
@@ -126,7 +124,7 @@ function bgOnClick(e) {
   var triangle = info[0];
   var bar = info[1];
   
-  var fTriangle = gTriangles[triangle.num-1];  
+  var fTriangle = BOARD.gTriangles[triangle.num-1];  
 
     if (bar.player >= 1) {
 	  gSelectedBarNumber = bar.player;
@@ -134,14 +132,14 @@ function bgOnClick(e) {
     }
   
     if (gSelectedBarNumber == -1) {
-	  if (gSelectedTriNumber == -1 && gTriangles[triangle.num-1].isEmpty()) {
+	  if (gSelectedTriNumber == -1 && BOARD.gTriangles[triangle.num-1].isEmpty()) {
         console.log("Triangle " + triangle.num + " which is empty was selected"); 
       } else {
         updateTriangle(triangle);
       }
 	}
     else {
-      if (gPlayers[gSelectedBarNumber-1].bar.isEmpty()) {
+      if (BOARD.gPlayers[gSelectedBarNumber-1].bar.isEmpty()) {
 	    console.log("Bar " + gSelectedBarNumber + " which is empty was selected");
 	    gSelectedBarNumber = -1;
 	  } else {
@@ -157,9 +155,9 @@ function bgOnClick(e) {
 
 function updateBar(dumTriangle) {
   var isValid = false;
-  var fromPlayer = gPlayers[gSelectedBarNumber-1];
+  var fromPlayer = BOARD.gPlayers[gSelectedBarNumber-1];
   var fromBar = fromPlayer.bar;
-  var to = gTriangles[dumTriangle.num-1];
+  var to = BOARD.gTriangles[dumTriangle.num-1];
   
   if (validDiceMove(fromBar, to)) {
     if (to.numCheckers == 0) {
@@ -171,7 +169,7 @@ function updateBar(dumTriangle) {
 	  } else {
 	    /* player hit */
 		console.log("Player " + fromBar.player + " hit Player " + to.player + " from the bar");
-		gPlayers[to.player-1].bar.numCheckers += 1;
+		BOARD.gPlayers[to.player-1].bar.numCheckers += 1;
 		to.numCheckers -= 1;
 		to.player = fromBar.player;
 		isValid = true;
@@ -207,8 +205,8 @@ function updateTriangle(triangle) {
     /* about to make a move */
     gSelectedTriNumber = triangle.num;
   } else {
-    var from = gTriangles[gSelectedTriNumber-1];
-	var to = gTriangles[triangle.num-1];
+    var from = BOARD.gTriangles[gSelectedTriNumber-1];
+	var to = BOARD.gTriangles[triangle.num-1];
       if (validDiceMove(from, to)) {    
 	  /* try to move */
 	    if (from.numCheckers) {
@@ -219,7 +217,7 @@ function updateTriangle(triangle) {
 	      } else if (from.player == 2 && from.num < to.num) {
 	        console.log("Player 2 trying to move backwards from " + from.num + " to " + to.num);	  
 	        gSelectedTriNumber = -1;
-	      } else if (gPlayers[from.player-1].isHit()) {
+	      } else if (BOARD.gPlayers[from.player-1].isHit()) {
 		    console.log("Player " + from.player + " needs to move off the bar");
 		    gSelectedTriNumber = -1;
 	      } else if (from.num == to.num) {
@@ -235,7 +233,7 @@ function updateTriangle(triangle) {
 		      if (from.player != to.player) {
 		        /* player has been hit */
 			    to.numCheckers -= 1;
-			    gPlayers[to.player-1].bar.numCheckers += 1;
+			    BOARD.gPlayers[to.player-1].bar.numCheckers += 1;
 			    console.log("Player " + to.player + " hit at Triangle " + to.num);		
 			    to.player = from.player;
 		      }
@@ -275,32 +273,6 @@ function validDiceMove(from, to) {
 }
 
 function newGame() {
-    gTriangles = [new Triangle(1, BOARD.boardWidth-1,   1, 2),
-                  new Triangle(2, BOARD.boardWidth-2,   0, 0),
-				  new Triangle(3, BOARD.boardWidth-3,   0, 0),
-				  new Triangle(4, BOARD.boardWidth-4,   0, 0),
-				  new Triangle(5, BOARD.boardWidth-5,   0, 0),
-				  new Triangle(6, BOARD.boardWidth-6,   2, 5),
-				  new Triangle(7, BOARD.boardWidth-8,   0, 0),
-				  new Triangle(8, BOARD.boardWidth-9,   2, 3),
-				  new Triangle(9, BOARD.boardWidth-10,  0, 0),
-				  new Triangle(10, BOARD.boardWidth-11, 0, 0),
-				  new Triangle(11, BOARD.boardWidth-12, 0, 0),
-				  new Triangle(12, BOARD.boardWidth-13, 1, 5),
-				  new Triangle(13, BOARD.boardWidth-13, 2, 5),
-				  new Triangle(14, BOARD.boardWidth-12, 0, 0),
-				  new Triangle(15, BOARD.boardWidth-11, 0, 0),
-				  new Triangle(16, BOARD.boardWidth-10, 0, 0),
-				  new Triangle(17, BOARD.boardWidth-9,  1, 3),
-				  new Triangle(18, BOARD.boardWidth-8,  0, 0),
-				  new Triangle(19, BOARD.boardWidth-6,  1, 5),
-				  new Triangle(20, BOARD.boardWidth-5,  0, 0),
-				  new Triangle(21, BOARD.boardWidth-4,  0, 0),
-				  new Triangle(22, BOARD.boardWidth-3,  0, 0),
-				  new Triangle(23, BOARD.boardWidth-2,  0, 0),
-				  new Triangle(24, BOARD.boardWidth-1,  2, 2)];
-    gPlayers = [new Player(1, "#ff0000", 0, BOARD.barColumn, 19, 24, 1, 6, 1),
-	            new Player(2, "#0000ff", BOARD.boardHeight - 1, BOARD.barColumn, 1, 6, 19, 24, -1)]
 	DICE.roll();
     DRAWER.drawBoard(DICE);
 	updateText();
@@ -320,6 +292,7 @@ function initGame(canvasElement) {
   DRAWER = new Drawer();
   DICE = new Dice(); 
   BOARD = new Board();
+  BOARD.initialize();
 
   if (!canvasElement) {
     canvasElement = document.createElement("canvas");
@@ -328,8 +301,8 @@ function initGame(canvasElement) {
   }
 	
   gCanvasElement = canvasElement;
-  gCanvasElement.width = BOARD.pixelWidth();
-  gCanvasElement.height = BOARD.pixelHeight();
+  gCanvasElement.width = BOARD.specs.pixelWidth;
+  gCanvasElement.height = BOARD.specs.pixelHeight;
   gCanvasElement.addEventListener("click", bgOnClick, false);	
 	
   DRAWER.drawingContext = gCanvasElement.getContext("2d");
