@@ -53,13 +53,13 @@ function Dice() {
       numeric = from.num;	  
 	} 
 	for (var t = 0; t < 2; t++) {
-      if (validMove(from, BOARD.gTriangles[numeric + (this.dice[t] * player.direction) - 1])) {
+	  if (from.validMoveTo(BOARD.gTriangles[numeric + (this.dice[t] * player.direction) - 1])) {
         curDie = [this.dice[t]];	
         directs.push([BOARD.gTriangles[numeric + (this.dice[t] * player.direction) - 1], curDie.slice(0)]);
         curSum = this.dice[t];
         for (i = 0; i < this.dice.length; i++) {
 	      if (i != t) {
-	        if (validMove(from, BOARD.gTriangles[numeric + ((curSum + this.dice[i]) * player.direction) - 1])) {
+			if (from.validMoveTo(BOARD.gTriangles[numeric + ((curSum + this.dice[i]) * player.direction) - 1])) {
 		      curDie.push(this.dice[i]);
 	          combineds.push([BOARD.gTriangles[numeric + ((curSum + this.dice[i]) * player.direction) - 1], curDie.slice(0)]);
 			  curSum += this.dice[i];			

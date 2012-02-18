@@ -32,17 +32,6 @@ function removeSubsetFromArray(subset, array) {
   return newArr;
 }
 
-function validMove(from, to) {
-  var isValid = false;
-  if (to) {
-    if (to.numCheckers == 0) isValid = true;
-    if (to.numCheckers == 1) isValid = true;
-    if (to.numCheckers >= 2) {
-      if (from.player == to.player) isValid = true;
-    }
-  }
-  return isValid;
-}
 
 function updateText() {
   var i;

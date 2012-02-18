@@ -9,4 +9,16 @@ function Triangle(num, column, player, numCheckers) {
   this.isTop = function() { return this.num <= 12; }
   this.isEmpty = function() { return this.numCheckers <= 0; }
   this.type = CONST_TRI;
+  
+  this.validMoveTo = function(to) {
+    var isValid = false;
+      if (to) {
+        if (to.numCheckers == 0) isValid = true;
+        if (to.numCheckers == 1) isValid = true;
+        if (to.numCheckers >= 2) {
+          if (this.player == to.player) isValid = true;
+        }
+      }
+    return isValid;  
+  }
 }
