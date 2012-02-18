@@ -33,7 +33,6 @@ function removeSubsetFromArray(subset, array) {
 }
 
 function getCursorPosition(e) {
-   /* returns Triangle with .num and .column properties */
   var x;
   var y;
   if (e.pageX != undefined && e.pageY != undefined) {
@@ -50,37 +49,30 @@ function getCursorPosition(e) {
   y = Math.min(y, BOARD.specs.boardHeight * BOARD.specs.pieceHeight);
 
   var checker = new Checker(Math.floor(y/BOARD.specs.pieceHeight), Math.floor(x/BOARD.specs.pieceWidth));
-  var triangle = new Triangle(checker.findTriangleNum(BOARD), Math.floor(x/BOARD.specs.pieceWidth), 0, -1);
-  var bar = new Bar(checker.findBarNum(BOARD), Math.floor(y/BOARD.specs.pieceHeight), Math.floor(x/BOARD.specs.pieceWidth), 0);
-  return [triangle, bar];
-}
-
-function resetInfo() {
-  gSelectedTriNumber = -1;
-  gSelectedBarNumber = -1;
+  return [checker.findTriangleNum(BOARD), checker.findBarNum(BOARD)]
 }
 
 function bgOnClick(e) {
   var info = getCursorPosition(e);
-  var triangle = info[0];
-  var bar = info[1];
+  var triangle = BOARD.getTriangleByNum(info[0]);
+  var bar = BOARD.getBarByNum(info[1]);
+  var selectedBar = BOARD.getBarByNum(gSelectedBarNumber);
   
-  var fTriangle = BOARD.gTriangles[triangle.num-1];  
-
     if (bar.player >= 1) {
 	  gSelectedBarNumber = bar.player;
+	  selectedBar = BOARD.getBarByNum(gSelectedBarNumber);
 	  console.log("Bar " + gSelectedBarNumber + " selected");
     }
   
     if (gSelectedBarNumber == -1) {
-	  if (gSelectedTriNumber == -1 && BOARD.gTriangles[triangle.num-1].isEmpty()) {
+	  if (gSelectedTriNumber == -1 && triangle.isEmpty()) {
         console.log("Triangle " + triangle.num + " which is empty was selected"); 
       } else {
         updateTriangle(triangle);
       }
 	}
     else {
-      if (BOARD.gPlayers[gSelectedBarNumber-1].bar.isEmpty()) {
+      if (selectedBar.isEmpty()) {
 	    console.log("Bar " + gSelectedBarNumber + " which is empty was selected");
 	    gSelectedBarNumber = -1;
 	  } else {
@@ -90,7 +82,6 @@ function bgOnClick(e) {
     
 	DRAWER.drawBoard(DICE);
 	DICE.canConfirm(confirmButtonElement);
-	
     DRAWER.updateText(DICE);
 }
 
