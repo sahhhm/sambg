@@ -32,7 +32,6 @@ function removeSubsetFromArray(subset, array) {
   return newArr;
 }
 
-
 function getCursorPosition(e) {
    /* returns Triangle with .num and .column properties */
   var x;
@@ -51,43 +50,9 @@ function getCursorPosition(e) {
   y = Math.min(y, BOARD.specs.boardHeight * BOARD.specs.pieceHeight);
 
   var checker = new Checker(Math.floor(y/BOARD.specs.pieceHeight), Math.floor(x/BOARD.specs.pieceWidth));
-  var triangle = new Triangle(findTriangle(checker), Math.floor(x/BOARD.specs.pieceWidth), 0, -1);
-  var bar = new Bar(findBar(checker), Math.floor(y/BOARD.specs.pieceHeight), Math.floor(x/BOARD.specs.pieceWidth), 0);
+  var triangle = new Triangle(checker.findTriangleNum(BOARD), Math.floor(x/BOARD.specs.pieceWidth), 0, -1);
+  var bar = new Bar(checker.findBarNum(BOARD), Math.floor(y/BOARD.specs.pieceHeight), Math.floor(x/BOARD.specs.pieceWidth), 0);
   return [triangle, bar];
-}
-
-function findTriangle(aChecker) {
-  /* given a checker (row, column) find the appropriate triangle number 
-     returns -1 if not appropriate selection */
-  var x = aChecker.column;
-  var y = aChecker.row;
-  var tnum = -1;
-  if (x != BOARD.specs.barColumn) { 
-    if (y < BOARD.specs.maxPiecesPerTriangle) { /* top */
-	  tnum = (BOARD.specs.totalTriangles/2) - x + 1;
-	  if (x < BOARD.specs.barColumn) tnum -= 1;
-	} else if (y > BOARD.specs.boardHeight - BOARD.specs.maxPiecesPerTriangle - 1) { /* bottom */
-	  tnum = (BOARD.specs.totalTriangles/2) + x + 1;
-	  if (x > BOARD.specs.barColumn) tnum -=1;
-	} else {
-	  tnum = -1;
-	} 
-  } else {
-	tnum = -1;
-  } 
-  return tnum;	
-}
-
-function findBar(aChecker) {
-  var x = aChecker.column;
-  var y = aChecker.row;
-  var bnum = -1;
-  if (x == BOARD.specs.barColumn) 
-    if (y < BOARD.specs.maxPiecesPerTriangle) bnum = 1;
-	else if (y > BOARD.specs.boardHeight - BOARD.specs.maxPiecesPerTriangle - 1) bnum = 2;
-	else bnum = -1;
-  else bnum = -1;
-  return bnum;	 
 }
 
 function resetInfo() {
