@@ -90,7 +90,7 @@ function Dice() {
 
   this.anyMovesLeft = function() {
     var any = false;
-    var player = playerTurn();
+    var player = this.playerTurn();
 	
 	if (BOARD.gPlayers[player - 1].bar.isEmpty()) {
       for (var i = 0 ; i < BOARD.gTriangles.length; i++) {
@@ -107,6 +107,10 @@ function Dice() {
 	  }	
 	}
     return any;
+  }
+  
+  this.playerTurn = function() {
+    return this.confirmedRolls % 2 ? 1: 2;
   }
   
 }

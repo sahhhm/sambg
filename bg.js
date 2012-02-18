@@ -54,7 +54,7 @@ function updateText() {
     for (var i = 0; i < DICE.dice.length; i++)
     i == DICE.dice.length -1 ? text += DICE.dice[i]  : text += DICE.dice[i] + " - ";
   currentDiceElement.innerHTML = text;
-  playerTurnElement.innerHTML = playerTurn();
+  playerTurnElement.innerHTML = DICE.playerTurn();
 }
 
 function getCursorPosition(e) {
@@ -260,7 +260,7 @@ function updateTriangle(triangle) {
 
 function validDiceMove(from, to) {
   var isValid = false;
-  if (from.player == playerTurn()) {
+  if (from.player == DICE.playerTurn()) {
     var i;
     var potentials = DICE.findPotentialMoves(from);
     for  (i = 0; i < potentials.length; i++) {
@@ -281,10 +281,6 @@ function newGame() {
 function confirmClick() {
   DICE.roll();
   updateText();	
-}
-
-function playerTurn() {
-  return DICE.confirmedRolls % 2 ? 1: 2;
 }
 
 function initGame(canvasElement) {
