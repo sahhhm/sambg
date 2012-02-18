@@ -51,8 +51,22 @@ function Board() {
 		 
       this.init = true;
     }
-	
-	
+  }
+  
+  this.getBarByNum = function(n) {
+    var bar = new Bar(-1, -1, -1, -1);
+    if (n > 0) {
+	  bar =  this.gPlayers[n-1].bar;
+	} 
+	return bar;
   }
 
+  this.getTriangleByNum = function(n) {
+    var tri = new Triangle(-1, -1, -1, -1)
+    if (n > 0) {
+	  tri = this.gTriangles[n-1];
+	} 
+	return tri;
+  }  
+  
 }	  
