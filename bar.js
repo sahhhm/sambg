@@ -19,4 +19,18 @@ function Bar(player, row, column, numCheckers) {
       }
     return isValid;  
   }  
+  
+  this.validDiceMoveTo = function(to, d) {
+    var isValid = false;
+    if (this.player == d.playerTurn()) {
+      var i;
+      var potentials = d.findPotentialMoves(this);
+      for  (i = 0; i < potentials.length; i++) {
+       if (potentials[i][0].num == to.num) isValid = true;
+      }
+    } else {
+      console.log("Incorrect player moving");
+    }
+    return isValid;
+  }    
 }

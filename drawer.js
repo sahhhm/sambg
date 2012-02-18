@@ -102,6 +102,19 @@ function Drawer() {
     this.drawingContext.stroke();
 	this.drawingContext.fillStyle = BOARD.gPlayers[p.player-1].color;
 	this.drawingContext.fill();   
+  } 
+
+  this.updateText = function(d) {
+    var i;
+    var text = "";
+    text += " [ ";
+    for (var i = 0; i < d.diceCopy.length; i++) 
+      i == d.diceCopy.length -1 ? text += d.diceCopy[i]  : text += d.diceCopy[i] + " - ";
+    text += " ] ";
+    for (var i = 0; i < d.dice.length; i++)
+      i == d.dice.length -1 ? text += d.dice[i]  : text += d.dice[i] + " - ";
+    currentDiceElement.innerHTML = text;
+    playerTurnElement.innerHTML = d.playerTurn();
   }  
   
 }

@@ -33,19 +33,6 @@ function removeSubsetFromArray(subset, array) {
 }
 
 
-function updateText() {
-  var i;
-  var text = "";
-  text += " [ ";
-  for (var i = 0; i < DICE.diceCopy.length; i++) 
-    i == DICE.diceCopy.length -1 ? text += DICE.diceCopy[i]  : text += DICE.diceCopy[i] + " - ";
-  text += " ] ";
-    for (var i = 0; i < DICE.dice.length; i++)
-    i == DICE.dice.length -1 ? text += DICE.dice[i]  : text += DICE.dice[i] + " - ";
-  currentDiceElement.innerHTML = text;
-  playerTurnElement.innerHTML = DICE.playerTurn();
-}
-
 function getCursorPosition(e) {
    /* returns Triangle with .num and .column properties */
   var x;
@@ -139,7 +126,7 @@ function bgOnClick(e) {
 	DRAWER.drawBoard(DICE);
 	DICE.canConfirm(confirmButtonElement);
 	
-  updateText();
+    DRAWER.updateText(DICE);
 }
 
 function updateBar(dumTriangle) {
@@ -148,7 +135,7 @@ function updateBar(dumTriangle) {
   var fromBar = fromPlayer.bar;
   var to = BOARD.gTriangles[dumTriangle.num-1];
   
-  if (validDiceMove(fromBar, to)) {
+  if (fromBar.validDiceMoveTo(to, DICE)) {
     if (to.numCheckers == 0) {
 	  isValid = true;
       to.player = fromBar.player;
@@ -196,7 +183,7 @@ function updateTriangle(triangle) {
   } else {
     var from = BOARD.gTriangles[gSelectedTriNumber-1];
 	var to = BOARD.gTriangles[triangle.num-1];
-      if (validDiceMove(from, to)) {    
+      if (from.validDiceMoveTo(to, DICE)) {	  
 	  /* try to move */
 	    if (from.numCheckers) {
 	      /* make sure player is moving in the right direction */
@@ -247,29 +234,15 @@ function updateTriangle(triangle) {
 
 }
 
-function validDiceMove(from, to) {
-  var isValid = false;
-  if (from.player == DICE.playerTurn()) {
-    var i;
-    var potentials = DICE.findPotentialMoves(from);
-    for  (i = 0; i < potentials.length; i++) {
-     if (potentials[i][0].num == to.num) isValid = true;
-    }
-  } else {
-    console.log("Incorrect player moving");
-  }
-  return isValid;
-}
-
 function newGame() {
 	DICE.roll();
     DRAWER.drawBoard(DICE);
-	updateText();
+	DRAWER.updateText(DICE);
 }
 
 function confirmClick() {
   DICE.roll();
-  updateText();	
+  DRAWER.updateText(DICE);	
 }
 
 function initGame(canvasElement) {
