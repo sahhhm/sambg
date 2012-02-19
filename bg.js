@@ -68,126 +68,24 @@ function bgOnClick(e) {
 	  if (gSelectedTriNumber == -1 && triangle.isEmpty()) {
         console.log("Triangle " + triangle.num + " which is empty was selected"); 
       } else {
-        updateTriangle(triangle);
+        if (gSelectedTriNumber == -1) {
+          gSelectedTriNumber = triangle.num;
+        } else {	    
+		  BOARD.getTriangleByNum(gSelectedTriNumber).update(triangle);
+        }
       }
-	}
-    else {
+	} else {
       if (selectedBar.isEmpty()) {
 	    console.log("Bar " + gSelectedBarNumber + " which is empty was selected");
 	    gSelectedBarNumber = -1;
 	  } else {
-	    if (triangle.num >= 1) updateBar(triangle);
+	    if (triangle.num >= 1) BOARD.getBarByNum(gSelectedBarNumber).update(triangle);
 	  }
 	} 
     
 	DRAWER.drawBoard(DICE);
 	DICE.canConfirm(confirmButtonElement);
     DRAWER.updateText(DICE);
-}
-
-function updateBar(dumTriangle) {
-  var isValid = false;
-  var fromPlayer = BOARD.gPlayers[gSelectedBarNumber-1];
-  var fromBar = fromPlayer.bar;
-  var to = BOARD.gTriangles[dumTriangle.num-1];
-  
-  if (fromBar.validDiceMoveTo(to, DICE)) {
-    if (to.numCheckers == 0) {
-	  isValid = true;
-      to.player = fromBar.player;
-    } else if (to.numCheckers == 1) {
-	  if (fromBar.player == to.player) {
-		isValid = true;
-	  } else {
-	    /* player hit */
-		console.log("Player " + fromBar.player + " hit Player " + to.player + " from the bar");
-		BOARD.gPlayers[to.player-1].bar.numCheckers += 1;
-		to.numCheckers -= 1;
-		to.player = fromBar.player;
-		isValid = true;
-	  }
-	} else {
-	  if (fromBar.player == to.player) {
-		isValid = true;
-	  } else {
-	    console.log("Player " + fromBar.player + " cannot move form the bar to triangle " + to.num + " because Player " + to.player + " is occupying the triangle");
-	  }
-	}
-  } else {
-    console.log("Player " + fromBar.player + " tried to move from the bar to triangle " + to.num);
-    gSelectedBarNumber = -1;
-  }
-  
-  if (isValid) move(fromBar, to);
-}
-
-function move(from, to) {
-    from.numCheckers -= 1;
-    to.numCheckers += 1;
-    gSelectedBarNumber = -1;
-    gSelectedTriNumber = -1;
-    DICE.updateDiceOnMove(from, to)
-    console.log("Moved from " + from.num + " to " + to.num);
-
-}
-
-function updateTriangle(triangle) {
-  var isValid = false;
-  if (gSelectedTriNumber == -1) {
-    /* about to make a move */
-    gSelectedTriNumber = triangle.num;
-  } else {
-    var from = BOARD.gTriangles[gSelectedTriNumber-1];
-	var to = BOARD.gTriangles[triangle.num-1];
-      if (from.validDiceMoveTo(to, DICE)) {	  
-	  /* try to move */
-	    if (from.numCheckers) {
-	      /* make sure player is moving in the right direction */
-	      if (from.player == 1 && from.num > to.num) {
-	        console.log("Player 1 trying to move backwards from " + from.num + " to " + to.num);
-	        gSelectedTriNumber = -1;
-	      } else if (from.player == 2 && from.num < to.num) {
-	        console.log("Player 2 trying to move backwards from " + from.num + " to " + to.num);	  
-	        gSelectedTriNumber = -1;
-	      } else if (BOARD.gPlayers[from.player-1].isHit()) {
-		    console.log("Player " + from.player + " needs to move off the bar");
-		    gSelectedTriNumber = -1;
-	      } else if (from.num == to.num) {
-            console.log("Clicked on the same triangle");
-          } else {
-	        if (to.numCheckers == 0) {
-	          /* need to assign new player to empty triangle */
-	          console.log("Moving from " + gSelectedTriNumber + " to " + triangle.num + " (an empty triangle)");
-	          to.player = from.player;
-		      isValid = true;
-	        } else if (to.numCheckers == 1) {
-		      isValid = true;		  
-		      if (from.player != to.player) {
-		        /* player has been hit */
-			    to.numCheckers -= 1;
-			    BOARD.gPlayers[to.player-1].bar.numCheckers += 1;
-			    console.log("Player " + to.player + " hit at Triangle " + to.num);		
-			    to.player = from.player;
-		      }
-		    } else if (to.numCheckers > 1) {
-		      if (from.player != to.player) {
-		        console.error("Trying to move to a triangle occupied by another player - from " + from.num + " to " + to.num + "(" + to.numCheckers + " checkers)");              
-		      } else {
-		        isValid = true;
-		      }  
-		    }
-	      }
-	    } else {
-	      gSelectedTriNumber = -1;
-	      console.log("ERROR - Trying to move from triangle with no checkers");
-	    }
-	  } else {
-	    console.log("not proper dice");
-	    gSelectedTriNumber = -1;
-	  }
-  }
-  if (isValid) move(from, to);
-
 }
 
 function newGame() {

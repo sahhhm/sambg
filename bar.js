@@ -32,5 +32,47 @@ function Bar(player, row, column, numCheckers) {
       console.log("Incorrect player moving");
     }
     return isValid;
-  }    
+  }   
+
+  this.update = function(to) {
+    var isValid = false;
+  
+    if (this.validDiceMoveTo(to, DICE)) {
+      if (to.numCheckers == 0) {
+	    isValid = true;
+        to.player = this.player;
+      } else if (to.numCheckers == 1) {
+	    if (this.player == to.player) {
+		  isValid = true;
+	    } else {
+	      //player hit
+		  console.log("Player " + this.player + " hit Player " + to.player + " from the bar");
+		  BOARD.gPlayers[to.player-1].bar.numCheckers += 1;
+		  to.numCheckers -= 1;
+		  to.player = this.player;
+		  isValid = true;
+	    }
+	  } else {
+	    if (this.player == to.player) {
+		  isValid = true;
+	    } else {
+	      console.log("Player " + this.player + " cannot move form the bar to triangle " + to.num + " because Player " + to.player + " is occupying the triangle");
+	    }
+	  }
+    } else {
+      console.log("Player " + this.player + " tried to move from the bar to triangle " + to.num);
+      gSelectedBarNumber = -1;
+    }
+  
+    if (isValid) this.move(to);
+  }  
+
+  this.move = function(to) {
+    this.numCheckers -= 1;
+    to.numCheckers += 1;
+    gSelectedBarNumber = -1;
+    gSelectedTriNumber = -1;
+    DICE.updateDiceOnMove(this, to)
+    console.log("Moved from " + this.num + " to " + to.num);
+  }
 }
