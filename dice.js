@@ -28,40 +28,23 @@ function Dice() {
   
   this.isDouble = function() { return this.dice[0] == this.dice[1]; }
   
-  this.directTriMoves = new Array();
-  
-  this.combinedTriMoves = new Array();
-  
-  this.directBarMoves = new Array();
-  
-  this.combinedBarMoves = new Array(); 
-  
   this.findPotentialMoves = function(from) {
-    var temp, i, curSum, curDie, directs, combineds, numeric;
+    var temp, i, curSum, curDie, directs, combineds;
     var player = BOARD.gPlayers[from.player-1];
-    if (from.type == CONST_BAR) {
-	  this.directBarMoves = new Array();
-      directs = this.directBarMoves;
-	  this.combinedBarMoves = new Array();
-	  combineds = this.combinedBarMoves;
-	  numeric = from.entry;
-    } else {
-	  this.directTriMoves = new Array();
-      directs = this.directTriMoves;
-	  this.combinedTriMoves = new Array();
-	  combineds = this.combinedTriMoves;
-      numeric = from.num;	  
-	} 
+    var entry = from.entry;
+	var directs = new Array();
+	var combineds = new Array();
+	
 	for (var t = 0; t < 2; t++) {
-	  if (from.validMoveTo(BOARD.gTriangles[numeric + (this.dice[t] * player.direction) - 1])) {
+	  if (from.validMoveTo(BOARD.gTriangles[entry + (this.dice[t] * player.direction) - 1])) {
         curDie = [this.dice[t]];	
-        directs.push([BOARD.gTriangles[numeric + (this.dice[t] * player.direction) - 1], curDie.slice(0)]);
+        directs.push([BOARD.gTriangles[entry + (this.dice[t] * player.direction) - 1], curDie.slice(0)]);
         curSum = this.dice[t];
         for (i = 0; i < this.dice.length; i++) {
 	      if (i != t) {
-			if (from.validMoveTo(BOARD.gTriangles[numeric + ((curSum + this.dice[i]) * player.direction) - 1])) {
+			if (from.validMoveTo(BOARD.gTriangles[entry + ((curSum + this.dice[i]) * player.direction) - 1])) {
 		      curDie.push(this.dice[i]);
-	          combineds.push([BOARD.gTriangles[numeric + ((curSum + this.dice[i]) * player.direction) - 1], curDie.slice(0)]);
+	          combineds.push([BOARD.gTriangles[entry + ((curSum + this.dice[i]) * player.direction) - 1], curDie.slice(0)]);
 			  curSum += this.dice[i];			
 	        } else {
               break;
