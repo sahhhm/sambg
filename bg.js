@@ -4,13 +4,11 @@ var currentDiceElement;
 var confirmButtonElement;
 var playerTurnElement;
 
-var DICE;
-var DRAWER;
 var BOARD;
 
 function removeSubsetFromArray(subset, array) {
   var newArr = new Array();
-  var limit = DICE.isDouble() ? subset.length : subset.length + 1;
+  var limit = BOARD.dice.isDouble() ? subset.length : subset.length + 1;
   for (var i = 0; i < array.length; i++) {
     var flagged = false;
 	if (i < limit) {
@@ -65,7 +63,7 @@ function bgOnClick(e) {
         if (!BOARD.hasSelectedTriangle()) {
           BOARD.selectedTriangleNum = triangle.num;
         } else {	    
-		  BOARD.getSelectedTriangle().update(triangle);
+		  BOARD.getSelectedTriangle().update(triangle, BOARD);
         }
       }
 	} else {
@@ -73,30 +71,27 @@ function bgOnClick(e) {
 	    console.log("Bar " + BOARD.selectedBarNum + " which is empty was selected");
 	    BOARD.selectedBarNum = -1;
 	  } else {
-	    if (triangle.num >= 1) BOARD.getSelectedBar().update(triangle);
+	    if (triangle.num >= 1) BOARD.getSelectedBar().update(triangle, BOARD);
 	  }
 	} 
     
-	DRAWER.drawBoard(DICE);
-	DICE.canConfirm(confirmButtonElement);
-    DRAWER.updateText(DICE);
+	BOARD.drawer.drawBoard();
+	BOARD.dice.canConfirm(confirmButtonElement);
+    BOARD.drawer.updateText();
 }
 
 function newGame() {
-	DICE.roll();
-    DRAWER.drawBoard(DICE);
-	DRAWER.updateText(DICE);
+	BOARD.dice.roll();
+    BOARD.drawer.drawBoard();
+	BOARD.drawer.updateText();
 }
 
 function confirmClick() {
-  DICE.roll();
-  DRAWER.updateText(DICE);	
+  BOARD.dice.roll();
+  BOARD.drawer.updateText();	
 }
 
-function initGame(canvasElement) {
-  // init game globals
-  DRAWER = new Drawer();
-  DICE = new Dice(); 
+function initGame(canvasElement) { 
   BOARD = new Board();
   BOARD.initialize();
 
@@ -111,7 +106,7 @@ function initGame(canvasElement) {
   gCanvasElement.height = BOARD.specs.pixelHeight;
   gCanvasElement.addEventListener("click", bgOnClick, false);	
 	
-  DRAWER.drawingContext = gCanvasElement.getContext("2d");
+  BOARD.drawer.drawingContext = gCanvasElement.getContext("2d");
 	
   currentDiceElement = document.getElementById('current-dice');
 	

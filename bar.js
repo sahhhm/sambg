@@ -33,10 +33,10 @@ function Bar(player, row, column, numCheckers) {
     return isValid;
   }   
 
-  this.update = function(to) {
+  this.update = function(to, onBoard) {
     var isValid = false;
   
-    if (this.validDiceMoveTo(to, DICE)) {
+    if (this.validDiceMoveTo(to, onBoard.dice)) {
       if (to.numCheckers == 0) {
 	    isValid = true;
         to.player = this.player;
@@ -46,7 +46,7 @@ function Bar(player, row, column, numCheckers) {
 	    } else {
 	      //player hit
 		  console.log("Player " + this.player + " hit Player " + to.player + " from the bar");
-		  BOARD.gPlayers[to.player-1].bar.numCheckers += 1;
+		  onBoard.gPlayers[to.player-1].bar.numCheckers += 1;
 		  to.numCheckers -= 1;
 		  to.player = this.player;
 		  isValid = true;
@@ -60,18 +60,18 @@ function Bar(player, row, column, numCheckers) {
 	  }
     } else {
       console.log("Player " + this.player + " tried to move from the bar to triangle " + to.num);
-      BOARD.selectedBarNum = -1;
+      onBoard.selectedBarNum = -1;
     }
   
-    if (isValid) this.move(to);
+    if (isValid) this.move(to, onBoard);
   }  
 
-  this.move = function(to) {
+  this.move = function(to, onBoard) {
     this.numCheckers -= 1;
     to.numCheckers += 1;
-    BOARD.selectedBarNum = -1;
-    BOARD.selectedTriangleNum = -1;
-    DICE.updateDiceOnMove(this, to)
+    onBoard.selectedBarNum = -1;
+    onBoard.selectedTriangleNum = -1;
+    onBoard.dice.updateDiceOnMove(this, to)
     console.log("Moved from " + this.num + " to " + to.num);
   }
 }

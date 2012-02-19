@@ -5,6 +5,9 @@ function Board() {
   this.selectedBarNum = -1;
   this.selectedTriangleNum = -1;
   
+  this.dice;
+  this.drawer;
+  
   this.initialize = function() {
     if (!this.init) {
 	  this.specs = {
@@ -50,7 +53,11 @@ function Board() {
       this.gPlayers = 
 	     [new Player(1, "#ff0000", 0, BOARD.specs.barColumn, 19, 24, 1, 6, 1),
 	     new Player(2, "#0000ff", BOARD.specs.boardHeight - 1, BOARD.specs.barColumn, 1, 6, 19, 24, -1)]		 
-		 
+	  
+	  this.dice = new Dice();
+	  
+	  this.drawer = new Drawer(this.dice);
+	  
       this.init = true;
     }
   }

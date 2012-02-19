@@ -1,7 +1,8 @@
-function Drawer() {
+function Drawer(d) {
+  this.dice = d;
   this.drawingContext = "";
 
-  this.drawBoard = function(dice) {
+  this.drawBoard = function() {
 
     this.drawingContext.clearRect(0, 0, BOARD.specs.pixelWidth, BOARD.specs.pixelHeight);
     this.drawingContext.beginPath();
@@ -43,13 +44,13 @@ function Drawer() {
 	/* highlight selected triangle */
 	if (BOARD.hasSelectedTriangle()) {
       this.highlight(BOARD.getSelectedTriangle(), "#00ff00", 3, false);	
-	  this.highlightPotentialTriMoves(dice);
+	  this.highlightPotentialTriMoves();
 	}
 	
 	/* highlight selected bar */
 	if (BOARD.hasSelectedBar()) {
       this.highlight(BOARD.getSelectedBar(), "#00ff00", 3, false);
-	  this.highlightPotentialBarMoves(dice);
+	  this.highlightPotentialBarMoves();
 	}
 
   }
@@ -71,14 +72,14 @@ function Drawer() {
       this.drawingContext.stroke();      
   }
   
-  this.highlightPotentialTriMoves = function(dice) {
-    var potentials = dice.findPotentialMoves(BOARD.getSelectedTriangle());
-    for (var i = 0; i < potentials.length; i++) DRAWER.highlight(potentials[i][0], "#a020f0", 3, true)
+  this.highlightPotentialTriMoves = function() {
+    var potentials = this.dice.findPotentialMoves(BOARD.getSelectedTriangle());
+    for (var i = 0; i < potentials.length; i++) this.highlight(potentials[i][0], "#a020f0", 3, true)
   }  
 
-  this.highlightPotentialBarMoves = function(dice) {
-    var potentials = dice.findPotentialMoves(BOARD.getSelectedBar());
-    for (var i = 0; i < potentials.length; i++) DRAWER.highlight(potentials[i][0], "#a020f0", 3, true)
+  this.highlightPotentialBarMoves = function() {
+    var potentials = this.dice.findPotentialMoves(BOARD.getSelectedBar());
+    for (var i = 0; i < potentials.length; i++) this.highlight(potentials[i][0], "#a020f0", 3, true)
   }
 
   this.drawTriangle = function(t) {
@@ -104,17 +105,17 @@ function Drawer() {
 	this.drawingContext.fill();   
   } 
 
-  this.updateText = function(d) {
+  this.updateText = function() {
     var i;
     var text = "";
     text += " [ ";
-    for (var i = 0; i < d.diceCopy.length; i++) 
-      i == d.diceCopy.length -1 ? text += d.diceCopy[i]  : text += d.diceCopy[i] + " - ";
+    for (var i = 0; i < this.dice.diceCopy.length; i++) 
+      i == this.dice.diceCopy.length -1 ? text += this.dice.diceCopy[i]  : text += this.dice.diceCopy[i] + " - ";
     text += " ] ";
     for (var i = 0; i < d.dice.length; i++)
-      i == d.dice.length -1 ? text += d.dice[i]  : text += d.dice[i] + " - ";
+      i == this.dice.dice.length -1 ? text += this.dice.dice[i]  : text += this.dice.dice[i] + " - ";
     currentDiceElement.innerHTML = text;
-    playerTurnElement.innerHTML = d.playerTurn();
+    playerTurnElement.innerHTML = this.dice.playerTurn();
   }  
   
 }

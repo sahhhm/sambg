@@ -36,27 +36,27 @@ function Triangle(num, column, player, numCheckers) {
     return isValid;
   }  
   
-  this.update = function(to) {
+  this.update = function(to, onBoard) {
     var isValid = false;
-    if (this.validDiceMoveTo(to, DICE)) {	  
+    if (this.validDiceMoveTo(to, onBoard.dice)) {	  
 	  // try to move 
 	    if (this.numCheckers) {
 	      //make sure player is moving in the right direction 
 	      if (this.player == 1 && this.num > to.num) {
 	        console.log("Player 1 trying to move backwards from " + this.num + " to " + to.num);
-	        BOARD.selectedTriangleNum = -1;
+	        onBoard.selectedTriangleNum = -1;
 	      } else if (this.player == 2 && this.num < to.num) {
 	        console.log("Player 2 trying to move backwards from " + this.num + " to " + to.num);	  
-	        BOARD.selectedTriangleNum = -1;
-	      } else if (BOARD.gPlayers[this.player-1].isHit()) {
+	        onBoard.selectedTriangleNum = -1;
+	      } else if (onBoard.gPlayers[this.player-1].isHit()) {
 		    console.log("Player " + this.player + " needs to move off the bar");
-		    BOARD.selectedTriangleNum = -1;
+		    onBoard.selectedTriangleNum = -1;
 	      } else if (this.num == to.num) {
             console.log("Clicked on the same triangle");
           } else {
 	        if (to.numCheckers == 0) {
 	          // need to assign new player to empty triangle 
-	          console.log("Moving from " + BOARD.selectedTriangleNum + " to " + to.num + " (an empty triangle)");
+	          console.log("Moving from " + onBoard.selectedTriangleNum + " to " + to.num + " (an empty triangle)");
 	          to.player = this.player;
 		      isValid = true;
 	        } else if (to.numCheckers == 1) {
@@ -64,7 +64,7 @@ function Triangle(num, column, player, numCheckers) {
 		      if (this.player != to.player) {
 		        // player has been hit 
 			    to.numCheckers -= 1;
-			    BOARD.gPlayers[to.player-1].bar.numCheckers += 1;
+			    onBoard.gPlayers[to.player-1].bar.numCheckers += 1;
 			    console.log("Player " + to.player + " hit at Triangle " + to.num);		
 			    to.player = this.player;
 		      }
@@ -77,23 +77,23 @@ function Triangle(num, column, player, numCheckers) {
 		    }
 	      }
 	    } else {
-	      BOARD.selectedTriangleNum = -1;
+	      onBoard.selectedTriangleNum = -1;
 	      console.log("ERROR - Trying to move from triangle with no checkers");
 	    }
 	  } else {
 	    console.log("not proper dice");
-	    BOARD.selectedTriangleNum = -1;
+	    onBoard.selectedTriangleNum = -1;
 	  }
 
-    if (isValid) this.move(to);  
+    if (isValid) this.move(to, onBoard);  
   }
   
-  this.move = function(to) {
+  this.move = function(to, onBoard) {
     this.numCheckers -= 1;
     to.numCheckers += 1;
-    BOARD.selectedBarNum = -1;
-    BOARD.selectedTriangleNum = -1;
-    DICE.updateDiceOnMove(this, to)
+    onBoard.selectedBarNum = -1;
+    onBoard.selectedTriangleNum = -1;
+    onBoard.dice.updateDiceOnMove(this, to)
     console.log("Moved from " + this.num + " to " + to.num);
   }
   
