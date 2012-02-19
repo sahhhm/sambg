@@ -8,7 +8,6 @@ function Triangle(num, column, player, numCheckers) {
   this.player = player;
   this.isTop = function() { return this.num <= 12; }
   this.isEmpty = function() { return this.numCheckers <= 0; }
-  this.type = CONST_TRI;
   this.entry = num;
   
   this.validMoveTo = function(to) {
@@ -45,19 +44,19 @@ function Triangle(num, column, player, numCheckers) {
 	      //make sure player is moving in the right direction 
 	      if (this.player == 1 && this.num > to.num) {
 	        console.log("Player 1 trying to move backwards from " + this.num + " to " + to.num);
-	        gSelectedTriNumber = -1;
+	        BOARD.selectedTriangleNum = -1;
 	      } else if (this.player == 2 && this.num < to.num) {
 	        console.log("Player 2 trying to move backwards from " + this.num + " to " + to.num);	  
-	        gSelectedTriNumber = -1;
+	        BOARD.selectedTriangleNum = -1;
 	      } else if (BOARD.gPlayers[this.player-1].isHit()) {
 		    console.log("Player " + this.player + " needs to move off the bar");
-		    gSelectedTriNumber = -1;
+		    BOARD.selectedTriangleNum = -1;
 	      } else if (this.num == to.num) {
             console.log("Clicked on the same triangle");
           } else {
 	        if (to.numCheckers == 0) {
 	          // need to assign new player to empty triangle 
-	          console.log("Moving from " + gSelectedTriNumber + " to " + to.num + " (an empty triangle)");
+	          console.log("Moving from " + BOARD.selectedTriangleNum + " to " + to.num + " (an empty triangle)");
 	          to.player = this.player;
 		      isValid = true;
 	        } else if (to.numCheckers == 1) {
@@ -78,12 +77,12 @@ function Triangle(num, column, player, numCheckers) {
 		    }
 	      }
 	    } else {
-	      gSelectedTriNumber = -1;
+	      BOARD.selectedTriangleNum = -1;
 	      console.log("ERROR - Trying to move from triangle with no checkers");
 	    }
 	  } else {
 	    console.log("not proper dice");
-	    gSelectedTriNumber = -1;
+	    BOARD.selectedTriangleNum = -1;
 	  }
 
     if (isValid) this.move(to);  
@@ -92,8 +91,8 @@ function Triangle(num, column, player, numCheckers) {
   this.move = function(to) {
     this.numCheckers -= 1;
     to.numCheckers += 1;
-    gSelectedBarNumber = -1;
-    gSelectedTriNumber = -1;
+    BOARD.selectedBarNum = -1;
+    BOARD.selectedTriangleNum = -1;
     DICE.updateDiceOnMove(this, to)
     console.log("Moved from " + this.num + " to " + to.num);
   }

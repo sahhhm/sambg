@@ -1,11 +1,5 @@
 var gCanvasElement;
 
-var gSelectedTriNumber = -1;
-var gSelectedBarNumber = -1;
-
-var CONST_BAR = "bar";
-var CONST_TRI = "tri";
-
 var currentDiceElement;
 var confirmButtonElement;
 var playerTurnElement;
@@ -56,30 +50,30 @@ function bgOnClick(e) {
   var info = getCursorPosition(e);
   var triangle = BOARD.getTriangleByNum(info[0]);
   var bar = BOARD.getBarByNum(info[1]);
-  var selectedBar = BOARD.getBarByNum(gSelectedBarNumber);
+  var selectedBar = BOARD.getSelectedBar();
   
     if (bar.player >= 1) {
-	  gSelectedBarNumber = bar.player;
-	  selectedBar = BOARD.getBarByNum(gSelectedBarNumber);
-	  console.log("Bar " + gSelectedBarNumber + " selected");
+	  BOARD.selectedBarNum = bar.player;
+	  selectedBar = BOARD.getSelectedBar();
+	  console.log("Bar " + BOARD.selectedBarNum + " selected");
     }
   
-    if (gSelectedBarNumber == -1) {
-	  if (gSelectedTriNumber == -1 && triangle.isEmpty()) {
+    if (!BOARD.hasSelectedBar()) {
+	  if (!BOARD.hasSelectedTriangle() && triangle.isEmpty()) {
         console.log("Triangle " + triangle.num + " which is empty was selected"); 
       } else {
-        if (gSelectedTriNumber == -1) {
-          gSelectedTriNumber = triangle.num;
+        if (!BOARD.hasSelectedTriangle()) {
+          BOARD.selectedTriangleNum = triangle.num;
         } else {	    
-		  BOARD.getTriangleByNum(gSelectedTriNumber).update(triangle);
+		  BOARD.getSelectedTriangle().update(triangle);
         }
       }
 	} else {
       if (selectedBar.isEmpty()) {
-	    console.log("Bar " + gSelectedBarNumber + " which is empty was selected");
-	    gSelectedBarNumber = -1;
+	    console.log("Bar " + BOARD.selectedBarNum + " which is empty was selected");
+	    BOARD.selectedBarNum = -1;
 	  } else {
-	    if (triangle.num >= 1) BOARD.getBarByNum(gSelectedBarNumber).update(triangle);
+	    if (triangle.num >= 1) BOARD.getSelectedBar().update(triangle);
 	  }
 	} 
     

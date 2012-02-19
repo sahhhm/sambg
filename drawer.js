@@ -41,14 +41,14 @@ function Drawer() {
 	}
 
 	/* highlight selected triangle */
-	if (gSelectedTriNumber != -1) {
-      this.highlight(BOARD.gTriangles[gSelectedTriNumber-1], "#00ff00", 3, false);	
+	if (BOARD.hasSelectedTriangle()) {
+      this.highlight(BOARD.getSelectedTriangle(), "#00ff00", 3, false);	
 	  this.highlightPotentialTriMoves(dice);
 	}
 	
 	/* highlight selected bar */
-	if (gSelectedBarNumber != -1) {
-      this.highlight(BOARD.gPlayers[gSelectedBarNumber-1].bar, "#00ff00", 3, false);
+	if (BOARD.hasSelectedBar()) {
+      this.highlight(BOARD.getSelectedBar(), "#00ff00", 3, false);
 	  this.highlightPotentialBarMoves(dice);
 	}
 
@@ -72,12 +72,12 @@ function Drawer() {
   }
   
   this.highlightPotentialTriMoves = function(dice) {
-    var potentials = dice.findPotentialMoves(BOARD.gTriangles[gSelectedTriNumber-1]);
+    var potentials = dice.findPotentialMoves(BOARD.getSelectedTriangle());
     for (var i = 0; i < potentials.length; i++) DRAWER.highlight(potentials[i][0], "#a020f0", 3, true)
   }  
 
   this.highlightPotentialBarMoves = function(dice) {
-    var potentials = dice.findPotentialMoves(BOARD.gPlayers[gSelectedBarNumber-1].bar);
+    var potentials = dice.findPotentialMoves(BOARD.getSelectedBar());
     for (var i = 0; i < potentials.length; i++) DRAWER.highlight(potentials[i][0], "#a020f0", 3, true)
   }
 

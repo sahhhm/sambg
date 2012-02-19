@@ -6,7 +6,6 @@ function Bar(player, row, column, numCheckers) {
   this.entry = this.player == 1 ? 0 : 25;
   this.isTop = function() { return row < BOARD.specs.maxPiecesPerTriangle; }
   this.isEmpty = function() { return this.numCheckers <= 0; }
-  this.type = CONST_BAR;
   
   this.validMoveTo = function(to) {
     var isValid = false;
@@ -61,7 +60,7 @@ function Bar(player, row, column, numCheckers) {
 	  }
     } else {
       console.log("Player " + this.player + " tried to move from the bar to triangle " + to.num);
-      gSelectedBarNumber = -1;
+      BOARD.selectedBarNum = -1;
     }
   
     if (isValid) this.move(to);
@@ -70,8 +69,8 @@ function Bar(player, row, column, numCheckers) {
   this.move = function(to) {
     this.numCheckers -= 1;
     to.numCheckers += 1;
-    gSelectedBarNumber = -1;
-    gSelectedTriNumber = -1;
+    BOARD.selectedBarNum = -1;
+    BOARD.selectedTriangleNum = -1;
     DICE.updateDiceOnMove(this, to)
     console.log("Moved from " + this.num + " to " + to.num);
   }

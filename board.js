@@ -2,6 +2,8 @@ function Board() {
   this.init = false;
   this.specs = {};
   this.gTriangles = [];
+  this.selectedBarNum = -1;
+  this.selectedTriangleNum = -1;
   
   this.initialize = function() {
     if (!this.init) {
@@ -61,6 +63,14 @@ function Board() {
 	return bar;
   }
 
+  this.getSelectedBar = function() {
+    return this.getBarByNum(this.selectedBarNum);
+  }  
+  
+  this.hasSelectedBar = function() {
+    return this.selectedBarNum > 0;
+  }
+  
   this.getTriangleByNum = function(n) {
     var tri = new Triangle(-1, -1, -1, -1)
     if (n > 0) {
@@ -69,4 +79,11 @@ function Board() {
 	return tri;
   }  
   
+  this.getSelectedTriangle = function() {
+    return this.getTriangleByNum(this.selectedTriangleNum);
+  }
+  
+  this.hasSelectedTriangle = function() {
+    return this.selectedTriangleNum > 0;
+  }  
 }	  
