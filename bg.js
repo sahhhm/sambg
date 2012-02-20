@@ -1,9 +1,3 @@
-var gCanvasElement;
-
-var currentDiceElement;
-var confirmButtonElement;
-var playerTurnElement;
-
 var BOARD;
 
 function removeSubsetFromArray(subset, array) {
@@ -35,8 +29,8 @@ function getCursorPosition(e) {
     x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
     y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
   }
-  x -= gCanvasElement.offsetLeft;
-  y -= gCanvasElement.offsetTop;
+  x -= BOARD.drawer.canvasElement.offsetLeft;
+  y -= BOARD.drawer.canvasElement.offsetTop;
   x = Math.min(x, BOARD.specs.boardWidth * BOARD.specs.pieceWidth);
   y = Math.min(y, BOARD.specs.boardHeight * BOARD.specs.pieceHeight);
 
@@ -76,44 +70,32 @@ function bgOnClick(e) {
 	} 
     
 	BOARD.drawer.drawBoard();
-	BOARD.dice.canConfirm(confirmButtonElement);
+	BOARD.drawer.canConfirm();
     BOARD.drawer.updateText();
 }
 
 function newGame() {
 	BOARD.dice.roll();
+	BOARD.drawer.canConfirm();
     BOARD.drawer.drawBoard();
 	BOARD.drawer.updateText();
 }
 
 function confirmClick() {
   BOARD.dice.roll();
+  BOARD.drawer.canConfirm();  
   BOARD.drawer.updateText();	
 }
 
 function initGame(canvasElement) { 
-  BOARD = new Board();
-  BOARD.initialize();
-
   if (!canvasElement) {
     canvasElement = document.createElement("canvas");
 	canvasElement.id = "bg_canvas";
 	document.body.appendChild(canvasElement);
   }
 	
-  gCanvasElement = canvasElement;
-  gCanvasElement.width = BOARD.specs.pixelWidth;
-  gCanvasElement.height = BOARD.specs.pixelHeight;
-  gCanvasElement.addEventListener("click", bgOnClick, false);	
-	
-  BOARD.drawer.drawingContext = gCanvasElement.getContext("2d");
-	
-  currentDiceElement = document.getElementById('current-dice');
-	
-  confirmButtonElement = document.getElementById('confirm');
-  confirmButtonElement.addEventListener("click", confirmClick, false);
-	
-  playerTurnElement = document.getElementById('player-turn');	
+  BOARD = new Board();
+  BOARD.initialize();	
 
   newGame();
 }

@@ -1,7 +1,14 @@
 function Drawer(d) {
   this.dice = d;
-  this.drawingContext = "";
-
+  
+  this.canvasElement = document.getElementById('bg_canvas');
+  this.canvasElement.addEventListener("click", bgOnClick, false);		  
+  this.drawingContext = this.canvasElement.getContext("2d")
+  this.currentDiceElement = document.getElementById('current-dice');
+  this.playerTurnElement = document.getElementById('player-turn');	
+  this.confirmButtonElement = document.getElementById('confirm');
+  this.confirmButtonElement.addEventListener("click", confirmClick, false);
+  
   this.drawBoard = function() {
 
     this.drawingContext.clearRect(0, 0, BOARD.specs.pixelWidth, BOARD.specs.pixelHeight);
@@ -52,7 +59,6 @@ function Drawer(d) {
       this.highlight(BOARD.getSelectedBar(), "#00ff00", 3, false);
 	  this.highlightPotentialBarMoves();
 	}
-
   }
 
   this.highlight = function(tri, color, width, isPotential) {
@@ -114,8 +120,11 @@ function Drawer(d) {
     text += " ] ";
     for (var i = 0; i < d.dice.length; i++)
       i == this.dice.dice.length -1 ? text += this.dice.dice[i]  : text += this.dice.dice[i] + " - ";
-    currentDiceElement.innerHTML = text;
-    playerTurnElement.innerHTML = this.dice.playerTurn();
+    this.currentDiceElement.innerHTML = text;
+    this.playerTurnElement.innerHTML = this.dice.playerTurn();
   }  
   
+  this.canConfirm = function() {
+    (!this.dice.dice.length || !this.dice.anyMovesLeft()) ? this.confirmButtonElement.disabled = false : this.confirmButtonElement.disabled = true;   
+  }  
 }

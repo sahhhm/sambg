@@ -16,7 +16,6 @@ function Dice() {
 	}
 	this.diceCopy = this.dice.slice(0);
 	this.confirmedRolls += 1;
-	this.canConfirm(confirmButtonElement);
 	var text = "Dice Rolled: ";
 	for (var i = 0; i < this.dice.length; i++) {
 	  text += this.dice[i] + " - ";
@@ -65,10 +64,6 @@ function Dice() {
         break;
 	  }
 	}
-  }
-
-  this.canConfirm = function(el) {
-    (!this.dice.length || !this.anyMovesLeft()) ? el.disabled = false : el.disabled = true;   
   }
 
   this.anyMovesLeft = function() {

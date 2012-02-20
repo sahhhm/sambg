@@ -24,6 +24,14 @@ function Board() {
 	  this.specs.pixelWidth = this.specs.boardWidth * this.specs.pieceWidth + 1;
 	  this.specs.pixelHeight = this.specs.boardHeight * this.specs.pieceHeight + 1;
 
+	  this.dice = new Dice();
+	  
+	  this.drawer = new Drawer(this.dice);	  
+	  
+      this.drawer.canvasElement.width = BOARD.specs.pixelWidth;
+      this.drawer.canvasElement.height = BOARD.specs.pixelHeight;
+  
+	  
       this.gTriangles = 
 	    [new Triangle(1, this.specs.boardWidth-1,   1, 2),
          new Triangle(2, this.specs.boardWidth-2,   0, 0),
@@ -53,10 +61,6 @@ function Board() {
       this.gPlayers = 
 	     [new Player(1, "#ff0000", 0, BOARD.specs.barColumn, 19, 24, 1, 6, 1),
 	     new Player(2, "#0000ff", BOARD.specs.boardHeight - 1, BOARD.specs.barColumn, 1, 6, 19, 24, -1)]		 
-	  
-	  this.dice = new Dice();
-	  
-	  this.drawer = new Drawer(this.dice);
 	  
       this.init = true;
     }
