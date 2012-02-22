@@ -69,22 +69,15 @@ function bgOnClick(e) {
 	  }
 	} 
     
-	BOARD.drawer.drawBoard();
-	BOARD.drawer.canConfirm();
-    BOARD.drawer.updateText();
+	BOARD.update({draw:true,confirm:true,text:true});
 }
 
 function newGame() {
-	BOARD.dice.roll();
-	BOARD.drawer.canConfirm();
-    BOARD.drawer.drawBoard();
-	BOARD.drawer.updateText();
+  BOARD.update({roll:true,confirm:true,draw:true,text:true});
 }
 
 function confirmClick() {
-  BOARD.dice.roll();
-  BOARD.drawer.canConfirm();  
-  BOARD.drawer.updateText();	
+  BOARD.update({roll:true,confirm:true,text:true});
 }
 
 function initGame(canvasElement) { 

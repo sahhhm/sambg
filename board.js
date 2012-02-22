@@ -97,4 +97,20 @@ function Board() {
   this.hasSelectedTriangle = function() {
     return this.selectedTriangleNum > 0;
   }  
+  
+  this.update = function(opts) {
+    if (opts.roll) {
+	  this.dice.roll();
+	}
+	if (opts.draw) {
+	  this.drawer.drawBoard();
+	}
+	if (opts.text) {
+	  this.drawer.updateText();
+	}
+	if (opts.confirm) {
+	  this.drawer.canConfirm();
+	}
+  
+  } 
 }	  
