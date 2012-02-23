@@ -1,22 +1,4 @@
-var BOARD;
-
-function removeSubsetFromArray(subset, array) {
-  var newArr = new Array();
-  var limit = BOARD.dice.isDouble() ? subset.length : subset.length + 1;
-  for (var i = 0; i < array.length; i++) {
-    var flagged = false;
-	if (i < limit) {
-	  for (var j = 0; j < subset.length; j++) {
-	    if (subset[j] == array[i]) { 
-		  flagged = true; 
-		  break; 
-	    }
-	  }
-	}
-	if (!flagged) newArr.push(array[i]);
-  }
-  return newArr;
-}
+var bggame;
 
 function getCursorPosition(e) {
   var x;
@@ -29,55 +11,55 @@ function getCursorPosition(e) {
     x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
     y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
   }
-  x -= BOARD.drawer.canvasElement.offsetLeft;
-  y -= BOARD.drawer.canvasElement.offsetTop;
-  x = Math.min(x, BOARD.specs.boardWidth * BOARD.specs.pieceWidth);
-  y = Math.min(y, BOARD.specs.boardHeight * BOARD.specs.pieceHeight);
+  x -= bggame.board.drawer.canvasElement.offsetLeft;
+  y -= bggame.board.drawer.canvasElement.offsetTop;
+  x = Math.min(x, bggame.board.specs.boardWidth * bggame.board.specs.pieceWidth);
+  y = Math.min(y, bggame.board.specs.boardHeight * bggame.board.specs.pieceHeight);
 
-  var checker = new Checker(Math.floor(y/BOARD.specs.pieceHeight), Math.floor(x/BOARD.specs.pieceWidth));
-  return [checker.findTriangleNum(BOARD), checker.findBarNum(BOARD)]
+  var checker = new Checker(Math.floor(y/bggame.board.specs.pieceHeight), Math.floor(x/bggame.board.specs.pieceWidth));
+  return [checker.findTriangleNum(bggame.board), checker.findBarNum(bggame.board)]
 }
 
 function bgOnClick(e) {
   var info = getCursorPosition(e);
-  var triangle = BOARD.getTriangleByNum(info[0]);
-  var bar = BOARD.getBarByNum(info[1]);
-  var selectedBar = BOARD.getSelectedBar();
+  var triangle = bggame.board.getTriangleByNum(info[0]);
+  var bar = bggame.board.getBarByNum(info[1]);
+  var selectedBar = bggame.board.getSelectedBar();
   
     if (bar.player >= 1) {
-	  BOARD.selectedBarNum = bar.player;
-	  selectedBar = BOARD.getSelectedBar();
-	  console.log("Bar " + BOARD.selectedBarNum + " selected");
+	  bggame.board.selectedBarNum = bar.player;
+	  selectedBar = bggame.board.getSelectedBar();
+	  console.log("Bar " + bggame.board.selectedBarNum + " selected");
     }
   
-    if (!BOARD.hasSelectedBar()) {
-	  if (!BOARD.hasSelectedTriangle() && triangle.isEmpty()) {
+    if (!bggame.board.hasSelectedBar()) {
+	  if (!bggame.board.hasSelectedTriangle() && triangle.isEmpty()) {
         console.log("Triangle " + triangle.num + " which is empty was selected"); 
       } else {
-        if (!BOARD.hasSelectedTriangle()) {
-          BOARD.selectedTriangleNum = triangle.num;
+        if (!bggame.board.hasSelectedTriangle()) {
+          bggame.board.selectedTriangleNum = triangle.num;
         } else {	    
-		  BOARD.getSelectedTriangle().update(triangle, BOARD);
+		  bggame.board.updateTriangle(bggame.board.getSelectedTriangle(), triangle);
         }
       }
 	} else {
       if (selectedBar.isEmpty()) {
-	    console.log("Bar " + BOARD.selectedBarNum + " which is empty was selected");
-	    BOARD.selectedBarNum = -1;
+	    console.log("Bar " + bggame.board.selectedBarNum + " which is empty was selected");
+	    bggame.board.selectedBarNum = -1;
 	  } else {
-	    if (triangle.num >= 1) BOARD.getSelectedBar().update(triangle, BOARD);
+	    if (triangle.num >= 1) bggame.board.updateBar(bggame.board.getSelectedBar(), triangle);
 	  }
 	} 
     
-	BOARD.update({draw:true,confirm:true,text:true});
+	bggame.board.update({draw:true,confirm:true,text:true});
 }
 
 function newGame() {
-  BOARD.update({roll:true,confirm:true,draw:true,text:true});
+  bggame.board.update({roll:true,confirm:true,draw:true,text:true});
 }
 
 function confirmClick() {
-  BOARD.update({roll:true,confirm:true,text:true});
+  bggame.board.update({roll:true,confirm:true,text:true});
 }
 
 function initGame(canvasElement) { 
@@ -87,8 +69,7 @@ function initGame(canvasElement) {
 	document.body.appendChild(canvasElement);
   }
 	
-  BOARD = new Board();
-  BOARD.initialize();	
+  bggame = new Game();
 
   newGame();
 }

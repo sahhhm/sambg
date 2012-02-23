@@ -1,10 +1,11 @@
 function Bar(player, row, column, numCheckers) {
   this.player = player;
+  this.num = player;
   this.row = row;
   this.column = column;
   this.numCheckers = numCheckers;
   this.entry = this.player == 1 ? 0 : 25;
-  this.isTop = function() { return row < BOARD.specs.maxPiecesPerTriangle; }
+  this.isTop = function() { return row < 6; }
   this.isEmpty = function() { return this.numCheckers <= 0; }
   
   this.validMoveTo = function(to) {
@@ -18,7 +19,7 @@ function Bar(player, row, column, numCheckers) {
       }
     return isValid;  
   }  
-  
+  /*
   this.validDiceMoveTo = function(to, d) {
     var isValid = false;
     if (this.player == d.playerTurn()) {
@@ -32,7 +33,8 @@ function Bar(player, row, column, numCheckers) {
     }
     return isValid;
   }   
-
+  */
+/*
   this.update = function(to, onBoard) {
     var isValid = false;
   
@@ -65,7 +67,8 @@ function Bar(player, row, column, numCheckers) {
   
     if (isValid) this.move(to, onBoard);
   }  
-
+  */
+/*
   this.move = function(to, onBoard) {
     this.numCheckers -= 1;
     to.numCheckers += 1;
@@ -74,4 +77,5 @@ function Bar(player, row, column, numCheckers) {
     onBoard.dice.updateDiceOnMove(this, to)
     console.log("Moved from " + this.num + " to " + to.num);
   }
+  */
 }

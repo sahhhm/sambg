@@ -27,68 +27,32 @@ function Dice() {
   
   this.isDouble = function() { return this.dice[0] == this.dice[1]; }
   
-  this.findPotentialMoves = function(from) {
-    var temp, i, curSum, curDie, directs, combineds;
-    var player = BOARD.gPlayers[from.player-1];
-    var entry = from.entry;
-	var directs = new Array();
-	var combineds = new Array();
-	
-	for (var t = 0; t < 2; t++) {
-	  if (from.validMoveTo(BOARD.gTriangles[entry + (this.dice[t] * player.direction) - 1])) {
-        curDie = [this.dice[t]];	
-        directs.push([BOARD.gTriangles[entry + (this.dice[t] * player.direction) - 1], curDie.slice(0)]);
-        curSum = this.dice[t];
-        for (i = 0; i < this.dice.length; i++) {
-	      if (i != t) {
-			if (from.validMoveTo(BOARD.gTriangles[entry + ((curSum + this.dice[i]) * player.direction) - 1])) {
-		      curDie.push(this.dice[i]);
-	          combineds.push([BOARD.gTriangles[entry + ((curSum + this.dice[i]) * player.direction) - 1], curDie.slice(0)]);
-			  curSum += this.dice[i];			
-	        } else {
-              break;
-            }
-          }
-	    }
-  	  }
-	}
-    return directs.concat(combineds);	
-  }  
-  
-  this.updateDiceOnMove = function(from, to) {
+  this.updateDiceOnMove = function(from, to, potentials) {
     var i;
-	var potentials = this.findPotentialMoves(from);
 	for (i = 0; i < potentials.length; i++) {
 	  if (potentials[i][0].num == to.num) {
-        this.dice = removeSubsetFromArray(potentials[i][1], this.dice);
+        this.dice = this.removeSubsetFromArray(potentials[i][1], this.dice);
         break;
 	  }
 	}
   }
-
-  this.anyMovesLeft = function() {
-    var any = false;
-    var player = this.playerTurn();
-	
-	if (BOARD.gPlayers[player - 1].bar.isEmpty()) {
-      for (var i = 0 ; i < BOARD.gTriangles.length; i++) {
-        if (BOARD.gTriangles[i].player == player && !BOARD.gTriangles[i].isEmpty()) {
-	      if (this.findPotentialMoves(BOARD.gTriangles[i]).length) {
-	        any = true;
-	        break;
+  
+  this.removeSubsetFromArray = function(subset, array) {
+    var newArr = new Array();
+    var limit = this.isDouble() ? subset.length : subset.length + 1;
+    for (var i = 0; i < array.length; i++) {
+      var flagged = false;
+	  if (i < limit) {
+	    for (var j = 0; j < subset.length; j++) {
+	      if (subset[j] == array[i]) { 
+		    flagged = true; 
+		    break; 
 	      }
 	    }
-      }	
-	} else {
-	  if (this.findPotentialMoves(BOARD.gPlayers[player-1].bar).length) {
-	    any = true;
-	  }	
-	}
-    return any;
-  }
-  
-  this.playerTurn = function() {
-    return this.confirmedRolls % 2 ? 1: 2;
-  }
-  
+	  }
+	  if (!flagged) newArr.push(array[i]);
+    }
+    return newArr;
+}  
+
 }
