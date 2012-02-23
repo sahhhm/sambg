@@ -28,8 +28,8 @@ function Board() {
 	  
 	  this.drawer = new Drawer(this.dice);	  
 	  
-      this.drawer.canvasElement.width = BOARD.specs.pixelWidth;
-      this.drawer.canvasElement.height = BOARD.specs.pixelHeight;
+      this.drawer.canvasElement.width = this.specs.pixelWidth;
+      this.drawer.canvasElement.height = this.specs.pixelHeight;
   
 	  
       this.gTriangles = 
@@ -59,8 +59,8 @@ function Board() {
 		 new Triangle(24, this.specs.boardWidth-1,  2, 2)];
 
       this.gPlayers = 
-	     [new Player(1, "#ff0000", 0, BOARD.specs.barColumn, 19, 24, 1, 6, 1),
-	     new Player(2, "#0000ff", BOARD.specs.boardHeight - 1, BOARD.specs.barColumn, 1, 6, 19, 24, -1)]		 
+	     [new Player(1, "#ff0000", 0, this.specs.barColumn, 19, 24, 1, 6, 1),
+	     new Player(2, "#0000ff", this.specs.boardHeight - 1, this.specs.barColumn, 1, 6, 19, 24, -1)]		 
 	  
       this.init = true;
     }
