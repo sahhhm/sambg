@@ -76,10 +76,6 @@ function Board(opts) {
     return this.getBarByNum(this.selectedBarNum);
   }  
   
-  this.hasSelectedBar = function() {
-    return this.selectedBarNum > 0;
-  }
-  
   this.getTriangleByNum = function(n) {
     var tri = new Triangle(-1, -1, -1, -1)
     if (n > 0) {
@@ -91,10 +87,6 @@ function Board(opts) {
   this.getSelectedTriangle = function() {
     return this.getTriangleByNum(this.selectedTriangleNum);
   }
-  
-  this.hasSelectedTriangle = function() {
-    return this.selectedTriangleNum > 0;
-  }  
   
   this.update = function(opts) {
     if (opts.roll) {

@@ -32,11 +32,11 @@ function bgOnClick(e) {
 	  console.log("Bar " + bggame.board.selectedBarNum + " selected");
     }
   
-    if (!bggame.board.hasSelectedBar()) {
-	  if (!bggame.board.hasSelectedTriangle() && triangle.isEmpty()) {
+    if (bggame.board.getSelectedBar().num == -1) {
+	  if (bggame.board.getSelectedTriangle().num == -1 && triangle.isEmpty()) {
         console.log("Triangle " + triangle.num + " which is empty was selected"); 
       } else {
-        if (!bggame.board.hasSelectedTriangle()) {
+        if (bggame.board.getSelectedTriangle().num == -1) {
           bggame.board.selectedTriangleNum = triangle.num;
         } else {	    
 		  bggame.board.updateTriangle(bggame.board.getSelectedTriangle(), triangle);
