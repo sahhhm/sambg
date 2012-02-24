@@ -62,12 +62,14 @@ function Board(opts) {
 	  this.gBars = [new Bar(1, 0, this.specs.barColumn, 0), 
 	                new Bar(2, this.specs.boardHeight - 1, this.specs.barColumn, 0)];
 	  
-  
+  this.getBars = function() {
+    return this.gBars;
+  } 
   
   this.getBarByNum = function(n) {
     var bar = new Bar(-1, -1, -1, -1);
     if (n > 0) {
-	  bar =  this.gBars[n-1];
+	  bar =  this.getBars()[n-1];
 	} 
 	return bar;
   }
@@ -76,10 +78,14 @@ function Board(opts) {
     return this.getBarByNum(this.selectedBarNum);
   }  
   
+  this.getTriangles = function() {
+    return this.gTriangles;
+  }
+  
   this.getTriangleByNum = function(n) {
     var tri = new Triangle(-1, -1, -1, -1)
     if (n > 0) {
-	  tri = this.gTriangles[n-1];
+	  tri = this.getTriangles()[n-1];
 	} 
 	return tri;
   }  
@@ -88,14 +94,22 @@ function Board(opts) {
     return this.getTriangleByNum(this.selectedTriangleNum);
   }
   
+  this.getPlayers = function() {
+    return this.bPlayers;
+  }
+  
+  this.getPlayerByNum = function(n) {
+    return this.getPlayers()[n-1];
+  }
+  
   this.update = function(opts) {
     if (opts.roll) {
 	  this.dice.roll();
 	}
 	if (opts.draw) {
 	  this.drawer.drawBoard();
-	  this.drawer.drawTriangles(this.gTriangles, this.bPlayers);
-	  this.drawer.drawBars(this.gBars, this.bPlayers);
+	  this.drawer.drawTriangles(this.getTriangles(), this.getPlayers());
+	  this.drawer.drawBars(this.getBars(), this.getPlayers());
 	  
 	  if (this.getSelectedTriangle().num != -1) {
 	    this.drawer.highlightTriangles(this.getSelectedTriangle(), this.findPotentialMoves(this.getSelectedTriangle()));	
@@ -132,21 +146,21 @@ function Board(opts) {
 
   this.findPotentialMoves = function(from) {
     var temp, i, curSum, curDie, directs, combineds;
-    var player = this.bPlayers[from.player-1];
+    var player = this.getPlayerByNum(from.player);
     var entry = from.entry;
 	var directs = new Array();
 	var combineds = new Array();
 	
 	for (var t = 0; t < 2; t++) {
-	  if (from.validMoveTo(this.gTriangles[entry + (this.dice.dice[t] * player.direction) - 1])) {
+	  if (from.validMoveTo(this.getTriangleByNum(entry + (this.dice.dice[t] * player.direction)))) {
         curDie = [this.dice.dice[t]];	
-        directs.push([this.gTriangles[entry + (this.dice.dice[t] * player.direction) - 1], curDie.slice(0)]);
+        directs.push([this.getTriangleByNum(entry + (this.dice.dice[t] * player.direction)), curDie.slice(0)]);
         curSum = this.dice.dice[t];
         for (i = 0; i < this.dice.dice.length; i++) {
 	      if (i != t) {
-			if (from.validMoveTo(this.gTriangles[entry + ((curSum + this.dice.dice[i]) * player.direction) - 1])) {
+			if (from.validMoveTo(this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)))) {
 		      curDie.push(this.dice.dice[i]);
-	          combineds.push([this.gTriangles[entry + ((curSum + this.dice.dice[i]) * player.direction) - 1], curDie.slice(0)]);
+	          combineds.push([this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)), curDie.slice(0)]);
 			  curSum += this.dice.dice[i];			
 	        } else {
               break;
@@ -170,7 +184,7 @@ function Board(opts) {
 	      } else if (from.player == 2 && from.num < to.num) {
 	        console.log("Player 2 trying to move backwards from " + from.num + " to " + to.num);	  
 	        this.selectedTriangleNum = -1;
-	      } else if (!this.gBars[from.player-1].isEmpty()) {
+	      } else if (!this.getBarByNum(from.player).isEmpty()) {
 		    console.log("Player " + from.player + " needs to move off the bar");
 		    this.selectedTriangleNum = -1;
 	      } else if (from.num == to.num) {
@@ -186,7 +200,7 @@ function Board(opts) {
 		      if (from.player != to.player) {
 		        // player has been hit 
 			    to.numCheckers -= 1;
-			    this.gBars[to.player-1].numCheckers += 1;
+			    this.getBarByNum(to.player).numCheckers += 1;
 			    console.log("Player " + to.player + " hit at Triangle " + to.num);		
 			    to.player = from.player;
 		      }
@@ -223,7 +237,7 @@ function Board(opts) {
 	    } else {
 	      //player hit
 		  console.log("Player " + from.player + " hit Player " + to.player + " from the bar");
-		  this.gBars[to.player-1].numCheckers += 1;
+		  this.getBarByNum(to.player).numCheckers += 1;
 		  to.numCheckers -= 1;
 		  to.player = from.player;
 		  isValid = true;
@@ -271,17 +285,18 @@ function Board(opts) {
     var any = false;
     var player = this.playerTurn();
 	
-	if (this.gBars[player - 1].isEmpty()) {
-      for (var i = 0 ; i < this.gTriangles.length; i++) {
-        if (this.gTriangles[i].player == player && !this.gTriangles[i].isEmpty()) {
-	      if (this.findPotentialMoves(this.gTriangles[i]).length) {
+	if (this.getBarByNum(player).isEmpty()) {
+      for (var i = 1 ; i < this.getTriangles().length + 1; i++) {
+	    var curTri = this.getTriangleByNum(i);
+        if (curTri.player == player && !curTri.isEmpty()) {
+	      if (this.findPotentialMoves(curTri).length) {
 	        any = true;
 	        break;
 	      }
 	    }
       }	
 	} else {
-	  if (this.findPotentialMoves(this.gBars[player-1]).length) {
+	  if (this.findPotentialMoves(this.getBarByNum(player)).length) {
 	    any = true;
 	  }	
 	}
