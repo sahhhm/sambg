@@ -66,7 +66,11 @@ function initGame(canvasElement) {
   if (!canvasElement) {
     canvasElement = document.createElement("canvas");
 	canvasElement.id = "bg_canvas";
-	document.body.appendChild(canvasElement);
+	//document.body.appendChild(canvasElement);
+	$("#game_area").append( '<p id="player">Current Player: <span id="player-turn">null</span></p>' + 
+                            '<p id="c-dice">Current Dice: <span id="current-dice">null</span></p>' +
+                            '<p><button id="confirm">confirm roll</button></p>' );
+	$("#game_area").append(canvasElement);
   }
 	
   bggame = new Game();
