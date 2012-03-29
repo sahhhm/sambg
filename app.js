@@ -69,15 +69,15 @@ io.sockets.on('connection', function (socket) {
 	  io.sockets.in('lobby').emit('room refresh',  get_room_names());
 	  
 	  // load game!
-	  if (rooms[idx].playerSockets.length == 2) {
-	    // send each individual player their unique id
-		rooms[idx].playerSockets[0].emit('my id', {myid: rooms[idx].playerSockets[0].id});
-		rooms[idx].playerSockets[1].emit('my id', {myid: rooms[idx].playerSockets[1].id});	  
-		
+	  if (rooms[idx].playerSockets.length == 2) { 		
 		// send initial load information/request 
 	    io.sockets.in(rooms[idx].roomId).emit('load game', {room: rooms[idx].roomId, 
 		                                                    player1: rooms[idx].playerSockets[0].id, 
 															player2: rooms[idx].playerSockets[1].id});
+
+	    // send each individual player their unique id
+		rooms[idx].playerSockets[0].emit('my id', {myid: rooms[idx].playerSockets[0].id});
+		rooms[idx].playerSockets[1].emit('my id', {myid: rooms[idx].playerSockets[1].id});	 
 															
         // send initial dice roll
 		io.sockets.in(rooms[idx].roomId).emit('dice', {die1: rooms[idx].rng.getADie(),

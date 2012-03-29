@@ -67,7 +67,8 @@ function initGame(canvasElement, data) {
     canvasElement = document.createElement("canvas");
 	canvasElement.id = "bg_canvas";
 
-	$("#game_area").append( '<p id="player">Current Player: <span id="player-turn">null</span></p>' + 
+	$("#game_area").append( '<p id="iam">I am Player: <span id="iam-player">null</span></p>' + 
+							'<p id="player">Current Player: <span id="player-turn">null</span></p>' + 
                             '<p id="c-dice">Current Dice: <span id="current-dice">null</span></p>' +
                             '<p><button id="confirm">confirm roll</button></p>' );
 	$("#game_area").append(canvasElement);
