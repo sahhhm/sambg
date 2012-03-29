@@ -113,7 +113,9 @@ io.sockets.on('connection', function (socket) {
     socket.get('room', function (err, name) {
 	  idx = get_room_index(name);
     });
-	if (idx > -1) rooms.splice(idx, 1);
+	if (idx != -1)  {
+       rooms.splice(idx, 1);
+	}
 	io.sockets.in('lobby').emit('room refresh',  get_room_names());
     console.log("user disconnected - room index:", idx);
   });  
@@ -121,7 +123,7 @@ io.sockets.on('connection', function (socket) {
 });
 
 function get_room_index(id) {
-  var foundRoomIdx = null;
+  var foundRoomIdx = -1;
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].roomId == id) {
       foundRoomIdx = i;
