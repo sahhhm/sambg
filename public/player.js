@@ -1,4 +1,5 @@
-function Player(num, color, homeMinNum, homeMaxNum, oppMinNum, oppMaxNum, direction) {
+function Player(id, num, color, homeMinNum, homeMaxNum, oppMinNum, oppMaxNum, direction) {
+  this.id = id;
   this.num = num;
   this.color = color;
   this.homeMinNum = homeMinNum;

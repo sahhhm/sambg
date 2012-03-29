@@ -55,25 +55,23 @@ function bgOnClick(e) {
 }
 
 function newGame() {
-  bggame.board.update({roll:true,confirm:true,draw:true,text:true});
+  bggame.board.update({roll:false,confirm:true,draw:true,text:true});
 }
 
 function confirmClick() {
-  bggame.board.update({roll:true,confirm:true,text:true});
+  bggame.board.update({roll:false,confirm:true,text:true});
 }
 
-function initGame(canvasElement) { 
+function initGame(canvasElement, data) { 
   if (!canvasElement) {
     canvasElement = document.createElement("canvas");
 	canvasElement.id = "bg_canvas";
-	//document.body.appendChild(canvasElement);
+
 	$("#game_area").append( '<p id="player">Current Player: <span id="player-turn">null</span></p>' + 
                             '<p id="c-dice">Current Dice: <span id="current-dice">null</span></p>' +
                             '<p><button id="confirm">confirm roll</button></p>' );
 	$("#game_area").append(canvasElement);
   }
 	
-  bggame = new Game();
-
-  newGame();
+  bggame = new Game(data);
 }

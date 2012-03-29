@@ -3,13 +3,14 @@ function Dice() {
   
   this.diceCopy = new Array();
   
-  this.roll = function() {
-    // use a RNG eventually
+  this.roll = function(theRoll) {
+  // take in a roll and update 
+  // the dice based off of that
 	this.dice = new Array();
 	this.diceCopy = new Array();
-	this.dice.push(Math.floor(Math.random()*6) + 1);
-	this.dice.push(Math.floor(Math.random()*6) + 1);
-	//this.dice.push(4); this.dice.push(1);
+	this.dice.push(theRoll.die1);
+	this.dice.push(theRoll.die2);
+
 	if (this.isDouble()) {
       this.dice.push(this.dice[0]);
 	  this.dice.push(this.dice[0]);

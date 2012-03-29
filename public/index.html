@@ -30,7 +30,9 @@
 
 <script language="javascript" type="text/javascript">
   var socket = io.connect("http://localhost");
-  var selectedRoom = -1;   
+  var selectedRoom = -1;
+  var mid = -1;  
+  var bbgame = null; //global game
    
    socket.on('room refresh', function(data){
 	 var list = $("#list_of_rooms").html('').append('<ul></ul>').find('ul');
@@ -53,7 +55,20 @@
    });
    
    socket.on('load game', function(data){
-     initGame(null);
+     initGame(null, data);
+	 newGame();
+   });
+   
+   socket.on('dice', function(data) {
+     console.log("got dice event");
+   	 bggame.setRoll(data.die1, data.die2);
+   });
+   
+   socket.on('my id', function(data) {
+     console.log("my id", data.myid);
+	 mid = data.myid;
+	 //* if player id is same as player whose turn it currently is, roll dice, emit update,  
+	 //* load game, begin game. (so i think you should get id event first, and then load game event
    });
   
    $("div").on("click", "div[id^='room-leave-']", function(e) {

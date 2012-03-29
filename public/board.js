@@ -104,7 +104,7 @@ function Board(opts) {
   
   this.update = function(opts) {
     if (opts.roll) {
-	  this.dice.roll();
+	  this.dice.roll({die1 : opts.die1, die2 : opts.die2});
 	}
 	if (opts.draw) {
 	  this.drawer.drawBoard();

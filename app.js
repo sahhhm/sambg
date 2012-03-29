@@ -1,9 +1,13 @@
-var express =require('express');
+var express = require('express');
+
+var mrng = require('./public/rng');
+
 var app = express.createServer();
 
 app.configure(function(){
   app.use(express.static(__dirname + '/public'));
 });
+
 
 var io = require('socket.io').listen(app);
 var rooms = [];
@@ -12,6 +16,7 @@ function room(roomId){
   //this.roomSocket = roomSocket;
   this.roomId = roomId;
   this.playerSockets = [];
+  this.rng = new mrng.RNG();
 };
 
 app.listen(8080);
@@ -65,7 +70,18 @@ io.sockets.on('connection', function (socket) {
 	  
 	  // load game!
 	  if (rooms[idx].playerSockets.length == 2) {
-	    io.sockets.in(rooms[idx].roomId).emit('load game');
+	    // send each individual player their unique id
+		rooms[idx].playerSockets[0].emit('my id', {myid: rooms[idx].playerSockets[0].id});
+		rooms[idx].playerSockets[1].emit('my id', {myid: rooms[idx].playerSockets[1].id});	  
+		
+		// send initial load information/request 
+	    io.sockets.in(rooms[idx].roomId).emit('load game', {room: rooms[idx].roomId, 
+		                                                    player1: rooms[idx].playerSockets[0].id, 
+															player2: rooms[idx].playerSockets[1].id});
+															
+        // send initial dice roll
+		io.sockets.in(rooms[idx].roomId).emit('dice', {die1: rooms[idx].rng.getADie(),
+													   die2: rooms[idx].rng.getADie()});
 	  }
 	} 
   });
