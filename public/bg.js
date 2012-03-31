@@ -1,4 +1,3 @@
-//var bggame;
 
 function getCursorPosition(e) {
   var x;
@@ -28,7 +27,6 @@ function bgOnClick(e) {
     var bar = bggame.board.getBarByNum(info[1]);
     var selectedBar = bggame.board.getSelectedBar();
   
-    //if (bar.player >= 1) {
 	if (bar.player == me.num) {
 	  bggame.board.selectedBarNum = bar.player;
 	  selectedBar = bggame.board.getSelectedBar();
@@ -64,11 +62,6 @@ function newGame() {
   bggame.board.update({roll:false,confirm:true,draw:true,text:true});
 }
 
-/*
-function confirmClick() {
-  bggame.board.update({roll:false,confirm:true,text:true});
-}
-*/
 
 function initGame(canvasElement, data) { 
   if (!canvasElement) {
