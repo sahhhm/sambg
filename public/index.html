@@ -64,6 +64,10 @@
    	 bggame.setRoll(data.die1, data.die2);
    });
    
+   socket.on('update', function(data) {
+     console.log("got update event!!");
+   });
+   
    socket.on('my id', function(data) {
 	 if (bggame.players[0].id == data.myid) {
 	   me.id = data.myid;
@@ -94,12 +98,14 @@
 	 socket.emit('join room', {room: selectedRoom});
    });  
 
+   $("div").on("click", "div[id='c-button']", function(e) {
+      socket.emit('moved', { room : selectedRoom, triangles : bggame.board.getTriangles(), bars : bggame.board.getBars() });
+   });  
    
    $("#create_button").click(function() {
     roomID = Math.floor(Math.random()*999999999);
     socket.emit('new room', { room: roomID });
   });
-
 
   
 </script>

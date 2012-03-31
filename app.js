@@ -86,6 +86,13 @@ io.sockets.on('connection', function (socket) {
 	} 
   });
   
+  socket.on("moved", function(data) {
+    var idx = get_room_index(data.room);
+	if (idx != -1) {
+      socket.broadcast.to(rooms[idx].roomId).emit("update", data);
+	}
+  });
+  
   socket.on("leave room", function(n, fn) {
 
 	socket.get('room', function (err, name) {

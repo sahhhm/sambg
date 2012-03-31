@@ -7,7 +7,7 @@ function Drawer(s) {
   this.currentDiceElement = document.getElementById('current-dice');
   this.playerTurnElement = document.getElementById('player-turn');	
   this.confirmButtonElement = document.getElementById('confirm');
-  this.confirmButtonElement.addEventListener("click", confirmClick, false);
+  //this.confirmButtonElement.addEventListener("click", confirmClick, false);
   
   this.drawBoard = function() {
 

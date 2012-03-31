@@ -141,7 +141,7 @@ function Board(opts) {
   }    
   
   this.canConfirm = function() {
-    (!this.dice.dice.length || !this.anyMovesLeft()) ? this.drawer.confirmButtonElement.disabled = false : this.drawer.confirmButtonElement.disabled = true;   
+    (!this.dice.dice.length || !this.anyMovesLeft()) ? this.drawer.confirmButtonElement.disabled = false : this.drawer.confirmButtonElement.disabled = true;
   }  
 
   this.findPotentialMoves = function(from) {
@@ -307,4 +307,5 @@ function Board(opts) {
   this.playerTurn = function() {
     return this.dice.confirmedRolls % 2 ? 1: 2;
   }  
+  
 }	  
