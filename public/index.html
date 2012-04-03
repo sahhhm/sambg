@@ -79,6 +79,7 @@
    });
    
    socket.on('update turns', function() {
+      console.log("got update turns event");
       bggame.board.turns.clearCurrentToHistory();
    });
    

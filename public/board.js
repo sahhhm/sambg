@@ -288,15 +288,15 @@ function Board(opts) {
     // adjust triangle checker counts
     from.numCheckers -= 1;
     to.numCheckers += 1;
-    
-    // ensure player type is correct
-    to.player = from.player;
 
     // if the to player is hit, update accordingly
     if (aMove.isToHit) {
       this.getBarByNum(to.player).numCheckers += 1;
       to.numCheckers -= 1;
     }
+    
+    // ensure player type is correct
+    to.player = from.player;    
     
     // since we just moved, nothing should be active
     this.selectedBarNum = -1;
