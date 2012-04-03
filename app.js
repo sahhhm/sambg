@@ -88,9 +88,18 @@ io.sockets.on('connection', function (socket) {
   
   socket.on("moved", function(data) {
     var idx = get_room_index(data.room);
+	
+	// pass the turn data to other player in the room
 	if (idx != -1) {
       socket.broadcast.to(rooms[idx].roomId).emit("update", data);
 	}
+	
+	// tell players to update turn history
+	io.sockets.in(rooms[idx].roomId).emit("update turns");
+	
+	// send new dice roll
+	io.sockets.in(rooms[idx].roomId).emit('dice', {die1: rooms[idx].rng.getADie(),
+												   die2: rooms[idx].rng.getADie()});
   });
   
   socket.on("leave room", function(n, fn) {

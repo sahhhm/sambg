@@ -26,6 +26,7 @@
 <script src="checker.js"></script>
 <script src="board.js"></script>
 <script src="bg.js"></script>
+<script src="turnhistory.js"></script>
 
 
 <script language="javascript" type="text/javascript">
@@ -66,6 +67,19 @@
    
    socket.on('update', function(data) {
      console.log("got update event!!");
+	 var i;
+	 var tempMove;
+	 var moves = data.moves;
+	 
+	 for (i = 0; i < moves.length; i++) {
+	   var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].isToHit, moves[i].diceRoll);
+       bggame.board.move(tempMove);
+	   bggame.board.update({draw:true,confirm:true,text:true});
+	 }
+   });
+   
+   socket.on('update turns', function() {
+      bggame.board.turns.clearCurrentToHistory();
    });
    
    socket.on('my id', function(data) {
@@ -99,7 +113,7 @@
    });  
 
    $("div").on("click", "div[id='c-button']", function(e) {
-      socket.emit('moved', { room : selectedRoom, triangles : bggame.board.getTriangles(), bars : bggame.board.getBars() });
+	  socket.emit('moved', { room: selectedRoom, moves:bggame.board.turns.currentTurn});
    });  
    
    $("#create_button").click(function() {

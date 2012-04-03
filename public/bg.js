@@ -21,6 +21,7 @@ function getCursorPosition(e) {
 
 function bgOnClick(e) {
   // move logic to check for correct player in here!
+  // this should eliminate ALL player hcecking in updates
   if (me.num == bggame.board.playerTurn()) {
     var info = getCursorPosition(e);
     var triangle = bggame.board.getTriangleByNum(info[0]);
@@ -39,7 +40,7 @@ function bgOnClick(e) {
       } else {
           if (bggame.board.getSelectedTriangle().num == -1 && triangle.player == me.num) {
             bggame.board.selectedTriangleNum = triangle.num;
-          } else {	    
+          } else { //elseif?	    
 		    bggame.board.updateTriangle(bggame.board.getSelectedTriangle(), triangle);
           }
       }

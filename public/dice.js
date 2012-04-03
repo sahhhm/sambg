@@ -3,6 +3,14 @@ function Dice() {
   
   this.diceCopy = new Array();
   
+  this.getDice = function() {
+    return this.dice;
+  }
+  
+  this.updateDice = function(updatedDice) {
+    this.dice = updatedDice;
+  }
+  
   this.roll = function(theRoll) {
   // take in a roll and update 
   // the dice based off of that

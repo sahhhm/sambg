@@ -7,6 +7,7 @@ function Board(opts) {
   this.dice;
   this.drawer;
   
+  this.turns;
 
 	  this.specs = {
         boardWidth : 13,
@@ -25,6 +26,8 @@ function Board(opts) {
 	  this.specs.p2color = opts.p2color;
 
 	  this.dice = new Dice();
+	  
+	  this.turns = new TurnHistory();
 	  
 	  this.drawer = new Drawer(this.specs);	  
 	  
@@ -174,6 +177,8 @@ function Board(opts) {
   
   this.updateTriangle = function(from, to) {
     var isValid = false;
+	var isToHit = false;
+	
     if (this.validDiceMoveTo(from, to)) {	  
 	  // try to move 
 	    if (from.numCheckers) {
@@ -191,18 +196,13 @@ function Board(opts) {
             console.log("Clicked on the same triangle");
           } else {
 	        if (to.numCheckers == 0) {
-	          // need to assign new player to empty triangle 
+			  isValid = true;
 	          console.log("Moving from " + this.selectedTriangleNum + " to " + to.num + " (an empty triangle)");
-	          to.player = from.player;
-		      isValid = true;
 	        } else if (to.numCheckers == 1) {
 		      isValid = true;		  
 		      if (from.player != to.player) {
-		        // player has been hit 
-			    to.numCheckers -= 1;
-			    this.getBarByNum(to.player).numCheckers += 1;
-			    console.log("Player " + to.player + " hit at Triangle " + to.num);		
-			    to.player = from.player;
+			    console.log("Player " + to.player + " hit at Triangle " + to.num);	
+				isToHit = true;				
 		      }
 		    } else if (to.numCheckers > 1) {
 		      if (from.player != to.player) {
@@ -221,26 +221,25 @@ function Board(opts) {
 	    this.selectedTriangleNum = -1;
 	  }
 
-    if (isValid) this.move(from, to);  
+    if (isValid) {
+	 var myMove = new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, to.num, isToHit, this.dice.getDice());
+	 this.move(myMove);
+	}
+	
   }
 
   this.updateBar = function(from, to) {
     var isValid = false;
+	var isToHit = false;
   
     if (this.validDiceMoveTo(from, to)) {
       if (to.numCheckers == 0) {
 	    isValid = true;
-        to.player = from.player;
       } else if (to.numCheckers == 1) {
-	    if (from.player == to.player) {
-		  isValid = true;
-	    } else {
-	      //player hit
+		isValid = true;
+		if (from.player != to.player) {
+		  isToHit = true;	  
 		  console.log("Player " + from.player + " hit Player " + to.player + " from the bar");
-		  this.getBarByNum(to.player).numCheckers += 1;
-		  to.numCheckers -= 1;
-		  to.player = from.player;
-		  isValid = true;
 	    }
 	  } else {
 	    if (from.player == to.player) {
@@ -254,7 +253,10 @@ function Board(opts) {
       this.selectedBarNum = -1;
     }
   
-    if (isValid) this.move(from, to);
+	if (isValid) {
+	 var myMove = new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, to.num, isToHit, this.dice.getDice());
+	 this.move(myMove);
+	}
   }    
   
   
@@ -272,14 +274,41 @@ function Board(opts) {
     return isValid;
   }  
 
-  this.move = function(from, to) {
+  
+  this.move = function(aMove) {
+    // initialize the from and to areas
+    if (aMove.fromType == "triangle") {
+	  from = this.getTriangleByNum(aMove.fromNo);
+	} else {
+	  from = this.getBarByNum(aMove.fromNo);
+	}
+	to = this.getTriangleByNum(aMove.toNo);
+	
+    // adjust triangle checker counts
     from.numCheckers -= 1;
-    to.numCheckers += 1;
+	to.numCheckers += 1;
+	
+	// ensure player type is correct
+    to.player = from.player;
+
+	// if the to player is hit, update accordingly
+	if (aMove.isToHit) {
+	  this.getBarByNum(to.player).numCheckers += 1;
+	  to.numCheckers -= 1;
+    }
+	
+	// since we just moved, nothing should be active
     this.selectedBarNum = -1;
     this.selectedTriangleNum = -1;
-    this.dice.updateDiceOnMove(from, to, this.findPotentialMoves(from))
+	
+	// update the dice based on the move
+	var movePotentials = this.findPotentialMoves(from);
+    this.dice.updateDiceOnMove(from, to, movePotentials)
     console.log("Moved from " + from.num + " to " + to.num);
-  }  
+	
+	// add the move to the history
+	this.turns.addAMove(aMove);
+  }    
   
   this.anyMovesLeft = function() {
     var any = false;
