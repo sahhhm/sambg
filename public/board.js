@@ -9,62 +9,63 @@ function Board(opts) {
   
   this.turns;
 
-	  this.specs = {
-        boardWidth : 13,
-        boardHeight : 12,
-        pieceWidth : 50,
-        pieceHeight : 45,
-        hitPieceWidth : 50,
-        hitPieceHeight : 20,
-        totalTriangles : 24,
-        maxPiecesPerTriangle : 5,
-        barColumn : 6
-	  };
-	  this.specs.pixelWidth = this.specs.boardWidth * this.specs.pieceWidth + 1;
-	  this.specs.pixelHeight = this.specs.boardHeight * this.specs.pieceHeight + 1;
-	  this.specs.p1color = opts.p1color;
-	  this.specs.p2color = opts.p2color;
+  this.specs = {
+    boardWidth : 13,
+    boardHeight : 12,
+    pieceWidth : 50,
+    pieceHeight : 45,
+    hitPieceWidth : 50,
+    hitPieceHeight : 20,
+    totalTriangles : 24,
+    maxPiecesPerTriangle : 5,
+    barColumn : 6
+  };
 
-	  this.dice = new Dice();
-	  
-	  this.turns = new TurnHistory();
-	  
-	  this.drawer = new Drawer(this.specs);	  
-	  
-      this.drawer.canvasElement.width = this.specs.pixelWidth;
-      this.drawer.canvasElement.height = this.specs.pixelHeight;
+  this.specs.pixelWidth = this.specs.boardWidth * this.specs.pieceWidth + 1;
+  this.specs.pixelHeight = this.specs.boardHeight * this.specs.pieceHeight + 1;
+  this.specs.p1color = opts.p1color;
+  this.specs.p2color = opts.p2color;
+
+  this.dice = new Dice();
+    
+  this.turns = new TurnHistory();
+
+  this.drawer = new Drawer(this.specs);	  
+      
+  this.drawer.canvasElement.width = this.specs.pixelWidth;
+  this.drawer.canvasElement.height = this.specs.pixelHeight;
   
-	  this.bPlayers = opts.players;
-	  
-      this.gTriangles = 
-	    [new Triangle(1, this.specs.boardWidth-1,   1, 2),
-         new Triangle(2, this.specs.boardWidth-2,   0, 0),
-		 new Triangle(3, this.specs.boardWidth-3,   0, 0),
-		 new Triangle(4, this.specs.boardWidth-4,   0, 0),
-		 new Triangle(5, this.specs.boardWidth-5,   0, 0),
-		 new Triangle(6, this.specs.boardWidth-6,   2, 5),
-		 new Triangle(7, this.specs.boardWidth-8,   0, 0),
-		 new Triangle(8, this.specs.boardWidth-9,   2, 3),
-		 new Triangle(9, this.specs.boardWidth-10,  0, 0),
-		 new Triangle(10, this.specs.boardWidth-11, 0, 0),
-		 new Triangle(11, this.specs.boardWidth-12, 0, 0),
-		 new Triangle(12, this.specs.boardWidth-13, 1, 5),
-		 new Triangle(13, this.specs.boardWidth-13, 2, 5),
-		 new Triangle(14, this.specs.boardWidth-12, 0, 0),
-		 new Triangle(15, this.specs.boardWidth-11, 0, 0),
-		 new Triangle(16, this.specs.boardWidth-10, 0, 0),
-		 new Triangle(17, this.specs.boardWidth-9,  1, 3),
-		 new Triangle(18, this.specs.boardWidth-8,  0, 0),
-		 new Triangle(19, this.specs.boardWidth-6,  1, 5),
-		 new Triangle(20, this.specs.boardWidth-5,  0, 0),
-		 new Triangle(21, this.specs.boardWidth-4,  0, 0),
-		 new Triangle(22, this.specs.boardWidth-3,  0, 0),
-		 new Triangle(23, this.specs.boardWidth-2,  0, 0),
-		 new Triangle(24, this.specs.boardWidth-1,  2, 2)];
-	  
-	  this.gBars = [new Bar(1, 0, this.specs.barColumn, 0), 
-	                new Bar(2, this.specs.boardHeight - 1, this.specs.barColumn, 0)];
-	  
+  this.bPlayers = opts.players;
+      
+  this.gTriangles = 
+    [new Triangle(1, this.specs.boardWidth-1,   1, 2),
+     new Triangle(2, this.specs.boardWidth-2,   0, 0),
+     new Triangle(3, this.specs.boardWidth-3,   0, 0),
+     new Triangle(4, this.specs.boardWidth-4,   0, 0),
+     new Triangle(5, this.specs.boardWidth-5,   0, 0),
+     new Triangle(6, this.specs.boardWidth-6,   2, 5),
+     new Triangle(7, this.specs.boardWidth-8,   0, 0),
+     new Triangle(8, this.specs.boardWidth-9,   2, 3),
+     new Triangle(9, this.specs.boardWidth-10,  0, 0),
+     new Triangle(10, this.specs.boardWidth-11, 0, 0),
+     new Triangle(11, this.specs.boardWidth-12, 0, 0),
+     new Triangle(12, this.specs.boardWidth-13, 1, 5),
+     new Triangle(13, this.specs.boardWidth-13, 2, 5),
+     new Triangle(14, this.specs.boardWidth-12, 0, 0),
+     new Triangle(15, this.specs.boardWidth-11, 0, 0),
+     new Triangle(16, this.specs.boardWidth-10, 0, 0),
+     new Triangle(17, this.specs.boardWidth-9,  1, 3),
+     new Triangle(18, this.specs.boardWidth-8,  0, 0),
+     new Triangle(19, this.specs.boardWidth-6,  1, 5),
+     new Triangle(20, this.specs.boardWidth-5,  0, 0),
+     new Triangle(21, this.specs.boardWidth-4,  0, 0),
+     new Triangle(22, this.specs.boardWidth-3,  0, 0),
+     new Triangle(23, this.specs.boardWidth-2,  0, 0),
+     new Triangle(24, this.specs.boardWidth-1,  2, 2)];
+      
+  this.gBars = [new Bar(1, 0, this.specs.barColumn, 0), 
+                new Bar(2, this.specs.boardHeight - 1, this.specs.barColumn, 0)];
+      
   this.getBars = function() {
     return this.gBars;
   } 
@@ -72,9 +73,9 @@ function Board(opts) {
   this.getBarByNum = function(n) {
     var bar = new Bar(-1, -1, -1, -1);
     if (n > 0) {
-	  bar =  this.getBars()[n-1];
-	} 
-	return bar;
+      bar =  this.getBars()[n-1];
+    } 
+    return bar;
   }
 
   this.getSelectedBar = function() {
@@ -88,9 +89,9 @@ function Board(opts) {
   this.getTriangleByNum = function(n) {
     var tri = new Triangle(-1, -1, -1, -1)
     if (n > 0) {
-	  tri = this.getTriangles()[n-1];
-	} 
-	return tri;
+      tri = this.getTriangles()[n-1];
+    } 
+    return tri;
   }  
   
   this.getSelectedTriangle = function() {
@@ -107,26 +108,26 @@ function Board(opts) {
   
   this.update = function(opts) {
     if (opts.roll) {
-	  this.dice.roll({die1 : opts.die1, die2 : opts.die2});
-	}
-	if (opts.draw) {
-	  this.drawer.drawBoard();
-	  this.drawer.drawTriangles(this.getTriangles(), this.getPlayers());
-	  this.drawer.drawBars(this.getBars(), this.getPlayers());
-	  
-	  if (this.getSelectedTriangle().num != -1) {
-	    this.drawer.highlightTriangles(this.getSelectedTriangle(), this.findPotentialMoves(this.getSelectedTriangle()));	
-	  } else if (this.getSelectedBar().player != -1) {
-	    this.drawer.highlightBars(this.getSelectedBar(), this.findPotentialMoves(this.getSelectedBar()));
-	  }
-	  
-	}
-	if (opts.text) {
-	  this.updateText();
-	}
-	if (opts.confirm) {
-	  this.canConfirm();
-	}
+      this.dice.roll({die1 : opts.die1, die2 : opts.die2});
+    }
+    if (opts.draw) {
+      this.drawer.drawBoard();
+      this.drawer.drawTriangles(this.getTriangles(), this.getPlayers());
+      this.drawer.drawBars(this.getBars(), this.getPlayers());
+      
+      if (this.getSelectedTriangle().num != -1) {
+        this.drawer.highlightTriangles(this.getSelectedTriangle(), this.findPotentialMoves(this.getSelectedTriangle()));	
+      } else if (this.getSelectedBar().player != -1) {
+        this.drawer.highlightBars(this.getSelectedBar(), this.findPotentialMoves(this.getSelectedBar()));
+      }
+      
+    }
+    if (opts.text) {
+      this.updateText();
+    }
+    if (opts.confirm) {
+      this.canConfirm();
+    }
   
   }
 
@@ -151,112 +152,112 @@ function Board(opts) {
     var temp, i, curSum, curDie, directs, combineds;
     var player = this.getPlayerByNum(from.player);
     var entry = from.entry;
-	var directs = new Array();
-	var combineds = new Array();
-	
-	for (var t = 0; t < 2; t++) {
-	  if (from.validMoveTo(this.getTriangleByNum(entry + (this.dice.dice[t] * player.direction)))) {
+    var directs = new Array();
+    var combineds = new Array();
+    
+    for (var t = 0; t < 2; t++) {
+      if (from.validMoveTo(this.getTriangleByNum(entry + (this.dice.dice[t] * player.direction)))) {
         curDie = [this.dice.dice[t]];	
         directs.push([this.getTriangleByNum(entry + (this.dice.dice[t] * player.direction)), curDie.slice(0)]);
         curSum = this.dice.dice[t];
         for (i = 0; i < this.dice.dice.length; i++) {
-	      if (i != t) {
-			if (from.validMoveTo(this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)))) {
-		      curDie.push(this.dice.dice[i]);
-	          combineds.push([this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)), curDie.slice(0)]);
-			  curSum += this.dice.dice[i];			
-	        } else {
+          if (i != t) {
+            if (from.validMoveTo(this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)))) {
+              curDie.push(this.dice.dice[i]);
+              combineds.push([this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)), curDie.slice(0)]);
+              curSum += this.dice.dice[i];			
+            } else {
               break;
             }
           }
-	    }
-  	  }
-	}
+        }
+        }
+    }
     return directs.concat(combineds);	
   }  
   
   this.updateTriangle = function(from, to) {
     var isValid = false;
-	var isToHit = false;
-	
+    var isToHit = false;
+    
     if (this.validDiceMoveTo(from, to)) {	  
-	  // try to move 
-	    if (from.numCheckers) {
-	      //make sure player is moving in the right direction 
-	      if (from.player == 1 && from.num > to.num) {
-	        console.log("Player 1 trying to move backwards from " + from.num + " to " + to.num);
-	        this.selectedTriangleNum = -1;
-	      } else if (from.player == 2 && from.num < to.num) {
-	        console.log("Player 2 trying to move backwards from " + from.num + " to " + to.num);	  
-	        this.selectedTriangleNum = -1;
-	      } else if (!this.getBarByNum(from.player).isEmpty()) {
-		    console.log("Player " + from.player + " needs to move off the bar");
-		    this.selectedTriangleNum = -1;
-	      } else if (from.num == to.num) {
-            console.log("Clicked on the same triangle");
-          } else {
-	        if (to.numCheckers == 0) {
-			  isValid = true;
-	          console.log("Moving from " + this.selectedTriangleNum + " to " + to.num + " (an empty triangle)");
-	        } else if (to.numCheckers == 1) {
-		      isValid = true;		  
-		      if (from.player != to.player) {
-			    console.log("Player " + to.player + " hit at Triangle " + to.num);	
-				isToHit = true;				
-		      }
-		    } else if (to.numCheckers > 1) {
-		      if (from.player != to.player) {
-		        console.error("Trying to move to a triangle occupied by another player - from " + from.num + " to " + to.num + "(" + to.numCheckers + " checkers)");              
-		      } else {
-		        isValid = true;
-		      }  
-		    }
-	      }
-	    } else {
-	      this.selectedTriangleNum = -1;
-	      console.log("ERROR - Trying to move from triangle with no checkers");
-	    }
-	  } else {
-	    console.log("not proper dice");
-	    this.selectedTriangleNum = -1;
-	  }
+      // try to move 
+      if (from.numCheckers) {
+        //make sure player is moving in the right direction 
+        if (from.player == 1 && from.num > to.num) {
+          console.log("Player 1 trying to move backwards from " + from.num + " to " + to.num);
+          this.selectedTriangleNum = -1;
+        } else if (from.player == 2 && from.num < to.num) {
+          console.log("Player 2 trying to move backwards from " + from.num + " to " + to.num);	  
+          this.selectedTriangleNum = -1;
+        } else if (!this.getBarByNum(from.player).isEmpty()) {
+          console.log("Player " + from.player + " needs to move off the bar");
+          this.selectedTriangleNum = -1;
+        } else if (from.num == to.num) {
+          console.log("Clicked on the same triangle");
+        } else {
+          if (to.numCheckers == 0) {
+            isValid = true;
+            console.log("Moving from " + this.selectedTriangleNum + " to " + to.num + " (an empty triangle)");
+          } else if (to.numCheckers == 1) {
+            isValid = true;		  
+            if (from.player != to.player) {
+              console.log("Player " + to.player + " hit at Triangle " + to.num);	
+              isToHit = true;				
+            }
+          } else if (to.numCheckers > 1) {
+            if (from.player != to.player) {
+              console.error("Trying to move to a triangle occupied by another player - from " + from.num + " to " + to.num + "(" + to.numCheckers + " checkers)");              
+            } else {
+              isValid = true;
+            }  
+          }
+        }
+      } else {
+        this.selectedTriangleNum = -1;
+        console.log("ERROR - Trying to move from triangle with no checkers");
+      }
+    } else {
+      console.log("not proper dice");
+      this.selectedTriangleNum = -1;
+    }
 
     if (isValid) {
-	 var myMove = new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, to.num, isToHit, this.dice.getDice());
-	 this.move(myMove);
-	}
-	
+     var myMove = new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, to.num, isToHit, this.dice.getDice());
+     this.move(myMove);
+    }
+    
   }
 
   this.updateBar = function(from, to) {
     var isValid = false;
-	var isToHit = false;
+    var isToHit = false;
   
     if (this.validDiceMoveTo(from, to)) {
       if (to.numCheckers == 0) {
-	    isValid = true;
+        isValid = true;
       } else if (to.numCheckers == 1) {
-		isValid = true;
-		if (from.player != to.player) {
-		  isToHit = true;	  
-		  console.log("Player " + from.player + " hit Player " + to.player + " from the bar");
-	    }
-	  } else {
-	    if (from.player == to.player) {
-		  isValid = true;
-	    } else {
-	      console.log("Player " + from.player + " cannot move form the bar to triangle " + to.num + " because Player " + to.player + " is occupying the triangle");
-	    }
-	  }
+        isValid = true;
+        if (from.player != to.player) {
+          isToHit = true;	  
+          console.log("Player " + from.player + " hit Player " + to.player + " from the bar");
+        }
+      } else {
+        if (from.player == to.player) {
+          isValid = true;
+        } else {
+          console.log("Player " + from.player + " cannot move form the bar to triangle " + to.num + " because Player " + to.player + " is occupying the triangle");
+        }
+      }
     } else {
       console.log("Player " + from.player + " tried to move from the bar to triangle " + to.num);
       this.selectedBarNum = -1;
     }
   
-	if (isValid) {
-	 var myMove = new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, to.num, isToHit, this.dice.getDice());
-	 this.move(myMove);
-	}
+    if (isValid) {
+     var myMove = new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, to.num, isToHit, this.dice.getDice());
+     this.move(myMove);
+    }
   }    
   
   
@@ -278,57 +279,57 @@ function Board(opts) {
   this.move = function(aMove) {
     // initialize the from and to areas
     if (aMove.fromType == "triangle") {
-	  from = this.getTriangleByNum(aMove.fromNo);
-	} else {
-	  from = this.getBarByNum(aMove.fromNo);
-	}
-	to = this.getTriangleByNum(aMove.toNo);
-	
+      from = this.getTriangleByNum(aMove.fromNo);
+    } else {
+      from = this.getBarByNum(aMove.fromNo);
+    }
+    to = this.getTriangleByNum(aMove.toNo);
+    
     // adjust triangle checker counts
     from.numCheckers -= 1;
-	to.numCheckers += 1;
-	
-	// ensure player type is correct
+    to.numCheckers += 1;
+    
+    // ensure player type is correct
     to.player = from.player;
 
-	// if the to player is hit, update accordingly
-	if (aMove.isToHit) {
-	  this.getBarByNum(to.player).numCheckers += 1;
-	  to.numCheckers -= 1;
+    // if the to player is hit, update accordingly
+    if (aMove.isToHit) {
+      this.getBarByNum(to.player).numCheckers += 1;
+      to.numCheckers -= 1;
     }
-	
-	// since we just moved, nothing should be active
+    
+    // since we just moved, nothing should be active
     this.selectedBarNum = -1;
     this.selectedTriangleNum = -1;
-	
-	// update the dice based on the move
-	var movePotentials = this.findPotentialMoves(from);
+    
+    // update the dice based on the move
+    var movePotentials = this.findPotentialMoves(from);
     this.dice.updateDiceOnMove(from, to, movePotentials)
     console.log("Moved from " + from.num + " to " + to.num);
-	
-	// add the move to the history
-	this.turns.addAMove(aMove);
+    
+    // add the move to the history
+    this.turns.addAMove(aMove);
   }    
   
   this.anyMovesLeft = function() {
     var any = false;
     var player = this.playerTurn();
-	
-	if (this.getBarByNum(player).isEmpty()) {
+    
+    if (this.getBarByNum(player).isEmpty()) {
       for (var i = 1 ; i < this.getTriangles().length + 1; i++) {
-	    var curTri = this.getTriangleByNum(i);
+        var curTri = this.getTriangleByNum(i);
         if (curTri.player == player && !curTri.isEmpty()) {
-	      if (this.findPotentialMoves(curTri).length) {
-	        any = true;
-	        break;
-	      }
-	    }
+          if (this.findPotentialMoves(curTri).length) {
+            any = true;
+            break;
+          }
+        }
       }	
-	} else {
-	  if (this.findPotentialMoves(this.getBarByNum(player)).length) {
-	    any = true;
-	  }	
-	}
+    } else {
+      if (this.findPotentialMoves(this.getBarByNum(player)).length) {
+        any = true;
+      }	
+    }
     return any;
   }  
   
@@ -337,4 +338,4 @@ function Board(opts) {
     return this.dice.confirmedRolls % 2 ? 1: 2;
   }  
   
-}	  
+}

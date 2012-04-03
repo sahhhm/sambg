@@ -22,12 +22,10 @@ function TurnHistory() {
   
   this.clearCurrentToHistory = function() {
     this.history.push(this.currentTurn);
-	this.currentTurn = [];
+    this.currentTurn = [];
   }
   
   this.getTurnsByNo = function(turnNo) {
     return this.history[turnNo];
   }
-
-
 }

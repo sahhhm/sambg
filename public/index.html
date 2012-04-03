@@ -36,46 +36,46 @@
   var bbgame = null; //global game
    
    socket.on('room refresh', function(data){
-	 var list = $("#list_of_rooms").html('').append('<ul></ul>').find('ul');
-	 for (var i =0; i < data.length; i++) {
-	   list.append('<li id="room-' + data[i] +'"><div id="room">' + data[i] + '</div></li>');
-	 }
-	 
-	 if (selectedRoom != -1) {
+     var list = $("#list_of_rooms").html('').append('<ul></ul>').find('ul');
+     for (var i =0; i < data.length; i++) {
+       list.append('<li id="room-' + data[i] +'"><div id="room">' + data[i] + '</div></li>');
+     }
+     
+     if (selectedRoom != -1) {
        $("#room-"+selectedRoom).append('<div id="room-leave-'+selectedRoom+'"> - leave</div>'); 
-	 } else {
-	   $("#list_of_rooms li").each(function(index) {
+     } else {
+       $("#list_of_rooms li").each(function(index) {
          $(this).append('<div id="room-join-'+selectedRoom+'"> - join</div>');
        });
-	 }
+     }
    });
    
    socket.on('room chosen', function(data){
      $("#create_button").attr('disabled', true);
-	 selectedRoom = data.room;
+     selectedRoom = data.room;
    });
    
    socket.on('load game', function(data){
      initGame(null, data);
-	 newGame();
+     newGame();
    });
    
    socket.on('dice', function(data) {
      console.log("got dice event");
-   	 bggame.setRoll(data.die1, data.die2);
+        bggame.setRoll(data.die1, data.die2);
    });
    
    socket.on('update', function(data) {
      console.log("got update event!!");
-	 var i;
-	 var tempMove;
-	 var moves = data.moves;
-	 
-	 for (i = 0; i < moves.length; i++) {
-	   var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].isToHit, moves[i].diceRoll);
+     var i;
+     var tempMove;
+     var moves = data.moves;
+     
+     for (i = 0; i < moves.length; i++) {
+       var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].isToHit, moves[i].diceRoll);
        bggame.board.move(tempMove);
-	   bggame.board.update({draw:true,confirm:true,text:true});
-	 }
+       bggame.board.update({draw:true,confirm:true,text:true});
+     }
    });
    
    socket.on('update turns', function() {
@@ -83,37 +83,37 @@
    });
    
    socket.on('my id', function(data) {
-	 if (bggame.players[0].id == data.myid) {
-	   me.id = data.myid;
-	   me.num = 1;
-	 } else if (bggame.players[1].id == data.myid) {
-	   me.id = data.myid;
-	   me.num = 2;	 
-	 } else {
-	   console.log("my id -- error finding player id by socket: ", data.myid);
-	 }
-	 console.log("my id", me.id, "- player number:", me.num);
-	 $("#iam-player").html(me.num);
+     if (bggame.players[0].id == data.myid) {
+       me.id = data.myid;
+       me.num = 1;
+     } else if (bggame.players[1].id == data.myid) {
+       me.id = data.myid;
+       me.num = 2;	 
+     } else {
+       console.log("my id -- error finding player id by socket: ", data.myid);
+     }
+     console.log("my id", me.id, "- player number:", me.num);
+     $("#iam-player").html(me.num);
    });
   
    $("div").on("click", "div[id^='room-leave-']", function(e) {
-	 selectedRoom = -1;
-	 socket.emit('leave room', "", function(response) {
-	   if (response == "success") {
-	     $("#create_button").attr('disabled', false);
-	   } else {
-	     alert("error leaving room...");
-	   }
-	 });
+     selectedRoom = -1;
+     socket.emit('leave room', "", function(response) {
+       if (response == "success") {
+         $("#create_button").attr('disabled', false);
+       } else {
+         alert("error leaving room...");
+       }
+     });
    }); 
    
    $("div").on("click", "div[id^='room-join-']", function(e) {
-	 selectedRoom = $(this).parent().attr('id').split('-')[1];
-	 socket.emit('join room', {room: selectedRoom});
+     selectedRoom = $(this).parent().attr('id').split('-')[1];
+     socket.emit('join room', {room: selectedRoom});
    });  
 
    $("div").on("click", "div[id='c-button']", function(e) {
-	  socket.emit('moved', { room: selectedRoom, moves:bggame.board.turns.currentTurn});
+      socket.emit('moved', { room: selectedRoom, moves:bggame.board.turns.currentTurn});
    });  
    
    $("#create_button").click(function() {

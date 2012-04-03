@@ -28,35 +28,35 @@ function bgOnClick(e) {
     var bar = bggame.board.getBarByNum(info[1]);
     var selectedBar = bggame.board.getSelectedBar();
   
-	if (bar.player == me.num) {
-	  bggame.board.selectedBarNum = bar.player;
-	  selectedBar = bggame.board.getSelectedBar();
-	  console.log("Bar " + bggame.board.selectedBarNum + " selected");
+    if (bar.player == me.num) {
+      bggame.board.selectedBarNum = bar.player;
+      selectedBar = bggame.board.getSelectedBar();
+      console.log("Bar " + bggame.board.selectedBarNum + " selected");
     }
   
     if (bggame.board.getSelectedBar().num == -1) {
-	  if (bggame.board.getSelectedTriangle().num == -1 && triangle.isEmpty()) {
+      if (bggame.board.getSelectedTriangle().num == -1 && triangle.isEmpty()) {
         console.log("Triangle " + triangle.num + " which is empty was selected"); 
       } else {
           if (bggame.board.getSelectedTriangle().num == -1 && triangle.player == me.num) {
             bggame.board.selectedTriangleNum = triangle.num;
           } else { //elseif?	    
-		    bggame.board.updateTriangle(bggame.board.getSelectedTriangle(), triangle);
+            bggame.board.updateTriangle(bggame.board.getSelectedTriangle(), triangle);
           }
       }
-	} else {
-	  if (bggame.board.getSelectedBar().player == me.num) {
+    } else {
+      if (bggame.board.getSelectedBar().player == me.num) {
         if (selectedBar.isEmpty()) {
-	      console.log("Bar " + bggame.board.selectedBarNum + " which is empty was selected");
-	      bggame.board.selectedBarNum = -1;
-	    } else {
-	      if (triangle.num >= 1) bggame.board.updateBar(bggame.board.getSelectedBar(), triangle);
-	    }
-	  }
-	} 
+          console.log("Bar " + bggame.board.selectedBarNum + " which is empty was selected");
+          bggame.board.selectedBarNum = -1;
+        } else {
+          if (triangle.num >= 1) bggame.board.updateBar(bggame.board.getSelectedBar(), triangle);
+        }
+      }
+    } 
     
-	bggame.board.update({draw:true,confirm:true,text:true});
-	}
+    bggame.board.update({draw:true,confirm:true,text:true});
+    }
 }
 
 function newGame() {
@@ -67,14 +67,14 @@ function newGame() {
 function initGame(canvasElement, data) { 
   if (!canvasElement) {
     canvasElement = document.createElement("canvas");
-	canvasElement.id = "bg_canvas";
+    canvasElement.id = "bg_canvas";
 
-	$("#game_area").append( '<p id="iam">I am Player: <span id="iam-player">null</span></p>' + 
-							'<p id="player">Current Player: <span id="player-turn">null</span></p>' + 
+    $("#game_area").append( '<p id="iam">I am Player: <span id="iam-player">null</span></p>' + 
+                            '<p id="player">Current Player: <span id="player-turn">null</span></p>' + 
                             '<p id="c-dice">Current Dice: <span id="current-dice">null</span></p>' +
                             '<div id="c-button"><button id="confirm">confirm roll</button></div>' );
-	$("#game_area").append(canvasElement);
+    $("#game_area").append(canvasElement);
   }
-	
+    
   bggame = new Game(data);
 }
