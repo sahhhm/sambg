@@ -6,9 +6,10 @@
   <!--<link rel="stylesheet" type="text/css" href="css/style.css" />-->
 </head>
 <body>
-  <button id="create_button"> create room </button>
-  
-  <div id="list_of_rooms"></div>
+  <div id="lobby">
+    <button id="create_button"> create room </button>
+    <div id="list_of_rooms"></div>
+  </div>
   
   <div id="game_area"></div>
   
@@ -58,6 +59,7 @@
    });
    
    socket.on('load game', function(data){
+     $('#lobby').hide();
      initGame(null, data);
      newGame();
    });
@@ -87,7 +89,7 @@
    
    socket.on('force leave room', function() {
      console.log("got force leave room event");
-     destroyGame();
+     resetClient();
      socket.emit('join lobby');
    });
    
@@ -124,8 +126,9 @@
     socket.emit('new room', { room: roomID });
   });
 
-  function destroyGame() {
+  function resetClient() {
      $('#game_area').html('');
+     $('#lobby').show();
      selectedRoom = -1;
      me = {};
   }
