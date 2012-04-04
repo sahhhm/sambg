@@ -106,9 +106,8 @@ io.sockets.on('connection', function (socket) {
 
     socket.get('room', function (err, name) {
       console.log("leaving room: " + name);
-      
+     
       idx = get_room_index(name);
-      
       if (idx != -1) {
         // leave room
         socket.leave(rooms[idx].roomId);
@@ -117,8 +116,6 @@ io.sockets.on('connection', function (socket) {
         
         // let everyone else know a room was left
         io.sockets.in('lobby').emit('room refresh', get_room_names());	
-        
-        fn("success");
       }	  
     });
   });

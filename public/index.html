@@ -42,7 +42,7 @@
      }
      
      if (selectedRoom != -1) {
-       $('#create_button').attr('disabled', false);
+       $('#create_button').attr('disabled', true);
        $("#room-"+selectedRoom).append('<div id="room-leave-'+selectedRoom+'"> - leave</div>'); 
      } else {
        $('#create_button').attr('disabled', false);
@@ -54,7 +54,6 @@
    });
    
    socket.on('room chosen', function(data){
-     $("#create_button").attr('disabled', true);
      selectedRoom = data.room;
    });
    
@@ -108,13 +107,7 @@
   
    $("div").on("click", "div[id^='room-leave-']", function(e) {
      selectedRoom = -1;
-     socket.emit('leave room', "", function(response) {
-       if (response == "success") {
-         $("#create_button").attr('disabled', false);
-       } else {
-         alert("error leaving room...");
-       }
-     });
+     socket.emit('leave room');
    }); 
    
    $("div").on("click", "div[id^='room-join-']", function(e) {
