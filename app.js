@@ -123,14 +123,34 @@ io.sockets.on('connection', function (socket) {
     });
   });
   
-  //When a user disconnects
+  socket.on("join lobby", function() {
+    // remove any other room channels 
+    var idx = -1;
+    socket.get('room', function (err, name) {
+      idx = get_room_index(name);
+    });
+    if (idx != -1) {
+      socket.leave(idx);
+      socket.set('room', -1, function() {});
+    }
+    
+    // join lobby channel
+    socket.join('lobby');
+  });
+  
   socket.on("disconnect", function(){
     var idx = -1;
     socket.get('room', function (err, name) {
       idx = get_room_index(name);
     });
     if (idx != -1)  {
+    
+       // let other player in the room know that the room is gone
+       io.sockets.in(idx).emit("force leave room");
+    
+       // remove room from the rooms list
        rooms.splice(idx, 1);
+       
     }
     io.sockets.in('lobby').emit('room refresh',  get_room_names());
     console.log("user disconnected - room index:", idx);

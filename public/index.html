@@ -42,12 +42,15 @@
      }
      
      if (selectedRoom != -1) {
+       $('#create_button').attr('disabled', false);
        $("#room-"+selectedRoom).append('<div id="room-leave-'+selectedRoom+'"> - leave</div>'); 
      } else {
+       $('#create_button').attr('disabled', false);
        $("#list_of_rooms li").each(function(index) {
          $(this).append('<div id="room-join-'+selectedRoom+'"> - join</div>');
        });
      }
+
    });
    
    socket.on('room chosen', function(data){
@@ -81,6 +84,12 @@
    socket.on('update turns', function() {
       console.log("got update turns event");
       bggame.board.turns.clearCurrentToHistory();
+   });
+   
+   socket.on('force leave room', function() {
+     console.log("got force leave room event");
+     destroyGame();
+     socket.emit('join lobby');
    });
    
    socket.on('my id', function(data) {
@@ -122,5 +131,10 @@
     socket.emit('new room', { room: roomID });
   });
 
+  function destroyGame() {
+     $('#game_area').html('');
+     selectedRoom = -1;
+     me = {};
+  }
   
 </script>
