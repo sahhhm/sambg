@@ -37,11 +37,13 @@ function Dice() {
   this.isDouble = function() { return this.dice[0] == this.dice[1]; }
   
   this.updateDiceOnMove = function(from, to, potentials) {
-    var i;
-    for (i = 0; i < potentials.length; i++) {
-      if (potentials[i][0].num == to.num) {
-        this.dice = this.removeSubsetFromArray(potentials[i][1], this.dice);
-        break;
+    for (var i = 0; i < potentials.length; i++) {
+      //for (var j = 0; j < potentials[i].moves.length; i++) {
+      for (var j = potentials[i].moves.length -1 ; j >= 0; j--) {
+        if (potentials[i].moves[j].toNo == to.num) {
+          this.dice = this.removeSubsetFromArray(potentials[i].usedDice, this.dice);
+          break;
+        }
       }
     }
   }

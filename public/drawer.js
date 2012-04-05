@@ -72,12 +72,12 @@ function Drawer(s) {
 
   this.highlightTriangles = function(selected, potentials) {
     this.highlight(selected, 3, false);
-    for (var i = 0; i < potentials.length; i++) this.highlight(potentials[i][0], 3, true)
+    for (var i = 0; i < potentials.length; i++) this.highlight(potentials[i], 3, true)
   }  
   
   this.highlightBars = function(selected, potentials) {
     this.highlight(selected, 3, false);
-    for (var i = 0; i < potentials.length; i++) this.highlight(potentials[i][0], 3, true)
+    for (var i = 0; i < potentials.length; i++) this.highlight(potentials[i], 3, true)
   }      
   
   this.drawTriangle = function(t) {

@@ -40,7 +40,7 @@ function bgOnClick(e) {
       } else {
           if (bggame.board.getSelectedTriangle().num == -1 && triangle.player == me.num) {
             bggame.board.selectedTriangleNum = triangle.num;
-          } else { //elseif?	    
+          } else if (triangle.player == me.num || triangle.numCheckers < 2) { //eh....    
             bggame.board.updateTriangle(bggame.board.getSelectedTriangle(), triangle);
           }
       }
@@ -49,7 +49,7 @@ function bgOnClick(e) {
         if (selectedBar.isEmpty()) {
           console.log("Bar " + bggame.board.selectedBarNum + " which is empty was selected");
           bggame.board.selectedBarNum = -1;
-        } else {
+        } else // need something {
           if (triangle.num >= 1) bggame.board.updateBar(bggame.board.getSelectedBar(), triangle);
         }
       }
