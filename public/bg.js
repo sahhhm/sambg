@@ -56,7 +56,7 @@ function bgOnClick(e) {
     } 
     
     bggame.board.update({draw:true,confirm:true,text:true});
-    }
+    
 }
 
 function newGame() {
