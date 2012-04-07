@@ -102,6 +102,12 @@ io.sockets.on('connection', function (socket) {
                                                    die2: rooms[idx].rng.getADie()});
   });
   
+  // for debugging purposes only....
+  socket.on("force dice", function(data) {
+     io.sockets.in(data.room).emit('fdice', {die1: parseInt(data.str[0]),
+                                             die2: parseInt(data.str[1])}); 
+  });
+  
   socket.on("leave room", function(n, fn) {
 
     socket.get('room', function (err, name) {

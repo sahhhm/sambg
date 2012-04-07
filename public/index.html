@@ -69,6 +69,12 @@
         bggame.setRoll(data.die1, data.die2);
    });
    
+   //for debugging only
+   socket.on('fdice', function(data) {
+     bggame.board.dice.froll(data);
+     bggame.board.update({draw:true,confirm:true,text:true});
+   });
+   
    socket.on('update', function(data) {
      console.log("got update event!!");
      var i;
@@ -119,7 +125,17 @@
 
    $("div").on("click", "div[id='c-button']", function(e) {
       socket.emit('moved', { room: selectedRoom, moves:bggame.board.turns.currentTurn});
-   });  
+   }); 
+
+  
+   // for debugging only
+   $("div").on("click", "div[id='force-dice']", function(e) {
+      var inp = $("#f-inp").val();
+      if (inp != "00") {
+        socket.emit('force dice', { room: selectedRoom, str: inp });
+         $("#f-inp").val("00");
+      }
+   }); 
    
    $("#create_button").click(function() {
     roomID = Math.floor(Math.random()*999999999);

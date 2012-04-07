@@ -72,6 +72,7 @@ function initGame(canvasElement, data) {
     $("#game_area").append( '<p id="iam">I am Player: <span id="iam-player">null</span></p>' + 
                             '<p id="player">Current Player: <span id="player-turn">null</span></p>' + 
                             '<p id="c-dice">Current Dice: <span id="current-dice">null</span></p>' +
+                            '<input type="text" id="f-inp" value="00" size="2"/><div id="force-dice"><button id="force-sub">force roll</button></div>' + //for debugging only
                             '<div id="c-button"><button id="confirm">confirm roll</button></div>' );
     $("#game_area").append(canvasElement);
   }

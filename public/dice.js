@@ -11,6 +11,26 @@ function Dice() {
     this.dice = updatedDice;
   }
   
+  this.froll = function(theRoll) {
+    // for debugging purposes only....
+    // take in a roll and update the dice based off of that
+    this.dice = new Array();
+    this.diceCopy = new Array();
+    this.dice.push(theRoll.die1);
+    this.dice.push(theRoll.die2);
+
+    if (this.isDouble()) {
+      this.dice.push(this.dice[0]);
+      this.dice.push(this.dice[0]);
+    }
+    this.diceCopy = this.dice.slice(0);
+    var text = " Fake Dice Rolled: ";
+    for (var i = 0; i < this.dice.length; i++) {
+      text += this.dice[i] + " - ";
+    }
+    console.log(text);  
+  }
+  
   this.roll = function(theRoll) {
   // take in a roll and update the dice based off of that
     this.dice = new Array();
@@ -40,7 +60,7 @@ function Dice() {
     if (idx != -1) {
       this.dice.splice(idx, 1);
     } else {
-      console.log("error -- trying to remove", num, "from dice...");
+      console.log("error -- trying to remove", num, "from dice...", this.dice);
     }
   } 
 
