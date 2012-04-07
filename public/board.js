@@ -171,33 +171,25 @@ function Board(opts) {
     var numberOfUniqueCombinedMoves = 0;
     var combinedFromTriangleNum;
     var tnum;
-
-    
-    //new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, to.num, isToHit, this.dice.getDice())
     
     for (var t = 0; t < 2; t++) {
       if (from.validMoveTo(this.getTriangleByNum(entry + (this.dice.dice[t] * player.direction)))) {
         curDie = [this.dice.dice[t]];	
         
-        
-        //directs.push([this.getTriangleByNum(entry + (this.dice.dice[t] * player.direction)), curDie.slice(0)]);
         tnum = entry + (this.dice.dice[t] * player.direction);
-        directs.push({ moves : [new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, tnum, false, null)], usedDice: curDie.slice(0) });
-        
-        
-        
+        directs[t] = { moves : [new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, tnum, false, null)], usedDice: curDie.slice(0) };
+
         curSum = this.dice.dice[t];
-        combinedFromTriangleNum = from.num;
-        combineds.push({ moves : [], usedDice: curDie.slice(0) });
+      
         for (i = 0; i < this.dice.dice.length; i++) {
           if (i != t) {
+            combinedFromTriangleNum = entry;
+            tnum = combinedFromTriangleNum + (this.dice.dice[t] * player.direction);
+            combineds[t] = { moves : [new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null)], usedDice: curDie.slice(0) };
+            combinedFromTriangleNum = tnum;          
             if (from.validMoveTo(this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)))) {
               curDie.push(this.dice.dice[i]);
-              
-              //combineds.push([this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)), curDie.slice(0)]);
-              //if (!combineds[t]) {
-                //combineds.push({ moves : [], usedDice: curDie.slice(0) });
-              //}
+           
               tnum = entry + ((curSum + this.dice.dice[i]) * player.direction);
               combineds[t].moves.push(new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null));
               
@@ -208,7 +200,6 @@ function Board(opts) {
             }
           }
         }
-        
       }
     }
     return directs.concat(combineds);	
@@ -222,13 +213,11 @@ function Board(opts) {
     
     var potentials = this.findPotentialMoves(from);
     for (var i = 0; i < potentials.length; i++ ) {
-      for (var j = potentials[i].moves.length - 1; j >= 0; j--) {
-        if (potentials[i].moves[j].toNo == to.num) {
-          // found it!
-          foundPotential = potentials[i];
-          break;
-        }
-      }      
+      if (potentials[i].moves[potentials[i].moves.length-1].toNo == to.num) {
+        // found it!
+        foundPotential = potentials[i];
+        break;
+      }   
     } 
     
     if (foundPotential) {
