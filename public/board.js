@@ -301,7 +301,27 @@ function Board(opts) {
   this.updateBar = function(from, to) {
     var isValid = false;
     var isToHit = false;
-  
+
+    var foundPotential;
+    
+    var potentials = this.findPotentialMoves(from);
+    for (var i = 0; i < potentials.length; i++ ) {
+      if (potentials[i].moves[potentials[i].moves.length -1].toNo == to.num) {
+        // found it!
+        foundPotential = potentials[i];
+        break;
+      }   
+
+    } 
+    
+    if (foundPotential) {
+      for (var j = 0; j < foundPotential.moves.length; j++) {
+        this.move(foundPotential.moves[j]);
+      }
+    } else {
+      this.selectedBarNum = -1;
+    }    
+    /*
     if (this.validDiceMoveTo(from, to)) {
       if (to.numCheckers == 0) {
         isValid = true;
@@ -327,6 +347,8 @@ function Board(opts) {
      var myMove = new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, to.num, isToHit, this.dice.getDice());
      this.move(myMove);
     }
+    */
+    
   }    
   
   
