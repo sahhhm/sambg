@@ -163,36 +163,53 @@ function Board(opts) {
   }  
 
   this.findPotentialMoves = function(from) {
-    var temp, i, curSum, directs, combineds;
-    var player = this.getPlayerByNum(from.player);
+    //Given a triangle or bar, finds all (direct and combined) valid moves for the given board.
+    //returns a list with entries defined like: {moves : list of AMove's }
+
+    var tnum; 
     var entry = from.entry;
     var directs = new Array();
     var combineds = new Array();
-    var numberOfUniqueCombinedMoves = 0;
-    var combinedFromTriangleNum;
-    var tnum;
-    
+    var player = this.getPlayerByNum(from.player);
+    var curSum; // count of the number of spaces moved for the potential move
+    var combinedFromTriangleNum; // for combined moves, this variable represents the current entry point
+
+    // iterate over the two dice rolls to create direct moves
     for (var t = 0; t < 2; t++) {
+      
+      // ensure the direct moves are valid
       if (from.validMoveTo(this.getTriangleByNum(entry + (this.dice.dice[t] * player.direction)))) {
         
+        // add the direct move
         tnum = entry + (this.dice.dice[t] * player.direction);
         directs.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, tnum, false, null)] } );
-        
         curSum = this.dice.dice[t];
       
-        for (i = 0; i < this.dice.dice.length; i++) {
+      
+        // now begin to look at any potential combined moves after this initial direct move
+        combinedFromTriangleNum = entry;
+        tnum = combinedFromTriangleNum + (this.dice.dice[t] * player.direction);
+        
+        // add the initialial direct move
+        combineds.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null)] } );
+        combinedFromTriangleNum = tnum;   
+        for (var i = 0; i < this.dice.dice.length; i++) {
+        
+          // make sure we don't try to move on the same dice twice
           if (i != t) {
-            combinedFromTriangleNum = entry;
-            tnum = combinedFromTriangleNum + (this.dice.dice[t] * player.direction);
-            combineds.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null)] } );
-            combinedFromTriangleNum = tnum;          
+             
+            // make sure combined move is valid
             if (from.validMoveTo(this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)))) {
            
               tnum = entry + ((curSum + this.dice.dice[i]) * player.direction);
-              combineds[combineds.length-1].moves.push(new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null));
               
-              combinedFromTriangleNum = combinedFromTriangleNum + (curSum * player.direct);
-              curSum += this.dice.dice[i];			
+              // create a copy of the most recent combined move and build/add the combined move off of that
+              var movecpy = combineds[combineds.length-1].moves.slice();
+              combineds.push( { moves: movecpy });
+              combineds[combineds.length - 1].moves.push(new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null));
+              combinedFromTriangleNum = tnum;
+              curSum += this.dice.dice[i];	
+              
             } else {
               break;
             }
@@ -211,11 +228,12 @@ function Board(opts) {
     
     var potentials = this.findPotentialMoves(from);
     for (var i = 0; i < potentials.length; i++ ) {
-      if (potentials[i].moves[potentials[i].moves.length-1].toNo == to.num) {
+      if (potentials[i].moves[potentials[i].moves.length -1].toNo == to.num) {
         // found it!
         foundPotential = potentials[i];
         break;
       }   
+
     } 
     
     if (foundPotential) {
