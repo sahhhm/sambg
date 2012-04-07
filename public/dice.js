@@ -12,8 +12,7 @@ function Dice() {
   }
   
   this.roll = function(theRoll) {
-  // take in a roll and update 
-  // the dice based off of that
+  // take in a roll and update the dice based off of that
     this.dice = new Array();
     this.diceCopy = new Array();
     this.dice.push(theRoll.die1);
@@ -36,34 +35,13 @@ function Dice() {
   
   this.isDouble = function() { return this.dice[0] == this.dice[1]; }
   
-  this.updateDiceOnMove = function(from, to, potentials) {
-    for (var i = 0; i < potentials.length; i++) {
-      //for (var j = 0; j < potentials[i].moves.length; i++) {
-      for (var j = potentials[i].moves.length -1 ; j >= 0; j--) {
-        if (potentials[i].moves[j].toNo == to.num) {
-          this.dice = this.removeSubsetFromArray(potentials[i].usedDice, this.dice);
-          break;
-        }
-      }
+  this.updateDiceOnMove = function(num) {
+    var idx = this.dice.indexOf(num);
+    if (idx != -1) {
+      this.dice.splice(idx, 1);
+    } else {
+      console.log("error -- trying to remove", num, "from dice...");
     }
-  }
-  
-  this.removeSubsetFromArray = function(subset, array) {
-    var newArr = new Array();
-    var limit = this.isDouble() ? subset.length : subset.length + 1;
-    for (var i = 0; i < array.length; i++) {
-      var flagged = false;
-      if (i < limit) {
-        for (var j = 0; j < subset.length; j++) {
-          if (subset[j] == array[i]) { 
-            flagged = true; 
-            break; 
-          }
-        }
-      }
-      if (!flagged) newArr.push(array[i]);
-    }
-    return newArr;
-}  
+  } 
 
 }

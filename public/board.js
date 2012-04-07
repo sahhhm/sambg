@@ -163,7 +163,7 @@ function Board(opts) {
   }  
 
   this.findPotentialMoves = function(from) {
-    var temp, i, curSum, curDie, directs, combineds;
+    var temp, i, curSum, directs, combineds;
     var player = this.getPlayerByNum(from.player);
     var entry = from.entry;
     var directs = new Array();
@@ -174,24 +174,22 @@ function Board(opts) {
     
     for (var t = 0; t < 2; t++) {
       if (from.validMoveTo(this.getTriangleByNum(entry + (this.dice.dice[t] * player.direction)))) {
-        curDie = [this.dice.dice[t]];	
         
         tnum = entry + (this.dice.dice[t] * player.direction);
-        directs[t] = { moves : [new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, tnum, false, null)], usedDice: curDie.slice(0) };
-
+        directs.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, tnum, false, null)] } );
+        
         curSum = this.dice.dice[t];
       
         for (i = 0; i < this.dice.dice.length; i++) {
           if (i != t) {
             combinedFromTriangleNum = entry;
             tnum = combinedFromTriangleNum + (this.dice.dice[t] * player.direction);
-            combineds[t] = { moves : [new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null)], usedDice: curDie.slice(0) };
+            combineds.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null)] } );
             combinedFromTriangleNum = tnum;          
             if (from.validMoveTo(this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)))) {
-              curDie.push(this.dice.dice[i]);
            
               tnum = entry + ((curSum + this.dice.dice[i]) * player.direction);
-              combineds[t].moves.push(new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null));
+              combineds[combineds.length-1].moves.push(new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null));
               
               combinedFromTriangleNum = combinedFromTriangleNum + (curSum * player.direct);
               curSum += this.dice.dice[i];			
@@ -367,7 +365,7 @@ function Board(opts) {
     this.selectedTriangleNum = -1;
     
     // update the dice based on the move
-    this.dice.updateDiceOnMove(from, to, movePotentials)
+    this.dice.updateDiceOnMove(Math.abs(from.entry - to.entry));
     console.log("Moved from " + from.num + " to " + to.num);
     
     // add the move to the history
