@@ -206,7 +206,7 @@ function Board(opts) {
               // create a copy of the most recent combined move and build/add the combined move off of that
               var movecpy = combineds[combineds.length-1].moves.slice();
               combineds.push( { moves: movecpy });
-              combineds[combineds.length - 1].moves.push(new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null));
+              combineds[combineds.length - 1].moves.push(new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, "triangle", tnum, false, null));
               combinedFromTriangleNum = tnum;
               curSum += this.dice.dice[i];	
               
@@ -375,7 +375,7 @@ function Board(opts) {
     if (aMove.fromType == "triangle") {
       from = this.getTriangleByNum(aMove.fromNo);
     } else {
-      from = this.getBarByNum(aMove.fromNo);
+      from = this.getBarByNum(aMove.player);
     }
     to = this.getTriangleByNum(aMove.toNo);
     
@@ -385,7 +385,7 @@ function Board(opts) {
     }
     aMove.diceRoll = this.dice.getDice();
     
-    var movePotentials = this.findPotentialMoves(from);
+    //var movePotentials = this.findPotentialMoves(from);
     
     // adjust triangle checker counts
     from.numCheckers -= 1;
