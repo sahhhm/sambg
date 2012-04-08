@@ -82,7 +82,7 @@
      var moves = data.moves;
      
      for (i = 0; i < moves.length; i++) {
-       var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].isToHit, moves[i].diceRoll);
+       var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].isToHit);
        bggame.board.move(tempMove);
        bggame.board.update({draw:true,confirm:true,text:true});
      }

@@ -183,7 +183,7 @@ function Board(opts) {
         
         // add the direct move
         tnum = entry + (this.dice.dice[t] * player.direction);
-        directs.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, tnum, false, null)] } );
+        directs.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, tnum, false)] } );
         curSum = this.dice.dice[t];
       
       
@@ -196,7 +196,7 @@ function Board(opts) {
         // ******* COMBINED MOVES SECTION
         // ******************************
           // add the initialial direct move
-          combineds.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null)] } );
+          combineds.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false)] } );
           combinedFromTriangleNum = tnum;   
           for (var i = 0; i < this.dice.dice.length; i++) {
         
@@ -211,7 +211,7 @@ function Board(opts) {
                 // create a copy of the most recent combined move and build/add the combined move off of that
                 var movecpy = combineds[combineds.length-1].moves.slice();
                 combineds.push( { moves: movecpy });
-                combineds[combineds.length - 1].moves.push(new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, "triangle", tnum, false, null));
+                combineds[combineds.length - 1].moves.push(new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, "triangle", tnum, false));
                 combinedFromTriangleNum = tnum;
                 curSum += this.dice.dice[i];	
               
@@ -280,7 +280,6 @@ function Board(opts) {
     if (to.numCheckers == 1 && to.player != from.player) {
       aMove.isToHit = true;
     }
-    aMove.diceRoll = this.dice.getDice();
     
     // adjust triangle checker counts
     from.numCheckers -= 1;

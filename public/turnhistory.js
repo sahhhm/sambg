@@ -1,11 +1,10 @@
-function AMove(confirmedRolls, player, from, fromType, to, isToHit, diceRoll) {
+function AMove(confirmedRolls, player, from, fromType, to, isToHit) {
   this.turnNo = confirmedRolls
   this.player = player;
   this.fromNo = from;
   this.fromType = fromType;
   this.toNo = to;
   this.isToHit = isToHit;
-  this.diceRoll = diceRoll; 
 }
 
 function TurnHistory() {
