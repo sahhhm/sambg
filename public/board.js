@@ -171,6 +171,7 @@ function Board(opts) {
     var directs = new Array();
     var combineds = new Array();
     var player = this.getPlayerByNum(from.player);
+    var playerBar = this.getBarByNum(from.player);
     var curSum; // count of the number of spaces moved for the potential move
     var combinedFromTriangleNum; // for combined moves, this variable represents the current entry point
 
@@ -190,28 +191,33 @@ function Board(opts) {
         combinedFromTriangleNum = entry;
         tnum = combinedFromTriangleNum + (this.dice.dice[t] * player.direction);
         
-        // add the initialial direct move
-        combineds.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null)] } );
-        combinedFromTriangleNum = tnum;   
-        for (var i = 0; i < this.dice.dice.length; i++) {
+        if (playerBar.numCheckers <= 1) {
+        // ******************************
+        // ******* COMBINED MOVES SECTION
+        // ******************************
+          // add the initialial direct move
+          combineds.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false, null)] } );
+          combinedFromTriangleNum = tnum;   
+          for (var i = 0; i < this.dice.dice.length; i++) {
         
-          // make sure we don't try to move on the same dice twice
-          if (i != t) {
+            // make sure we don't try to move on the same dice twice
+            if (i != t) {
              
-            // make sure combined move is valid
-            if (from.validMoveTo(this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)))) {
+              // make sure combined move is valid
+              if (from.validMoveTo(this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)))) {
            
-              tnum = entry + ((curSum + this.dice.dice[i]) * player.direction);
+                tnum = entry + ((curSum + this.dice.dice[i]) * player.direction);
               
-              // create a copy of the most recent combined move and build/add the combined move off of that
-              var movecpy = combineds[combineds.length-1].moves.slice();
-              combineds.push( { moves: movecpy });
-              combineds[combineds.length - 1].moves.push(new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, "triangle", tnum, false, null));
-              combinedFromTriangleNum = tnum;
-              curSum += this.dice.dice[i];	
+                // create a copy of the most recent combined move and build/add the combined move off of that
+                var movecpy = combineds[combineds.length-1].moves.slice();
+                combineds.push( { moves: movecpy });
+                combineds[combineds.length - 1].moves.push(new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, "triangle", tnum, false, null));
+                combinedFromTriangleNum = tnum;
+                curSum += this.dice.dice[i];	
               
-            } else {
-              break;
+              } else {
+                break;
+              }
             }
           }
         }
@@ -221,9 +227,6 @@ function Board(opts) {
   }  
   
   this.updateTriangle = function(from, to) {
-    var isValid = false;
-    var isToHit = false;
-    
     var foundPotential;
     
     var potentials = this.findPotentialMoves(from);
@@ -233,7 +236,6 @@ function Board(opts) {
         foundPotential = potentials[i];
         break;
       }   
-
     } 
     
     if (foundPotential) {
@@ -242,60 +244,7 @@ function Board(opts) {
       }
     } else {
       this.selectedTriangleNum = -1;
-    }
-    
-    /*
-    if (this.validDiceMoveTo(from, to)) {	  
-      // try to move 
-      if (from.numCheckers) {
-        //make sure player is moving in the right direction 
-        if (from.player == 1 && from.num > to.num) {
-          console.log("Player 1 trying to move backwards from " + from.num + " to " + to.num);
-          this.selectedTriangleNum = -1;
-        } else if (from.player == 2 && from.num < to.num) {
-          console.log("Player 2 trying to move backwards from " + from.num + " to " + to.num);	  
-          this.selectedTriangleNum = -1;
-        } else if (!this.getBarByNum(from.player).isEmpty()) {
-          console.log("Player " + from.player + " needs to move off the bar");
-          this.selectedTriangleNum = -1;
-        } else if (from.num == to.num) {
-          console.log("Clicked on the same triangle");
-        } else {
-          if (to.numCheckers == 0) {
-            isValid = true;
-            console.log("Moving from " + this.selectedTriangleNum + " to " + to.num + " (an empty triangle)");
-          } else if (to.numCheckers == 1) {
-            isValid = true;		  
-            if (from.player != to.player) {
-              console.log("Player " + to.player + " hit at Triangle " + to.num);	
-              isToHit = true;				
-            }
-          } else if (to.numCheckers > 1) {
-            if (from.player != to.player) {
-              console.error("Trying to move to a triangle occupied by another player - from " + from.num + " to " + to.num + "(" + to.numCheckers + " checkers)");              
-            } else {
-              isValid = true;
-            }  
-          }
-        }
-      } else {
-        this.selectedTriangleNum = -1;
-        console.log("ERROR - Trying to move from triangle with no checkers");
-      }
-    } else {
-      console.log("not proper dice");
-      this.selectedTriangleNum = -1;
-    }
-    
-
-
-    if (isValid) {
-     var myMove = new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, to.num, isToHit, this.dice.getDice());
-     this.move(myMove);
-    }
-    
-    */
-    
+    } 
   }
 
   this.updateBar = function(from, to) {
@@ -311,7 +260,6 @@ function Board(opts) {
         foundPotential = potentials[i];
         break;
       }   
-
     } 
     
     if (foundPotential) {
@@ -321,34 +269,6 @@ function Board(opts) {
     } else {
       this.selectedBarNum = -1;
     }    
-    /*
-    if (this.validDiceMoveTo(from, to)) {
-      if (to.numCheckers == 0) {
-        isValid = true;
-      } else if (to.numCheckers == 1) {
-        isValid = true;
-        if (from.player != to.player) {
-          isToHit = true;	  
-          console.log("Player " + from.player + " hit Player " + to.player + " from the bar");
-        }
-      } else {
-        if (from.player == to.player) {
-          isValid = true;
-        } else {
-          console.log("Player " + from.player + " cannot move form the bar to triangle " + to.num + " because Player " + to.player + " is occupying the triangle");
-        }
-      }
-    } else {
-      console.log("Player " + from.player + " tried to move from the bar to triangle " + to.num);
-      this.selectedBarNum = -1;
-    }
-  
-    if (isValid) {
-     var myMove = new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, to.num, isToHit, this.dice.getDice());
-     this.move(myMove);
-    }
-    */
-    
   }    
   
   
@@ -384,8 +304,6 @@ function Board(opts) {
       aMove.isToHit = true;
     }
     aMove.diceRoll = this.dice.getDice();
-    
-    //var movePotentials = this.findPotentialMoves(from);
     
     // adjust triangle checker counts
     from.numCheckers -= 1;
@@ -433,7 +351,6 @@ function Board(opts) {
     }
     return any;
   }  
-  
   
   this.playerTurn = function() {
     return this.dice.confirmedRolls % 2 ? 1: 2;
