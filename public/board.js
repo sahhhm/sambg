@@ -115,26 +115,23 @@ function Board(opts) {
       this.drawer.drawTriangles(this.getTriangles(), this.getPlayers());
       this.drawer.drawBars(this.getBars(), this.getPlayers());
       
+      // highlight moves from either bar or triangle, when applicable
+      var from;
       if (this.getSelectedTriangle().num != -1) {
+        from = this.getSelectedTriangle();
+      } else if (this.getSelectedBar().num != -1) {
+        from = this.getSelectedBar();
+      }
+      if (from) {
         var tos = [];
-        var potentials = this.findPotentialMoves(this.getSelectedTriangle());
+        var potentials = this.findPotentialMoves(from);
         for (var i = 0; i < potentials.length; i++) {
           for (var j = 0; j < potentials[i].moves.length; j++) {
             tos.push(this.getTriangleByNum(potentials[i].moves[j].toNo));
           }
         }
-        this.drawer.highlightTriangles(this.getSelectedTriangle(), tos);	
-      } else if (this.getSelectedBar().player != -1) {
-        var tos = [];
-        var potentials = this.findPotentialMoves(this.getSelectedBar());
-        for (var i = 0; i < potentials.length; i++) {
-          for (var j = 0; j < potentials[i].moves.length; j++) {
-            tos.push(this.getTriangleByNum(potentials[i].moves[j].toNo));
-          }
-        }      
-        this.drawer.highlightBars(this.getSelectedBar(), tos);
+        this.drawer.highlightTriangles(from, tos);	      
       }
-      
     }
     if (opts.text) {
       this.updateText();
