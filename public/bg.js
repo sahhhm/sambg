@@ -37,7 +37,7 @@ function bgOnClick(e) {
           if (bggame.board.getSelectedTriangle().num == -1 && triangle.player == me.num) {
             bggame.board.selectedTriangleNum = triangle.num;
           } else if (bggame.board.getSelectedTriangle().num != -1 && (triangle.player == me.num || triangle.numCheckers < 2)) { //eh....    
-            bggame.board.updateTriangle(bggame.board.getSelectedTriangle(), triangle);
+            bggame.board.updateSpace(bggame.board.getSelectedTriangle(), triangle);
           }
       }
     } else {
@@ -45,7 +45,7 @@ function bgOnClick(e) {
         bggame.board.selectedBarNum = bar.player;
       } else {
         if (bggame.board.getSelectedBar().num != -1 && triangle.num >= 1) {
-          bggame.board.updateBar(bggame.board.getSelectedBar(), triangle);
+          bggame.board.updateSpace(bggame.board.getSelectedBar(), triangle);
         } 
       }
     } 

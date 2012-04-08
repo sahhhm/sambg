@@ -226,9 +226,10 @@ function Board(opts) {
     return directs.concat(combineds);	
   }  
   
-  this.updateTriangle = function(from, to) {
+  this.updateSpace = function(from, to) {
     var foundPotential;
     
+    // search potential moves to find the move that ends at to.num
     var potentials = this.findPotentialMoves(from);
     for (var i = 0; i < potentials.length; i++ ) {
       if (potentials[i].moves[potentials[i].moves.length -1].toNo == to.num) {
@@ -244,33 +245,9 @@ function Board(opts) {
       }
     } else {
       this.selectedTriangleNum = -1;
-    } 
-  }
-
-  this.updateBar = function(from, to) {
-    var isValid = false;
-    var isToHit = false;
-
-    var foundPotential;
-    
-    var potentials = this.findPotentialMoves(from);
-    for (var i = 0; i < potentials.length; i++ ) {
-      if (potentials[i].moves[potentials[i].moves.length -1].toNo == to.num) {
-        // found it!
-        foundPotential = potentials[i];
-        break;
-      }   
-    } 
-    
-    if (foundPotential) {
-      for (var j = 0; j < foundPotential.moves.length; j++) {
-        this.move(foundPotential.moves[j]);
-      }
-    } else {
       this.selectedBarNum = -1;
-    }    
-  }    
-  
+    } 
+  }  
   
   this.validDiceMoveTo = function(from, to) {
     var isValid = false;
