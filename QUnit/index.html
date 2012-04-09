@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                       "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
+  <script src="../public/game.js"></script>
+  <script src="../public/dice.js"></script>
+  <script src="../public/drawer.js"></script>
+  <script src="../public/player.js"></script>
+  <script src="../public/triangle.js"></script>
+  <script src="../public/bar.js"></script>
+  <script src="../public/checker.js"></script>
+  <script src="../public/board.js"></script>
+  <script src="../public/bg.js"></script>
+  <script src="../public/turnhistory.js"></script>
+
+  <script>
+  $(document).ready(function(){
+    //******************************
+    //* INITIALZE 
+    //******************************
+
+    canvasElement = document.createElement("canvas");
+    canvasElement.id = "bg_canvas";
+
+    $("#game_area").append( '<p id="iam">I am Player: <span id="iam-player">null</span></p>' + 
+                            '<p id="player">Current Player: <span id="player-turn">null</span></p>' + 
+                            '<p id="c-dice">Current Dice: <span id="current-dice">null</span></p>' +
+                            '<input type="text" id="f-inp" value="00" size="2"/><div id="force-dice"><button id="force-sub">force roll</button></div>' + //for debugging only
+                            '<div id="u-button"><button id="undo">undo move</button></div>' +
+                            '<div id="c-button"><button id="confirm">confirm roll</button></div>' );
+    $("#game_area").append(canvasElement);
+    $("#game_area").hide();
+    
+ 
+    var game1GameData = {room: 1, player1: 1111, player2: 2222}
+    var game1;
+
+    module("Dice Testing");
+
+    test("regular dice roll", function() {
+      game1 = new Game(game1GameData);
+      expect(2);
+      game1.setRoll(1, 5);
+      deepEqual( game1.board.dice.getDice(), [1, 5], "testing 1-5" );
+      game1.setRoll(6, 2)
+      deepEqual( game1.board.dice.getDice(), [6, 2], "testing 6-2" );
+    });
+
+    test("doubles dice roll", function() {
+      game1 = new Game(game1GameData);
+      expect(2);
+      game1.setRoll(6, 6);
+      deepEqual( game1.board.dice.getDice(), [6, 6, 6, 6], "testing 6-6-6-6" );
+      game1.setRoll(3, 3)
+      deepEqual( game1.board.dice.getDice(), [3, 3, 3, 3], "testing 3-3-3-3" );
+    });
+
+    module("Module B");
+
+  });
+  </script>
+  
+</head>
+<body>
+  <h1 id="qunit-header">QUnit example</h1>
+  <h2 id="qunit-banner"></h2>
+  <div id="qunit-testrunner-toolbar"></div>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests"></ol>
+  <div id="qunit-fixture">test markup, will be hidden</div>
+    <div id="lobby">
+    <div id="list_of_rooms"></div>
+  </div>
+  
+  <div id="game_area"></div>
+</body>
+</html>
