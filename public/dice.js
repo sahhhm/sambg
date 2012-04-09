@@ -63,5 +63,9 @@ function Dice() {
       console.log("error -- trying to remove", num, "from dice...", this.dice);
     }
   } 
+  
+  this.replaceDiceOnUndo = function(num) {
+    this.dice.push(num);
+  }
 
 }

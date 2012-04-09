@@ -8,7 +8,7 @@ function Game(gameData) {
   this.board = new Board(boardOpts);
   
   this.setRoll = function(d1, d2) {
-    this.board.update({roll:true, text:true, confirm:true, die1: d1, die2: d2});
+    this.board.update({roll:true, text:true, confirm:true, die1: d1, die2: d2, undo:false});
   }
   
 }

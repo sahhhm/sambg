@@ -7,6 +7,7 @@ function Drawer(s) {
   this.currentDiceElement = document.getElementById('current-dice');
   this.playerTurnElement = document.getElementById('player-turn');	
   this.confirmButtonElement = document.getElementById('confirm');
+  this.undoButtonElement = document.getElementById('undo');
   
   this.drawBoard = function() {
     this.drawingContext.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);

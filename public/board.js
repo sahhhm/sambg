@@ -136,6 +136,9 @@ function Board(opts) {
     if (opts.text) {
       this.updateText();
     }
+    if (opts.undo) {
+      this.turns.currentTurn.length ? this.drawer.undoButtonElement.disabled = false : this.drawer.undoButtonElement.disabled = true;
+    }
     if (opts.confirm) {
       this.canConfirm();
     }
@@ -301,7 +304,38 @@ function Board(opts) {
     
     // add the move to the history
     this.turns.addAMove(aMove);
-  }    
+  }
+  
+  this.undoMove = function() {
+    var otherPlayer;
+    var theMove = this.turns.currentTurn.pop();
+    
+    if (theMove.fromType == "triangle") {
+      to = this.getTriangleByNum(theMove.fromNo);
+    } else {
+      to = this.getBarByNum(theMove.player);
+    }
+    from = this.getTriangleByNum(theMove.toNo);
+
+    from.numCheckers -= 1;
+    to.numCheckers += 1;
+
+    // if the to player was hit, update accordingly
+    if (theMove.isToHit) {
+      from.player == 1 ? otherPlayer = 2 : otherPlayer = 1;
+      this.getBarByNum(otherPlayer).numCheckers -= 1;
+      from.numCheckers += 1;
+      from.player = otherPlayer;
+    }   
+
+    // since we just moved, nothing should be active
+    this.selectedBarNum = -1;
+    this.selectedTriangleNum = -1;    
+    
+    // update the dice based on the move
+    this.dice.replaceDiceOnUndo(Math.abs(from.entry - to.entry));
+    console.log("undo move from " + from.num + " to " + to.num);
+  }
   
   this.anyMovesLeft = function() {
     var any = false;

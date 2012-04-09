@@ -72,7 +72,7 @@
    //for debugging only
    socket.on('fdice', function(data) {
      bggame.board.dice.froll(data);
-     bggame.board.update({draw:true,confirm:true,text:true});
+     bggame.board.update({draw:true,confirm:true,text:true,undo:false});
    });
    
    socket.on('update', function(data) {
@@ -84,13 +84,14 @@
      for (i = 0; i < moves.length; i++) {
        var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].isToHit);
        bggame.board.move(tempMove);
-       bggame.board.update({draw:true,confirm:true,text:true});
+       bggame.board.update({draw:true,confirm:true,text:true,undo:false}); // confirm should be false... look into.
      }
    });
    
    socket.on('update turns', function() {
       console.log("got update turns event");
       bggame.board.turns.clearCurrentToHistory();
+      bggame.board.update({draw:true,confirm:false,text:true,undo:true});
    });
    
    socket.on('force leave room', function() {
@@ -125,7 +126,12 @@
 
    $("div").on("click", "div[id='c-button']", function(e) {
       socket.emit('moved', { room: selectedRoom, moves:bggame.board.turns.currentTurn});
-   }); 
+   });
+
+   $("div").on("click", "div[id='u-button']", function(e) {
+      bggame.board.undoMove();
+      bggame.board.update({draw:true,confirm:true,text:true,undo:true});
+   });    
 
   
    // for debugging only
