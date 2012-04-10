@@ -35,6 +35,12 @@ function Drawer(s) {
     for (var y = 0; y <= this.specs.pixelHeight; y += this.specs.pieceHeight) {
       this.drawingContext.fillRect(this.specs.pieceWidth * Math.floor(this.specs.boardWidth/2), y, this.specs.pieceWidth, this.specs.pieceHeight);
     }
+    
+    /* bear off area */
+    this.drawingContext.fillStyle = "#0f0";
+    for (var y = 0; y <= this.specs.pixelHeight; y += this.specs.pieceHeight) {
+      this.drawingContext.fillRect(this.specs.boardWidth * this.specs.pieceWidth + 1, y, this.specs.bearOffWidth, this.specs.pieceHeight);
+    }
   }
 
   this.drawTriangles = function(theTriangles) {  
@@ -50,6 +56,13 @@ function Drawer(s) {
       this.drawBar(theBars[j]);
     }
   }
+  
+  this.drawBearOffs = function(theBOs) {
+    /* draw bear off area pieces */
+    for (var k = 0; k < theBOs.length; k++) {
+      this.drawBearOff(theBOs[k]);
+    }
+  }  
 
   this.highlight = function(tri, width, isPotential) {
     var color;
@@ -91,6 +104,11 @@ function Drawer(s) {
       b.isTop() ? this.drawPiece(new Checker(k, b.column, b.player), false) : this.drawPiece(new Checker(this.specs.boardHeight - k - 1, b.column, b.player), false);	
   }  
   
+  this.drawBearOff = function(b) {
+    for (var k = 0; k < b.numCheckers; k++) 
+      b.isTop() ? this.drawBearPiece(new Checker(k * this.specs.bearOffHeight, b.column, b.player)) : this.drawBearPiece(new Checker((this.specs.boardHeight * this.specs.pieceHeight) - ((k+1) * this.specs.bearOffHeight) - 1, b.column, b.player));	
+  }  
+  
   this.drawPiece = function(ch, selected) {
     var x = (ch.column * this.specs.pieceWidth) + (this.specs.pieceWidth/2);
     var y = (ch.row * this.specs.pieceHeight) + (this.specs.pieceHeight/2);
@@ -102,5 +120,31 @@ function Drawer(s) {
     this.drawingContext.stroke();
     ch.player == 1 ? this.drawingContext.fillStyle = this.specs.p1color : this.drawingContext.fillStyle = this.specs.p2color;
     this.drawingContext.fill();   
-  } 
+  }
+
+  this.drawBearPiece = function(ch) {
+    var kappa = .5522848;
+    var x = this.specs.pieceWidth * ch.column;
+    var y = ch.row;
+    var w = this.specs.bearOffWidth;
+    var h = this.specs.bearOffHeight;
+      ox = (w / 2) * kappa, // control point offset horizontal
+      oy = (h / 2) * kappa, // control point offset vertical
+      xe = x + w,           // x-end
+      ye = y + h,           // y-end
+      xm = x + w / 2,       // x-middle
+      ym = y + h / 2;       // y-middle
+
+    this.drawingContext.beginPath();
+    this.drawingContext.moveTo(x, ym);
+    this.drawingContext.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+    this.drawingContext.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+    this.drawingContext.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+    this.drawingContext.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+    this.drawingContext.closePath();
+    this.drawingContext.stroke();    
+    
+    ch.player == 1 ? this.drawingContext.fillStyle = this.specs.p1color : this.drawingContext.fillStyle = this.specs.p2color;
+    this.drawingContext.fill();   
+  }   
 }

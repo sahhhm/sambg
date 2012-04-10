@@ -18,10 +18,13 @@ function Board(opts) {
     hitPieceHeight : 20,
     totalTriangles : 24,
     maxPiecesPerTriangle : 5,
-    barColumn : 6
+    barColumn : 6,
+    bearOffColumn : 13,
+    bearOffWidth : 65,
+    bearOffHeight: 15
   };
 
-  this.specs.pixelWidth = this.specs.boardWidth * this.specs.pieceWidth + 1;
+  this.specs.pixelWidth = this.specs.boardWidth * this.specs.pieceWidth + 1 + this.specs.bearOffWidth;
   this.specs.pixelHeight = this.specs.boardHeight * this.specs.pieceHeight + 1;
   this.specs.p1color = opts.p1color;
   this.specs.p2color = opts.p2color;
@@ -65,10 +68,17 @@ function Board(opts) {
       
   this.gBars = [new Bar(1, 0, this.specs.barColumn, 0), 
                 new Bar(2, this.specs.boardHeight - 1, this.specs.barColumn, 0)];
-      
+  
+  this.gBearOffs = [new BearOff(1, this.specs.boardHeight - 1, this.specs.bearOffColumn, 15),
+                    new BearOff(2, 0, this.specs.bearOffColumn, 15)]; 
+                    
   this.getBars = function() {
     return this.gBars;
   } 
+  
+  this.getBearOffs = function() {
+    return this.gBearOffs;
+  }
   
   this.getBarByNum = function(n) {
     var bar = new Bar(-1, -1, -1, -1);
@@ -114,6 +124,9 @@ function Board(opts) {
       this.drawer.drawBoard();
       this.drawer.drawTriangles(this.getTriangles(), this.getPlayers());
       this.drawer.drawBars(this.getBars(), this.getPlayers());
+      this.drawer.drawBearOffs(this.getBearOffs());
+      
+      
       
       // highlight moves from either bar or triangle, when applicable
       var from;
@@ -132,6 +145,7 @@ function Board(opts) {
         }
         this.drawer.highlightTriangles(from, tos);	      
       }
+      
     }
     if (opts.text) {
       this.updateText();
