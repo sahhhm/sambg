@@ -15,6 +15,7 @@
   <script src="../public/board.js"></script>
   <script src="../public/bg.js"></script>
   <script src="../public/turnhistory.js"></script>
+  <script src="../public/bearoff.js"></script>
 
   <script>
   $(document).ready(function(){
@@ -39,26 +40,44 @@
     var game1;
 
     module("Dice Testing");
-
     test("regular dice roll", function() {
       game1 = new Game(game1GameData);
       expect(2);
       game1.setRoll(1, 5);
-      deepEqual( game1.board.dice.getDice(), [1, 5], "testing 1-5" );
+      deepEqual( game1.board.dice.getDice(), [1, 5], "1-5" );
       game1.setRoll(6, 2)
-      deepEqual( game1.board.dice.getDice(), [6, 2], "testing 6-2" );
+      deepEqual( game1.board.dice.getDice(), [6, 2], "6-2" );
     });
 
     test("doubles dice roll", function() {
       game1 = new Game(game1GameData);
       expect(2);
       game1.setRoll(6, 6);
-      deepEqual( game1.board.dice.getDice(), [6, 6, 6, 6], "testing 6-6-6-6" );
+      deepEqual( game1.board.dice.getDice(), [6, 6, 6, 6], "6-6-6-6" );
       game1.setRoll(3, 3)
-      deepEqual( game1.board.dice.getDice(), [3, 3, 3, 3], "testing 3-3-3-3" );
+      deepEqual( game1.board.dice.getDice(), [3, 3, 3, 3], "3-3-3-3" );
     });
 
-    module("Module B");
+    module("Simple Move Sequence (Dice Rolls: 1-5, 6-2)");
+    test("Dice Rolls: 1-5, 6-2", function() {
+      game1.setRoll(1, 5);
+      game1 = new Game(game1GameData);
+      equal( game1.board.playerTurn(), 1, "first player to move is player 1");
+      equal( game1.board.getTriangleByNum(1).numCheckers, 2, "triangle 1 initially has 2 checkers");
+      equal( game1.board.getTriangleByNum(2).numCheckers, 0, "triangle 2 initially has 0 checkers");
+      game1.board.move(new AMove(1, 1, 1, "triangle", 2, false));
+      equal( game1.board.getTriangleByNum(1).numCheckers, 1, "move one checker from triangle 1");
+      equal( game1.board.getTriangleByNum(2).numCheckers, 1, "move one checker to triangle 2");
+      equal( game1.board.canConfirm(), false, "player cannot confirm since there are other valid moves to be made");
+      deepEqual( game1.board.dice.getDice(), [5], "since we moved one position, our dice roll of 1 should have been removed");
+      equal( game1.board.getTriangleByNum(12).numCheckers, 5, "triangle 12 initially has 5 checkers");
+      equal( game1.board.getTriangleByNum(17).numCheckers, 3, "triangle 17 initially has 0 checkers");
+      game1.board.move(new AMove(1, 1, 12, "triangle", 17, false));
+      equal( game1.board.getTriangleByNum(12).numCheckers, 4, "move one checker from triangle 12");
+      equal( game1.board.getTriangleByNum(17).numCheckers, 4, "move one checker to triangle 17");
+      equal( game1.board.canConfirm(), true, "player can now confirm since there are no other valid moves to be made");
+    });
+
 
   });
   </script>
