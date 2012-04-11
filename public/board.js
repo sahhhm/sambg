@@ -17,6 +17,7 @@ function Board(opts) {
     hitPieceWidth : 50,
     hitPieceHeight : 20,
     totalTriangles : 24,
+    totalPiecesPerPlayer : 15,
     maxPiecesPerTriangle : 5,
     barColumn : 6,
     bearOffColumn : 13,
@@ -247,8 +248,25 @@ function Board(opts) {
     return directs.concat(combineds);	
   }  
   
+  this.playerReadyToBearOff = function(p) {
+    var numChecks = 0;
+    
+    for (var i = 1; i < this.getTriangles().length + 1; i++) {
+      if ( i >= p.homeMinNum && i <= p.homeMaxNum ) {
+        var t =  this.getTriangleByNum(i);
+        if (t.player == p.num && t.numCheckers > 0) {
+          numChecks += t.numCheckers;
+        }
+      } 
+    }
+    console.log(numChecks, "in home court.... need 15");
+    return numChecks == this.specs.totalPiecesPerPlayer;
+  }
+  
   this.updateSpace = function(from, to) {
     var foundPotential;
+    
+    this.playerReadyToBearOff(this.getPlayerByNum(from.player));
     
     // search potential moves to find the move that ends at to.num
     var potentials = this.findPotentialMoves(from);
