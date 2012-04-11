@@ -69,8 +69,8 @@ function Board(opts) {
   this.gBars = [new Bar(1, 0, this.specs.barColumn, 0), 
                 new Bar(2, this.specs.boardHeight - 1, this.specs.barColumn, 0)];
   
-  this.gBearOffs = [new BearOff(1, this.specs.boardHeight - 1, this.specs.bearOffColumn, 15),
-                    new BearOff(2, 0, this.specs.bearOffColumn, 15)]; 
+  this.gBearOffs = [new BearOff(1, this.specs.boardHeight - 1, this.specs.bearOffColumn, 0),
+                    new BearOff(2, 0, this.specs.bearOffColumn, 0)]; 
                     
   this.getBars = function() {
     return this.gBars;
@@ -79,6 +79,14 @@ function Board(opts) {
   this.getBearOffs = function() {
     return this.gBearOffs;
   }
+  
+  this.getBearOffByNum = function(n) {
+    var bearOff = new BearOff(-1, -1, -1, -1);
+    if (n > 0) {
+      bearOff =  this.getBearOffs()[n-1];
+    } 
+    return bar;  
+  } 
   
   this.getBarByNum = function(n) {
     var bar = new Bar(-1, -1, -1, -1);
@@ -154,9 +162,8 @@ function Board(opts) {
       this.turns.currentTurn.length ? this.drawer.undoButtonElement.disabled = false : this.drawer.undoButtonElement.disabled = true;
     }
     if (opts.confirm) {
-      this.canConfirm();
+      this.canConfirm() ? this.drawer.confirmButtonElement.disabled = false : this.drawer.confirmButtonElement.disabled = true;;
     }
-  
   }
 
   this.updateText = function() {
@@ -173,7 +180,7 @@ function Board(opts) {
   }    
   
   this.canConfirm = function() {
-    (!this.dice.dice.length || !this.anyMovesLeft()) ? this.drawer.confirmButtonElement.disabled = false : this.drawer.confirmButtonElement.disabled = true;
+    return (!this.dice.dice.length || !this.anyMovesLeft());
   }  
 
   this.findPotentialMoves = function(from) {
