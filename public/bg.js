@@ -23,12 +23,14 @@ function bgOnClick(e) {
   // move logic to check for correct player in here!
   // this should eliminate ALL player hcecking in updates
   if (me.num == bggame.board.playerTurn()) {
-    var info = getCursorPosition(e);
-    var triangle = bggame.board.getTriangleByNum(info[0]);
-    var bar = bggame.board.getBarByNum(info[1]);
-    var selectedBar = bggame.board.getSelectedBar();
     var mePlayer = bggame.board.getPlayerByNum(me.num);
     var meBar = bggame.board.getBarByNum(me.num);
+    var info = getCursorPosition(e);
+    var triangle = bggame.board.getTriangleByNum(info[0]); 
+	var bearOff = bggame.board.getBearOffByPlayerNum(me.num); // refactor to get from "getCursorPosition"
+    var bar = bggame.board.getBarByNum(info[1]);
+    var selectedBar = bggame.board.getSelectedBar();
+
   
     if (meBar.isEmpty()) {
       if (bggame.board.getSelectedTriangle().num == -1 && triangle.isEmpty()) {
@@ -36,9 +38,11 @@ function bgOnClick(e) {
       } else {
           if (bggame.board.getSelectedTriangle().num == -1 && triangle.player == me.num) {
             bggame.board.selectedTriangleNum = triangle.num;
-          } else if (bggame.board.getSelectedTriangle().num != -1 && (triangle.player == me.num || triangle.numCheckers < 2)) { //eh....    
+          } else if (bggame.board.getSelectedTriangle().num != -1 && triangle.num != -1 && (triangle.player == me.num || triangle.numCheckers < 2)) { //eh....    
             bggame.board.updateSpace(bggame.board.getSelectedTriangle(), triangle);
-          }
+          } else if (bggame.board.getSelectedTriangle().num != -1 && (bearOff.player == me.num)) {
+		    bggame.board.updateSpace(bggame.board.getSelectedTriangle(), bearOff);
+		  }
       }
     } else {
       if (bar.player == me.num && bggame.board.getSelectedBar().num == -1) {

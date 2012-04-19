@@ -94,6 +94,10 @@ function Drawer(s) {
     for (var i = 0; i < potentials.length; i++) this.highlight(potentials[i], 3, true)
   }      
   
+  this.highlightBearOff = function (bo) {
+    this.highlight(bo, 3, true);
+  }
+  
   this.drawTriangle = function(t) {
     for (var i = 0; i < t.numCheckers; i++) 
       t.isTop() ? this.drawPiece(new Checker(i, t.column, t.player), false) : this.drawPiece(new Checker(this.specs.boardHeight - i - 1, t.column, t.player), false);

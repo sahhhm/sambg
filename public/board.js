@@ -42,7 +42,7 @@ function Board(opts) {
   this.bPlayers = opts.players;
       
   this.gTriangles = 
-    [new Triangle(1, this.specs.boardWidth-1,   1, 2),
+   /* [new Triangle(1, this.specs.boardWidth-1,   1, 2),
      new Triangle(2, this.specs.boardWidth-2,   0, 0),
      new Triangle(3, this.specs.boardWidth-3,   0, 0),
      new Triangle(4, this.specs.boardWidth-4,   0, 0),
@@ -66,12 +66,37 @@ function Board(opts) {
      new Triangle(22, this.specs.boardWidth-3,  0, 0),
      new Triangle(23, this.specs.boardWidth-2,  0, 0),
      new Triangle(24, this.specs.boardWidth-1,  2, 2)];
+	 */
+	             [new Triangle(1, this.specs.boardWidth-1,   2, 2), // player 2 home begins
+             new Triangle(2, this.specs.boardWidth-2,   2, 2),
+             new Triangle(3, this.specs.boardWidth-3,   2, 2),
+             new Triangle(4, this.specs.boardWidth-4,   2, 2),
+             new Triangle(5, this.specs.boardWidth-5,   2, 2),
+             new Triangle(6, this.specs.boardWidth-6,   2, 5), // player 2 home ends
+             new Triangle(7, this.specs.boardWidth-8,   0, 0),
+             new Triangle(8, this.specs.boardWidth-9,   2, 0),
+             new Triangle(9, this.specs.boardWidth-10,  0, 0),
+             new Triangle(10, this.specs.boardWidth-11, 0, 0),
+             new Triangle(11, this.specs.boardWidth-12, 0, 0),
+             new Triangle(12, this.specs.boardWidth-13, 1, 0),
+             new Triangle(13, this.specs.boardWidth-13, 2, 0),
+             new Triangle(14, this.specs.boardWidth-12, 0, 0),
+             new Triangle(15, this.specs.boardWidth-11, 0, 0),
+             new Triangle(16, this.specs.boardWidth-10, 0, 0),
+             new Triangle(17, this.specs.boardWidth-9,  1, 0),
+             new Triangle(18, this.specs.boardWidth-8,  0, 0),
+             new Triangle(19, this.specs.boardWidth-6,  1, 3), // player 1 home begins
+             new Triangle(20, this.specs.boardWidth-5,  1, 1),
+             new Triangle(21, this.specs.boardWidth-4,  1, 5),
+             new Triangle(22, this.specs.boardWidth-3,  1, 3),
+             new Triangle(23, this.specs.boardWidth-2,  1, 3),
+             new Triangle(24, this.specs.boardWidth-1,  1, 0)]; // player 1 home ends
       
   this.gBars = [new Bar(1, 0, this.specs.barColumn, 0), 
                 new Bar(2, this.specs.boardHeight - 1, this.specs.barColumn, 0)];
   
-  this.gBearOffs = [new BearOff(1, this.specs.boardHeight - 1, this.specs.bearOffColumn, 0),
-                    new BearOff(2, 0, this.specs.bearOffColumn, 0)]; 
+  this.gBearOffs = [new BearOff(1, 25, this.specs.boardHeight - 1, this.specs.bearOffColumn, 0),
+                    new BearOff(2, 0, 0, this.specs.bearOffColumn, 0)]; 
                     
   this.getBars = function() {
     return this.gBars;
@@ -81,12 +106,12 @@ function Board(opts) {
     return this.gBearOffs;
   }
   
-  this.getBearOffByNum = function(n) {
+  this.getBearOffByPlayerNum = function(n) {
     var bearOff = new BearOff(-1, -1, -1, -1);
     if (n > 0) {
       bearOff =  this.getBearOffs()[n-1];
     } 
-    return bar;  
+    return bearOff;  
   } 
   
   this.getBarByNum = function(n) {
@@ -107,7 +132,7 @@ function Board(opts) {
   
   this.getTriangleByNum = function(n) {
     var tri = new Triangle(-1, -1, -1, -1)
-    if (n > 0) {
+    if (n >=1  && n <= 24) {
       tri = this.getTriangles()[n-1];
     } 
     return tri;
@@ -135,8 +160,6 @@ function Board(opts) {
       this.drawer.drawBars(this.getBars(), this.getPlayers());
       this.drawer.drawBearOffs(this.getBearOffs());
       
-      
-      
       // highlight moves from either bar or triangle, when applicable
       var from;
       if (this.getSelectedTriangle().num != -1) {
@@ -144,17 +167,24 @@ function Board(opts) {
       } else if (this.getSelectedBar().num != -1) {
         from = this.getSelectedBar();
       }
+
       if (from) {
+      fromPlayer = this.getPlayerByNum(from.player);
+      var playerCanBear = false;
         var tos = [];
         var potentials = this.findPotentialMoves(from);
         for (var i = 0; i < potentials.length; i++) {
           for (var j = 0; j < potentials[i].moves.length; j++) {
-            tos.push(this.getTriangleByNum(potentials[i].moves[j].toNo));
+        if (potentials[i].moves[j].toNo == fromPlayer.bearOffNum) {
+        playerCanBear = true;
+      } else {
+              tos.push(this.getTriangleByNum(potentials[i].moves[j].toNo));
+      }
           }
         }
-        this.drawer.highlightTriangles(from, tos);	      
+        if (tos.length) this.drawer.highlightTriangles(from, tos);
+        if (playerCanBear) this.drawer.highlightBearOff(this.getBearOffByPlayerNum(from.player));
       }
-      
     }
     if (opts.text) {
       this.updateText();
@@ -192,14 +222,20 @@ function Board(opts) {
     var entry = from.entry;
     var directs = new Array();
     var combineds = new Array();
+	var bears = new Array();
     var player = this.getPlayerByNum(from.player);
     var playerBar = this.getBarByNum(from.player);
     var curSum; // count of the number of spaces moved for the potential move
     var combinedFromTriangleNum; // for combined moves, this variable represents the current entry point
 
-    // iterate over the two dice rolls to create direct moves
+    
     for (var t = 0; t < 2; t++) {
-      
+    // ******************************
+    // NORMAL, NON-BEAR MOVES *******
+    // ******************************  
+      // ******************************
+      // ******* DIRECT MOVES SECTION
+      // ******************************
       // ensure the direct moves are valid
       if (from.validMoveTo(this.getTriangleByNum(entry + (this.dice.dice[t] * player.direction)))) {
         
@@ -213,6 +249,7 @@ function Board(opts) {
         combinedFromTriangleNum = entry;
         tnum = combinedFromTriangleNum + (this.dice.dice[t] * player.direction);
         
+        // begin looking for combined moves only if the player has 1 or less chekers in their bar
         if (playerBar.numCheckers <= 1) {
         // ******************************
         // ******* COMBINED MOVES SECTION
@@ -245,6 +282,40 @@ function Board(opts) {
         }
       }
     }
+	
+    // ******************************
+    // ******* BEAR OFF MOVES SECTION
+    // ****************************** 
+	if (this.playerReadyToBearOff(player)) {
+      for (var t = 0; t < this.dice.dice.length; t++) {
+	    var start = -1;
+	    //determine the first space from where the player can bar off from
+	    for (var i = 0; i < 6; i++) {
+		  var tr = this.getTriangleByNum(player.homeStartNum + (i * player.direction))
+          if (tr.numCheckers > 0 && tr.player == player.num) {
+		    start = tr.num;
+			//console.log("potential bear off start", start);
+			break;
+		  }
+        }	
+
+	    // check to see if the player can directly bear off
+	    var fromNormalized = (Math.abs(from.num - player.homeEndNum) + 1);
+	    var startNormalized = (Math.abs(start - player.homeEndNum) + 1);
+	    if (this.dice.dice[t] + from.num * player.direction  == 0 || this.dice.dice[t] + from.num * player.direction == 25) {
+	      console.log("CAN BEAR OFF FROM", from.num);
+	      bears.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, player.bearOffNum, false)] } );
+	    } else if (fromNormalized  == startNormalized && this.dice.dice[t] > startNormalized) {
+	      console.log("CAN BEAR OFF due greater dice FROM", from.num);
+	      bears.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, player.bearOffNum, false)] } );
+	    }
+      }		  
+	} else {
+	  console.log("player not ready to bear off yet");
+	}
+	
+	//combine and return all potential moves
+	directs.concat(bears);
     return directs.concat(combineds);	
   }  
   
@@ -252,21 +323,26 @@ function Board(opts) {
     var numChecks = 0;
     
     for (var i = 1; i < this.getTriangles().length + 1; i++) {
-      if ( i >= p.homeMinNum && i <= p.homeMaxNum ) {
+	
+	  // get the home start and finish in min,max order
+      var min = Math.min(p.homeStartNum, p.homeEndNum);
+      var max = Math.max(p.homeStartNum, p.homeEndNum);
+
+      if ( !(i >= min && i <= max) ) { 
         var t =  this.getTriangleByNum(i);
         if (t.player == p.num && t.numCheckers > 0) {
           numChecks += t.numCheckers;
         }
       } 
     }
-    console.log(numChecks, "in home court.... need 15");
-    return numChecks == this.specs.totalPiecesPerPlayer;
+	numChecks += this.getBarByNum(p.num).numCheckers;
+	
+    //console.log(numChecks, "not in home court.... need 0");
+    return numChecks == 0;
   }
   
   this.updateSpace = function(from, to) {
     var foundPotential;
-    
-    this.playerReadyToBearOff(this.getPlayerByNum(from.player));
     
     // search potential moves to find the move that ends at to.num
     var potentials = this.findPotentialMoves(from);
@@ -277,7 +353,7 @@ function Board(opts) {
         break;
       }   
     } 
-    
+	
     if (foundPotential) {
       for (var j = 0; j < foundPotential.moves.length; j++) {
         this.move(foundPotential.moves[j]);
@@ -286,23 +362,6 @@ function Board(opts) {
       this.selectedTriangleNum = -1;
       this.selectedBarNum = -1;
     } 
-  }  
-  
-  this.validDiceMoveTo = function(from, to) {
-    var isValid = false;
-    if (from.player == this.playerTurn()) {
-      var i;
-      var potentials = this.findPotentialMoves(from);
-      for  (i = 0; i < potentials.length; i++) {
-        for (j = 0; j < potentials[i].moves.length; j++) {
-        
-         if (potentials[i].moves[j].toNo == to.num) isValid = true;
-        }
-      } 
-    } else {
-      console.log("Incorrect player moving");
-    }
-    return isValid;
   }  
 
   
@@ -313,7 +372,11 @@ function Board(opts) {
     } else {
       from = this.getBarByNum(aMove.player);
     }
-    to = this.getTriangleByNum(aMove.toNo);
+	if (aMove.toNo == 0 || aMove.toNo == 25) {
+	  to = this.getBearOffByPlayerNum(from.player);
+	} else {
+      to = this.getTriangleByNum(aMove.toNo);
+	}
     
     // update the move information as needed
     if (to.numCheckers == 1 && to.player != from.player) {
@@ -354,7 +417,11 @@ function Board(opts) {
     } else {
       to = this.getBarByNum(theMove.player);
     }
-    from = this.getTriangleByNum(theMove.toNo);
+    if (theMove.toNo == 0 || theMove.toNo == 25) {
+	  from = this.getBearOffByPlayerNum(to.player);
+	} else {
+	  from = this.getTriangleByNum(theMove.toNo);
+	}
 
     from.numCheckers -= 1;
     to.numCheckers += 1;
@@ -373,7 +440,7 @@ function Board(opts) {
     
     // update the dice based on the move
     this.dice.replaceDiceOnUndo(Math.abs(from.entry - to.entry));
-    console.log("undo move from " + from.num + " to " + to.num);
+    console.log("undo move from " + from.entry + " to " + to.entry);
   }
   
   this.anyMovesLeft = function() {
