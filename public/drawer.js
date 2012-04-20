@@ -95,7 +95,7 @@ function Drawer(s) {
   }      
   
   this.highlightBearOff = function (bo) {
-    this.highlight(bo, 3, true);
+    this.highlight(bo, 10, true);
   }
   
   this.drawTriangle = function(t) {

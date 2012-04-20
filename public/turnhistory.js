@@ -1,10 +1,12 @@
-function AMove(confirmedRolls, player, from, fromType, to, isToHit) {
+function AMove( confirmedRolls, player, from, fromType, to, toType, isToHit, diceValue ) {
   this.turnNo = confirmedRolls
   this.player = player;
   this.fromNo = from;
   this.fromType = fromType;
   this.toNo = to;
+  this.toType = toType;
   this.isToHit = isToHit;
+  this.diceValue = diceValue; // great for when user bearsOff (and then tries to undo it...)
 }
 
 function TurnHistory() {

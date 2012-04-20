@@ -83,7 +83,7 @@
      var moves = data.moves;
      
      for (i = 0; i < moves.length; i++) {
-       var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].isToHit);
+       var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].toType, moves[i].isToHit, moves[i].diceValue);
        bggame.board.move(tempMove);
        bggame.board.update({draw:true,confirm:true,text:true,undo:false}); // confirm should be false... look into.
      }

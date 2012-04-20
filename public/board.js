@@ -42,7 +42,7 @@ function Board(opts) {
   this.bPlayers = opts.players;
       
   this.gTriangles = 
-   /* [new Triangle(1, this.specs.boardWidth-1,   1, 2),
+    [new Triangle(1, this.specs.boardWidth-1,   1, 2),
      new Triangle(2, this.specs.boardWidth-2,   0, 0),
      new Triangle(3, this.specs.boardWidth-3,   0, 0),
      new Triangle(4, this.specs.boardWidth-4,   0, 0),
@@ -66,7 +66,7 @@ function Board(opts) {
      new Triangle(22, this.specs.boardWidth-3,  0, 0),
      new Triangle(23, this.specs.boardWidth-2,  0, 0),
      new Triangle(24, this.specs.boardWidth-1,  2, 2)];
-	 */
+	 /*
 	             [new Triangle(1, this.specs.boardWidth-1,   2, 2), // player 2 home begins
              new Triangle(2, this.specs.boardWidth-2,   2, 2),
              new Triangle(3, this.specs.boardWidth-3,   2, 2),
@@ -91,7 +91,7 @@ function Board(opts) {
              new Triangle(22, this.specs.boardWidth-3,  1, 3),
              new Triangle(23, this.specs.boardWidth-2,  1, 3),
              new Triangle(24, this.specs.boardWidth-1,  1, 0)]; // player 1 home ends
-      
+      */
   this.gBars = [new Bar(1, 0, this.specs.barColumn, 0), 
                 new Bar(2, this.specs.boardHeight - 1, this.specs.barColumn, 0)];
   
@@ -219,10 +219,12 @@ function Board(opts) {
     //returns a list with entries defined like: {moves : list of AMove's }
 
     var tnum; 
+    var tempTo;
+    var tempFrom; 
     var entry = from.entry;
     var directs = new Array();
     var combineds = new Array();
-	var bears = new Array();
+	  var bears = new Array();
     var player = this.getPlayerByNum(from.player);
     var playerBar = this.getBarByNum(from.player);
     var curSum; // count of the number of spaces moved for the potential move
@@ -241,7 +243,8 @@ function Board(opts) {
         
         // add the direct move
         tnum = entry + (this.dice.dice[t] * player.direction);
-        directs.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, tnum, false)] } );
+        tempTo = this.getTriangleByNum(tnum);
+        directs.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tnum, tempTo.type, false, Math.abs( from.entry - tempTo.entry ) )] } );
         curSum = this.dice.dice[t];
       
       
@@ -255,7 +258,9 @@ function Board(opts) {
         // ******* COMBINED MOVES SECTION
         // ******************************
           // add the initialial direct move
-          combineds.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, from.type, tnum, false)] } );
+          tempTo = this.getTriangleByNum( tnum );
+          tempFrom = this.getTriangleByNum( combinedFromTriangleNum );
+          combineds.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, tempFrom.num, tempFrom.type, tnum, tempTo.type, false, Math.abs( tempFrom.entry - tempTo.entry ) )] } );
           combinedFromTriangleNum = tnum;   
           for (var i = 0; i < this.dice.dice.length; i++) {
         
@@ -266,11 +271,12 @@ function Board(opts) {
               if (from.validMoveTo(this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)))) {
            
                 tnum = entry + ((curSum + this.dice.dice[i]) * player.direction);
-              
+                tempTo = this.getTriangleByNum( tnum );
+                tempFrom = this.getTriangleByNum( combinedFromTriangleNum );
                 // create a copy of the most recent combined move and build/add the combined move off of that
                 var movecpy = combineds[combineds.length-1].moves.slice();
                 combineds.push( { moves: movecpy });
-                combineds[combineds.length - 1].moves.push(new AMove(this.dice.confirmedRolls, from.player, combinedFromTriangleNum, "triangle", tnum, false));
+                combineds[combineds.length - 1].moves.push(new AMove(this.dice.confirmedRolls, from.player, tempFrom.num, tempFrom.type, tnum, tempTo.type, false, Math.abs ( tempFrom.entry - tempTo.entry ) ));
                 combinedFromTriangleNum = tnum;
                 curSum += this.dice.dice[i];	
               
@@ -286,36 +292,37 @@ function Board(opts) {
     // ******************************
     // ******* BEAR OFF MOVES SECTION
     // ****************************** 
-	if (this.playerReadyToBearOff(player)) {
+    if (this.playerReadyToBearOff(player)) {
       for (var t = 0; t < this.dice.dice.length; t++) {
-	    var start = -1;
-	    //determine the first space from where the player can bar off from
-	    for (var i = 0; i < 6; i++) {
-		  var tr = this.getTriangleByNum(player.homeStartNum + (i * player.direction))
+	      var start = -1;
+	      //determine the first space from where the player can bar off from
+	      for (var i = 0; i < 6; i++) {
+		    var tr = this.getTriangleByNum(player.homeStartNum + (i * player.direction))
           if (tr.numCheckers > 0 && tr.player == player.num) {
-		    start = tr.num;
-			//console.log("potential bear off start", start);
-			break;
-		  }
+		        start = tr.num;
+			      //console.log("potential bear off start", start);
+			      break;
+		      }
         }	
 
-	    // check to see if the player can directly bear off
-	    var fromNormalized = (Math.abs(from.num - player.homeEndNum) + 1);
-	    var startNormalized = (Math.abs(start - player.homeEndNum) + 1);
-	    if (this.dice.dice[t] + from.num * player.direction  == 0 || this.dice.dice[t] + from.num * player.direction == 25) {
-	      console.log("CAN BEAR OFF FROM", from.num);
-	      bears.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, player.bearOffNum, false)] } );
-	    } else if (fromNormalized  == startNormalized && this.dice.dice[t] > startNormalized) {
-	      console.log("CAN BEAR OFF due greater dice FROM", from.num);
-	      bears.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, from.num, from.type, player.bearOffNum, false)] } );
-	    }
+	      // check to see if the player can directly bear off
+	      var fromNormalized = ( Math.abs( from.num - player.homeEndNum ) + 1 );
+	      var startNormalized = ( Math.abs(start - player.homeEndNum) + 1 );
+        var tempBear = this.getBearOffByPlayerNum( player.num );
+	      if ( this.dice.dice[t] + from.num * player.direction  == 0 || this.dice.dice[t] + from.num * player.direction == 25 ) {
+	        console.log("CAN BEAR OFF FROM", from.num);
+	        bears.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tempBear.num, tempBear.type, false, Math.abs( from.entry - tempBear.entry ) )] } );
+	      } else if (fromNormalized  == startNormalized && this.dice.dice[t] > startNormalized) {
+	        console.log("CAN BEAR OFF due greater dice FROM", from.num);
+	        bears.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tempBear.num, tempBear.type, false, this.dice.dice[t] )] } );
+	      }
       }		  
-	} else {
-	  console.log("player not ready to bear off yet");
-	}
+    } else {
+      console.log("player not ready to bear off yet");
+    }
 	
-	//combine and return all potential moves
-	directs.concat(bears);
+    //combine and return all potential moves
+    directs = directs.concat(bears);
     return directs.concat(combineds);	
   }  
   
@@ -367,16 +374,17 @@ function Board(opts) {
   
   this.move = function(aMove) {
     // initialize the from and to areas
-    if (aMove.fromType == "triangle") {
-      from = this.getTriangleByNum(aMove.fromNo);
+    if ( aMove.fromType == "triangle" ) {
+      from = this.getTriangleByNum( aMove.fromNo );
     } else {
-      from = this.getBarByNum(aMove.player);
+      from = this.getBarByNum( aMove.player );
     }
-	if (aMove.toNo == 0 || aMove.toNo == 25) {
-	  to = this.getBearOffByPlayerNum(from.player);
-	} else {
-      to = this.getTriangleByNum(aMove.toNo);
-	}
+    //if (aMove.toNo == 0 || aMove.toNo == 25) {
+    if ( aMove.toType == "bearoff" ) {
+      to = this.getBearOffByPlayerNum( from.player );
+    } else {
+      to = this.getTriangleByNum( aMove.toNo );
+    }
     
     // update the move information as needed
     if (to.numCheckers == 1 && to.player != from.player) {
@@ -400,11 +408,11 @@ function Board(opts) {
     this.selectedBarNum = -1;
     this.selectedTriangleNum = -1;
     
-    // update the dice based on the move
-    this.dice.updateDiceOnMove(Math.abs(from.entry - to.entry));
-    console.log("Moved from " + from.num + " to " + to.num);
+    // update the dice based on the move + default to max dice (for bearOff specials)
+    this.dice.updateDiceOnMove( aMove.diceValue );
     
     // add the move to the history
+    console.log("Moved from " + from.num + " to " + to.num);
     this.turns.addAMove(aMove);
   }
   
@@ -413,15 +421,16 @@ function Board(opts) {
     var theMove = this.turns.currentTurn.pop();
     
     if (theMove.fromType == "triangle") {
-      to = this.getTriangleByNum(theMove.fromNo);
+      to = this.getTriangleByNum( theMove.fromNo );
     } else {
-      to = this.getBarByNum(theMove.player);
+      to = this.getBarByNum( theMove.player );
     }
-    if (theMove.toNo == 0 || theMove.toNo == 25) {
-	  from = this.getBearOffByPlayerNum(to.player);
-	} else {
-	  from = this.getTriangleByNum(theMove.toNo);
-	}
+    //if (theMove.toNo == 0 || theMove.toNo == 25) {
+    if ( theMove.toType == "bearoff" ) {
+	    from = this.getBearOffByPlayerNum( to.player );
+	  } else {
+	    from = this.getTriangleByNum( theMove.toNo );
+	  }
 
     from.numCheckers -= 1;
     to.numCheckers += 1;
@@ -439,7 +448,7 @@ function Board(opts) {
     this.selectedTriangleNum = -1;    
     
     // update the dice based on the move
-    this.dice.replaceDiceOnUndo(Math.abs(from.entry - to.entry));
+    this.dice.replaceDiceOnUndo( theMove.diceValue );
     console.log("undo move from " + from.entry + " to " + to.entry);
   }
   

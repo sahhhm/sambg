@@ -27,7 +27,7 @@ function bgOnClick(e) {
     var meBar = bggame.board.getBarByNum(me.num);
     var info = getCursorPosition(e);
     var triangle = bggame.board.getTriangleByNum(info[0]); 
-	var bearOff = bggame.board.getBearOffByPlayerNum(me.num); // refactor to get from "getCursorPosition"
+    var bearOff = bggame.board.getBearOffByPlayerNum(me.num); // refactor to get from "getCursorPosition"
     var bar = bggame.board.getBarByNum(info[1]);
     var selectedBar = bggame.board.getSelectedBar();
 
@@ -41,8 +41,8 @@ function bgOnClick(e) {
           } else if (bggame.board.getSelectedTriangle().num != -1 && triangle.num != -1 && (triangle.player == me.num || triangle.numCheckers < 2)) { //eh....    
             bggame.board.updateSpace(bggame.board.getSelectedTriangle(), triangle);
           } else if (bggame.board.getSelectedTriangle().num != -1 && (bearOff.player == me.num)) {
-		    bggame.board.updateSpace(bggame.board.getSelectedTriangle(), bearOff);
-		  }
+            bggame.board.updateSpace(bggame.board.getSelectedTriangle(), bearOff);
+          }
       }
     } else {
       if (bar.player == me.num && bggame.board.getSelectedBar().num == -1) {
