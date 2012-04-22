@@ -64,20 +64,22 @@ function Drawer(s) {
     }
   }  
 
-  this.highlight = function(tri, width, isPotential) {
-    var color;
-    var tx = tri.column * this.specs.pieceWidth;
-    var height = isPotential ? 0 : tri.numCheckers * this.specs.pieceHeight;
-    if (!tri.isTop()) height = this.specs.pixelHeight - height;
-    var base = tri.isTop() ? 0 : this.specs.pixelHeight;
-
+  this.highlight = function(space, width, isPotential) {
+    var color, l, base, height, tx;
+    tx = space.column * this.specs.pieceWidth;
+    base = space.isTop() ? 0 : this.specs.pixelHeight;
+    l = ( space.type == "bearoff" ) ? this.specs.bearOffWidth : this.specs.pieceWidth;
     isPotential ? color =  "#a020f0" : "#00ff00";
-  
+    height = isPotential ? 0 : space.numCheckers * this.specs.pieceHeight;
+    if ( !space.isTop() ) {
+      height = this.specs.pixelHeight - height;
+    }
+
     this.drawingContext.beginPath();
-    this.drawingContext.moveTo(0.5 + tx, base);
-    this.drawingContext.lineTo(0.5 + tx, height);
-    this.drawingContext.lineTo(0.5 + tx + this.specs.pieceWidth, height);
-    this.drawingContext.lineTo(0.5 + tx + this.specs.pieceWidth, base);
+    this.drawingContext.moveTo( 0.5 + tx, base );
+    this.drawingContext.lineTo( 0.5 + tx, height );
+    this.drawingContext.lineTo( 0.5 + tx + l, height );
+    this.drawingContext.lineTo( 0.5 + tx + l, base );
 
     this.drawingContext.lineWidth = width;
     this.drawingContext.strokeStyle = color;
