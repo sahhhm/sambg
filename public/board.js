@@ -195,6 +195,14 @@ function Board(opts) {
     if (opts.confirm) {
       this.canConfirm() ? this.drawer.confirmButtonElement.disabled = false : this.drawer.confirmButtonElement.disabled = true;;
     }
+    if (opts.canRoll) {
+      //determine if user can request a dice roll. {num : playerNum}
+      if (!this.dice.dice.length && opts.canRoll.num == (( this.playerTurn() % 2 ) + 1 )) {
+        this.drawer.rollButtonElement.disabled = false;
+      } else {
+        this.drawer.rollButtonElement.disabled = true;         
+      }
+    }
   }
 
   this.updateText = function() {

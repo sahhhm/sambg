@@ -70,7 +70,8 @@
    
    socket.on('dice', function(data) {
      console.log("got dice event");
-        bggame.setRoll(data.die1, data.die2);
+     //bggame.setRoll(data.die1, data.die2);
+     bggame.board.update({roll:true, text:true, confirm:true, die1: data.die1, die2: data.die2, undo:false, canRoll : {'num' : me.num } });
    });
    
    //for debugging only
@@ -88,14 +89,14 @@
      for (i = 0; i < moves.length; i++) {
        var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].toType, moves[i].isToHit, moves[i].diceValue);
        bggame.board.move(tempMove);
-       bggame.board.update({draw:true,confirm:true,text:true,undo:false}); // confirm should be false... look into.
+       bggame.board.update({draw:true,confirm:false,text:true,undo:false}); // confirm should be false... look into.
      }
    });
    
    socket.on('update turns', function() {
       console.log("got update turns event");
       bggame.board.turns.clearCurrentToHistory();
-      bggame.board.update({draw:true,confirm:false,text:true,undo:true});
+      bggame.board.update({draw:true,confirm:false,text:true,undo:true, canRoll: {'num' : me.num}});
    });
    
    socket.on('force leave room', function() {
@@ -130,7 +131,13 @@
 
    $("#game_area_input").on("click", "#confirm", function(e) {
       socket.emit('moved', { room: selectedRoom, moves:bggame.board.turns.currentTurn});
+      bggame.board.drawer.confirmButtonElement.disabled = true; // force confirm button to be disabled once user clicks it. change code?
    });
+   
+   $("#game_area_input").on("click", "#roll", function(e) {
+      socket.emit( 'dice request', { room: selectedRoom } );
+      bggame.board.update({ canRoll: {'num' : me.num } });
+   });   
    
    $("#game_area_input").on("click", "#undo", function(e) {
       bggame.board.undoMove();

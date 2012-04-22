@@ -73,7 +73,7 @@ function initGame(canvasElement, data) {
                                   '<p id="c-dice">Current Dice: <span id="current-dice">null</span></p>' +
                                   '<input type="text" id="f-inp" value="00" size="2"/><div id="force-dice"><button id="force-sub">force roll</button></div>' + //for debugging only
                                   '<div id="u-button"><button id="undo">undo move</button></div>' +
-                                  '<div id="c-button"><button id="confirm">confirm roll</button></div>' );
+                                  '<div id="roll-buttons"><button id="roll">roll dice</button><button id="confirm">confirm roll</button></div>' );
     $("#game_area").append(canvasElement);
   }
     
