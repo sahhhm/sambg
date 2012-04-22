@@ -155,36 +155,7 @@ function Board(opts) {
       this.dice.roll({die1 : opts.die1, die2 : opts.die2});
     }
     if (opts.draw) {
-      this.drawer.drawBoard();
-      this.drawer.drawTriangles(this.getTriangles(), this.getPlayers());
-      this.drawer.drawBars(this.getBars(), this.getPlayers());
-      this.drawer.drawBearOffs(this.getBearOffs());
-      
-      // highlight moves from either bar or triangle, when applicable
-      var from;
-      if (this.getSelectedTriangle().num != -1) {
-        from = this.getSelectedTriangle();
-      } else if (this.getSelectedBar().num != -1) {
-        from = this.getSelectedBar();
-      }
-
-      if (from) {
-      fromPlayer = this.getPlayerByNum(from.player);
-      var playerCanBear = false;
-        var tos = [];
-        var potentials = this.findPotentialMoves(from);
-        for (var i = 0; i < potentials.length; i++) {
-          for (var j = 0; j < potentials[i].moves.length; j++) {
-        if (potentials[i].moves[j].toNo == fromPlayer.bearOffNum) {
-        playerCanBear = true;
-      } else {
-              tos.push(this.getTriangleByNum(potentials[i].moves[j].toNo));
-      }
-          }
-        }
-        if (tos.length) this.drawer.highlightTriangles(from, tos);
-        if (playerCanBear) this.drawer.highlightBearOff(this.getBearOffByPlayerNum(from.player));
-      }
+      this.updateDraw();
     }
     if (opts.text) {
       this.updateText();
@@ -196,12 +167,8 @@ function Board(opts) {
       this.canConfirm() ? this.drawer.confirmButtonElement.disabled = false : this.drawer.confirmButtonElement.disabled = true;;
     }
     if (opts.canRoll) {
-      //determine if user can request a dice roll. {num : playerNum}
-      if (!this.dice.dice.length && opts.canRoll.num == (( this.playerTurn() % 2 ) + 1 )) {
-        this.drawer.rollButtonElement.disabled = false;
-      } else {
-        this.drawer.rollButtonElement.disabled = true;         
-      }
+      // canRoll data format ==> {num : playerNum}
+      this.canRoll(opts.canRoll.num) ? this.drawer.rollButtonElement.disabled = false : this.drawer.rollButtonElement.disabled = true;
     }
   }
 
@@ -219,9 +186,50 @@ function Board(opts) {
   }    
   
   this.canConfirm = function() {
+    // returns true if the user is able to confirm the move.
+    // Either all dice moves have been played, or no valid
+    // moves exist.
     return (!this.dice.dice.length || !this.anyMovesLeft());
   }  
 
+  this.canRoll = function(num) {
+    // if it's about to be the next players turn, let them request new dice.
+    return (!this.dice.dice.length && num == (( this.playerTurn() % 2 ) + 1 ));
+  }
+  
+  this.updateDraw = function() {
+    this.drawer.drawBoard();
+    this.drawer.drawTriangles(this.getTriangles());
+    this.drawer.drawBars(this.getBars());
+    this.drawer.drawBearOffs(this.getBearOffs());
+    
+    // highlight moves from either bar or triangle, when applicable
+    var from;
+    if (this.getSelectedTriangle().num != -1) {
+      from = this.getSelectedTriangle();
+    } else if (this.getSelectedBar().num != -1) {
+      from = this.getSelectedBar();
+    }
+
+    if (from) {
+      fromPlayer = this.getPlayerByNum(from.player);
+      var playerCanBear = false;
+      var tos = [];
+      var potentials = this.findPotentialMoves(from);
+      for (var i = 0; i < potentials.length; i++) {
+        for (var j = 0; j < potentials[i].moves.length; j++) {
+          if (potentials[i].moves[j].toNo == fromPlayer.bearOffNum) {
+            playerCanBear = true;
+          } else {
+            tos.push(this.getTriangleByNum(potentials[i].moves[j].toNo));
+          }
+        }
+      }
+      if (tos.length) this.drawer.highlightTriangles(from, tos);
+      if (playerCanBear) this.drawer.highlightBearOff(this.getBearOffByPlayerNum(from.player));
+    }  
+  }
+  
   this.findPotentialMoves = function(from) {
     //Given a triangle or bar, finds all (direct and combined) valid moves for the given board.
     //returns a list with entries defined like: {moves : list of AMove's }

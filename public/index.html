@@ -70,7 +70,6 @@
    
    socket.on('dice', function(data) {
      console.log("got dice event");
-     //bggame.setRoll(data.die1, data.die2);
      bggame.board.update({roll:true, text:true, confirm:true, die1: data.die1, die2: data.die2, undo:false, canRoll : {'num' : me.num } });
    });
    
@@ -89,7 +88,7 @@
      for (i = 0; i < moves.length; i++) {
        var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].toType, moves[i].isToHit, moves[i].diceValue);
        bggame.board.move(tempMove);
-       bggame.board.update({draw:true,confirm:false,text:true,undo:false}); // confirm should be false... look into.
+       bggame.board.update({draw:true,confirm:false,text:true,undo:false});
      }
    });
    

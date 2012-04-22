@@ -43,25 +43,25 @@
     test("regular dice roll", function() {
       game1 = new Game(game1GameData);
       expect(2);
-      game1.setRoll(1, 5);
+      game1.board.dice.roll({die1 : 1, die2 : 5});
       deepEqual( game1.board.dice.getDice(), [1, 5], "1-5" );
-      game1.setRoll(6, 2)
+      game1.board.dice.roll({die1 : 6, die2 : 2});
       deepEqual( game1.board.dice.getDice(), [6, 2], "6-2" );
     });
 
     test("doubles dice roll", function() {
       game1 = new Game(game1GameData);
       expect(2);
-      game1.setRoll(6, 6);
+      game1.board.dice.roll({die1 : 6, die2 : 6});
       deepEqual( game1.board.dice.getDice(), [6, 6, 6, 6], "6-6-6-6" );
-      game1.setRoll(3, 3)
+      game1.board.dice.roll({die1 : 3, die2 : 3});
       deepEqual( game1.board.dice.getDice(), [3, 3, 3, 3], "3-3-3-3" );
     });
 
     module("Simple Move Sequence (Dice Rolls: 1-5, 6-2)");
     test("Dice Rolls: 1-5, 6-2", function() {
       game1 = new Game(game1GameData);
-      game1.setRoll(1, 5);
+      game1.board.dice.roll({die1 : 1, die2 : 5});
       equal( game1.board.playerTurn(), 1, "first player to move is player 1");
       equal( game1.board.getTriangleByNum(1).numCheckers, 2, "triangle 1 initially has 2 checkers");
       equal( game1.board.getTriangleByNum(2).numCheckers, 0, "triangle 2 initially has 0 checkers");
