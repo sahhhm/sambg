@@ -5,7 +5,6 @@ function Drawer(s) {
   this.canvasElement.addEventListener("click", bgOnClick, false);		  
   this.drawingContext = this.canvasElement.getContext("2d")
   this.currentDiceElement = document.getElementById('current-dice');
-  this.playerTurnElement = document.getElementById('player-turn');	
   this.confirmButtonElement = document.getElementById('confirm');
   this.undoButtonElement = document.getElementById('undo');
   this.rollButtonElement = document.getElementById('roll');

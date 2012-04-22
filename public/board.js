@@ -157,8 +157,8 @@ function Board(opts) {
     if (opts.draw) {
       this.updateDraw();
     }
-    if (opts.text) {
-      this.updateText();
+    if (opts.drawDice) {
+      this.drawDice();
     }
     if (opts.undo) {
       this.turns.currentTurn.length ? this.drawer.undoButtonElement.disabled = false : this.drawer.undoButtonElement.disabled = true;
@@ -172,7 +172,8 @@ function Board(opts) {
     }
   }
 
-  this.updateText = function() {
+  this.drawDice = function() {
+    // eventually needs to be thrown into drawer
     var i;
     var text = "";
     text += " [ ";
@@ -182,7 +183,7 @@ function Board(opts) {
     for (var i = 0; i < this.dice.dice.length; i++)
       i == this.dice.dice.length -1 ? text += this.dice.dice[i]  : text += this.dice.dice[i] + " - ";
     this.drawer.currentDiceElement.innerHTML = text;
-    this.drawer.playerTurnElement.innerHTML = this.playerTurn();
+    this.drawer.currentDiceElement.style.color= this.getPlayerByNum(this.playerTurn()).color;
   }    
   
   this.canConfirm = function() {

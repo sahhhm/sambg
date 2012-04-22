@@ -70,13 +70,13 @@
    
    socket.on('dice', function(data) {
      console.log("got dice event");
-     bggame.board.update({roll:true, text:true, confirm:true, die1: data.die1, die2: data.die2, undo:false, canRoll : {'num' : me.num } });
+     bggame.board.update({roll:true, drawDice:true, confirm:true, die1: data.die1, die2: data.die2, undo:false, canRoll : {'num' : me.num } });
    });
    
    //for debugging only
    socket.on('fdice', function(data) {
      bggame.board.dice.froll(data);
-     bggame.board.update({draw:true,confirm:true,text:true,undo:false});
+     bggame.board.update({draw:true,confirm:true,drawDice:true,undo:false});
    });
    
    socket.on('update', function(data) {
@@ -88,14 +88,14 @@
      for (i = 0; i < moves.length; i++) {
        var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].toType, moves[i].isToHit, moves[i].diceValue);
        bggame.board.move(tempMove);
-       bggame.board.update({draw:true,confirm:false,text:true,undo:false});
+       bggame.board.update({draw:true,confirm:false,drawDice:true,undo:false});
      }
    });
    
    socket.on('update turns', function() {
       console.log("got update turns event");
       bggame.board.turns.clearCurrentToHistory();
-      bggame.board.update({draw:true,confirm:false,text:true,undo:true, canRoll: {'num' : me.num}});
+      bggame.board.update({draw:true,confirm:false,drawDice:true,undo:true, canRoll: {'num' : me.num}});
    });
    
    socket.on('force leave room', function() {
@@ -140,7 +140,7 @@
    
    $("#game_area_input").on("click", "#undo", function(e) {
       bggame.board.undoMove();
-      bggame.board.update({draw:true,confirm:true,text:true,undo:true});
+      bggame.board.update({draw:true,confirm:true,drawDice:true,undo:true});
    });   
 
    // for debugging only
