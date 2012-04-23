@@ -7,6 +7,8 @@ function Dice() {
     return this.dice;
   }
   
+  this.isRolled = false;
+  
   this.updateDice = function(updatedDice) {
     this.dice = updatedDice;
   }
@@ -43,12 +45,9 @@ function Dice() {
       this.dice.push(this.dice[0]);
     }
     this.diceCopy = this.dice.slice(0);
+    
+    this.isRolled = true;
     this.confirmedRolls += 1;
-    var text = "Dice Rolled: ";
-    for (var i = 0; i < this.dice.length; i++) {
-      text += this.dice[i] + " - ";
-    }
-    console.log(text);
   }
   
   this.confirmedRolls = 0;
@@ -67,5 +66,15 @@ function Dice() {
   this.replaceDiceOnUndo = function(num) {
     this.dice.push(num);
   }
+}
 
+
+function DoublingDice() {
+  this.lastPlayerToDoubleNum = -1;
+  this.value = 1;
+  
+  this.doubleDice = function(pNum) {
+    this.value *= 2;
+    this.lastPlayerToDoubleNum = pNum;
+  }
 }

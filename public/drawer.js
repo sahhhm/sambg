@@ -8,6 +8,7 @@ function Drawer(s) {
   this.confirmButtonElement = document.getElementById('confirm');
   this.undoButtonElement = document.getElementById('undo');
   this.rollButtonElement = document.getElementById('roll');
+  this.doubleButtonElement = document.getElementById('double');
   
   this.drawBoard = function() {
     this.drawingContext.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);

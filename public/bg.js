@@ -54,12 +54,12 @@ function bgOnClick(e) {
       }
     } 
   }
-  bggame.board.update({draw:true,confirm:true,drawDice:true,undo:true});
+  bggame.board.update({forPlayer : me.num, draw:true,confirm:true,drawDice:true,undo:true});
     
 }
 
 function newGame() {
-  bggame.board.update({roll:false,confirm:true,draw:true,drawDice:true,undo:true});
+  bggame.board.update({forPlayer : me.num, roll:false,confirm:true,draw:true,drawDice:true,undo:true});
 }
 
 
@@ -70,7 +70,7 @@ function initGame(canvasElement, data) {
 
     $("#game_area_input").append( '<p id="iam">I am Player: <span id="iam-player">null</span></p>' + 
                                   '<p id="c-dice">Current Dice: <span id="current-dice">null</span></p>' +
-                                  '<div id="roll-buttons"><button id="roll">roll dice</button><button id="confirm">confirm roll</button></div>' +
+                                  '<div id="roll-buttons"><button id="roll">roll dice</button><button id="double">double</button><button id="confirm">confirm roll</button></div>' +
                                   '<div id="u-button"><button id="undo">undo move</button></div>' +
                                   '<input type="text" id="f-inp" value="00" size="2"/><div id="force-dice"><button id="force-sub">force roll</button></div>');//for debugging only
                                

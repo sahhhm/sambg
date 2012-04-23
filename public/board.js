@@ -31,6 +31,7 @@ function Board(opts) {
   this.specs.p2color = opts.p2color;
 
   this.dice = new Dice();
+  this.doublingDice = new DoublingDice();
     
   this.turns = new TurnHistory();
 
@@ -151,6 +152,9 @@ function Board(opts) {
   }
   
   this.update = function(opts) {
+    if (!opts.forPlayer) {
+      opts.forPlayer = -1;
+    }
     if (opts.roll) {
       this.dice.roll({die1 : opts.die1, die2 : opts.die2});
     }
@@ -159,6 +163,7 @@ function Board(opts) {
     }
     if (opts.drawDice) {
       this.drawDice();
+      this.drawDoublingDice(opts.forPlayer);
     }
     if (opts.undo) {
       this.turns.currentTurn.length ? this.drawer.undoButtonElement.disabled = false : this.drawer.undoButtonElement.disabled = true;
@@ -168,12 +173,12 @@ function Board(opts) {
     }
     if (opts.canRoll) {
       // canRoll data format ==> {num : playerNum}
-      this.canRoll(opts.canRoll.num) ? this.drawer.rollButtonElement.disabled = false : this.drawer.rollButtonElement.disabled = true;
+      this.canRoll(opts.forPlayer) ? this.drawer.rollButtonElement.disabled = false : this.drawer.rollButtonElement.disabled = true;
     }
   }
 
   this.drawDice = function() {
-    // eventually needs to be thrown into drawer
+    // game dice
     var i;
     var text = "";
     text += " [ ";
@@ -183,8 +188,18 @@ function Board(opts) {
     for (var i = 0; i < this.dice.dice.length; i++)
       i == this.dice.dice.length -1 ? text += this.dice.dice[i]  : text += this.dice.dice[i] + " - ";
     this.drawer.currentDiceElement.innerHTML = text;
-    this.drawer.currentDiceElement.style.color= this.getPlayerByNum(this.playerTurn()).color;
+    this.drawer.currentDiceElement.style.color = this.getPlayerByNum(this.playerTurn()).color;
   }    
+  
+  
+  this.drawDoublingDice = function(playerNum) {
+    this.drawer.doubleButtonElement.innerText = "double ( " + this.doublingDice.value + " )";
+    if (playerNum == ((this.playerTurn() %2) +1) && !this.dice.isRolled && this.doublingDice.lastPlayerToDoubleNum != playerNum) {
+      this.drawer.doubleButtonElement.disabled = false;
+    } else {
+      this.drawer.doubleButtonElement.disabled = true;
+    }
+  }
   
   this.canConfirm = function() {
     // returns true if the user is able to confirm the move.

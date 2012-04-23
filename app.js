@@ -96,12 +96,24 @@ io.sockets.on('connection', function (socket) {
     
     // tell players to update turn history
     io.sockets.in(rooms[idx].roomId).emit("update turns");
-    
-    // send new dice roll
-    //io.sockets.in(rooms[idx].roomId).emit('dice', {die1: rooms[idx].rng.getADie(),
-    //                                               die2: rooms[idx].rng.getADie()});
   });
+  
+  socket.on("double sent", function(data) {
+    var idx = get_room_index(data.room);
 
+    if (idx != -1) {     
+      io.sockets.in(rooms[idx].roomId).emit("double request", { requestingPlayer: data.requestingPlayer });
+    }
+  });  
+
+  socket.on("double chosen", function(data) {
+    var idx = get_room_index(data.room);
+
+    if (idx != -1) {     
+      io.sockets.in(rooms[idx].roomId).emit("double action", { choosingPlayer: data.choosingPlayer, action: data.action });
+    }
+  });    
+  
   socket.on("dice request", function(data) {
     // send dice on request
     var idx = get_room_index(data.room);
