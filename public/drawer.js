@@ -67,11 +67,12 @@ function Drawer(s) {
 
   this.highlight = function(space, width, isPotential) {
     var color, l, base, height, tx;
+    var modNumCheckers = space.numCheckers > this.specs.maxPiecesPerTriangle ? this.specs.maxPiecesPerTriangle : space.numCheckers;
     tx = space.column * this.specs.pieceWidth;
     base = space.isTop() ? 0 : this.specs.pixelHeight;
     l = ( space.type == "bearoff" ) ? this.specs.bearOffWidth : this.specs.pieceWidth;
     isPotential ? color =  "#a020f0" : "#00ff00";
-    height = isPotential ? 0 : space.numCheckers * this.specs.pieceHeight;
+    height = isPotential ? 0 : modNumCheckers * this.specs.pieceHeight;
     if ( !space.isTop() ) {
       height = this.specs.pixelHeight - height;
     }
@@ -101,9 +102,18 @@ function Drawer(s) {
     this.highlight(bo, 10, true);
   }
   
-  this.drawTriangle = function(t) {
-    for (var i = 0; i < t.numCheckers; i++) 
+  this.drawTriangle = function(t) { 
+    var thresh = this.specs.maxPiecesPerTriangle; // limit number of actual checkers drawn
+    var num = (t.numCheckers <= thresh) ? t.numCheckers : thresh;
+
+    for (var i = 0; i <= num - 1; i++) {
       t.isTop() ? this.drawPiece(new Checker(i, t.column, t.player), false) : this.drawPiece(new Checker(this.specs.boardHeight - i - 1, t.column, t.player), false);
+    }
+    
+    if (t.numCheckers > (thresh)) {
+      t.isTop() ? this.drawTextGTThresh( { column: t.column, row: thresh - 1, isTop: t.isTop(), numCheckers: t.numCheckers } ) : 
+                  this.drawTextGTThresh( { column: t.column, row: this.specs.boardHeight - thresh, isTop: t.isTop(), numCheckers: t.numCheckers } ) ;
+    }
   }  
 
   this.drawBar = function(b) {
@@ -115,6 +125,14 @@ function Drawer(s) {
     for (var k = 0; k < b.numCheckers; k++) 
       b.isTop() ? this.drawBearPiece(new Checker(k * this.specs.bearOffHeight, b.column, b.player)) : this.drawBearPiece(new Checker((this.specs.boardHeight * this.specs.pieceHeight) - ((k+1) * this.specs.bearOffHeight) - 1, b.column, b.player));	
   }  
+  
+  this.drawTextGTThresh = function(opts) {
+    var x = (opts.column * this.specs.pieceWidth) + (this.specs.pieceWidth/2) - 5;
+    var y = (opts.row * this.specs.pieceHeight) + (this.specs.pieceHeight/2) + 5;  
+    this.drawingContext.font = "15pt Arial";
+    this.drawingContext.fillStyle = "white";
+    this.drawingContext.fillText(opts.numCheckers, x, y);
+  }
   
   this.drawPiece = function(ch, selected) {
     var x = (ch.column * this.specs.pieceWidth) + (this.specs.pieceWidth/2);
