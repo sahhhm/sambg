@@ -104,7 +104,6 @@
    socket.on( 'double action', function( data ) {
      if (data.action == "accept") {
        bggame.board.doublingDice.doubleDice((data.choosingPlayer % 2) + 1);
-       bggame.board.drawer.doubleButtonElement.disabled = true;
        $('#doubling-area').html('');
        bggame.board.update( {forPlayer: me.num, drawDice: true} );
      } else if (data.action == "reject") {
@@ -157,11 +156,6 @@
    $("#game_area_input").on("click", "#roll", function(e) {
       socket.emit( 'dice request', { room: selectedRoom } );
       bggame.board.update({forPlayer : me.num, canRoll: true });
-   });   
-   
-   $("#game_area_input").on("click", "#double", function(e) {
-     socket.emit( 'double sent', { room: selectedRoom, requestingPlayer: me.num } );
-     bggame.board.drawer.doubleButtonElement.disabled = true;
    });   
    
    $("#game_area_input").on("click", "#undo", function(e) {

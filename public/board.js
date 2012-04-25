@@ -4,6 +4,8 @@ function Board(opts) {
   this.selectedBarNum = -1;
   this.selectedTriangleNum = -1;
   
+  this.canDouble = false;
+  
   this.dice;
   this.drawer;
   
@@ -22,7 +24,7 @@ function Board(opts) {
     barColumn : 6,
     bearOffColumn : 13,
     bearOffWidth : 65,
-    bearOffHeight: 15
+    bearOffHeight: 15,
   };
 
   this.specs.pixelWidth = this.specs.boardWidth * this.specs.pieceWidth + 1 + this.specs.bearOffWidth;
@@ -193,11 +195,12 @@ function Board(opts) {
   
   
   this.drawDoublingDice = function(playerNum) {
-    this.drawer.doubleButtonElement.innerText = "double ( " + this.doublingDice.value + " )";
     if (playerNum == ((this.playerTurn() %2) +1) && !this.dice.isRolled && this.doublingDice.lastPlayerToDoubleNum != playerNum) {
-      this.drawer.doubleButtonElement.disabled = false;
+      this.canDouble = true;
+      this.drawer.drawDoublingDice( { isActive: this.canDouble, value: this.doublingDice.value } );
     } else {
-      this.drawer.doubleButtonElement.disabled = true;
+      this.canDouble = false;
+      this.drawer.drawDoublingDice( { isActive: this.canDouble, value: this.doublingDice.value } );
     }
   }
   

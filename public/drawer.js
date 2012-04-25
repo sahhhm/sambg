@@ -8,7 +8,30 @@ function Drawer(s) {
   this.confirmButtonElement = document.getElementById('confirm');
   this.undoButtonElement = document.getElementById('undo');
   this.rollButtonElement = document.getElementById('roll');
-  this.doubleButtonElement = document.getElementById('double');
+  
+  // initialize interacting row
+  this.interact =
+    {
+      row: 6,
+      columns: 13,
+      doubling: 
+      {
+        column: 6
+      }
+    }
+  this.interact.pieceWidthPix = this.specs.pieceWidth;
+  this.interact.pieceHeightPix = this.specs.pieceHeight;
+  this.interact.startX = 0;
+  this.interact.startY = this.interact.row * this.interact.pieceHeightPix  - this.interact.pieceHeightPix/2;
+  this.interact.totalWidthPix = this.interact.pieceWidthPix * this.interact.columns;
+  this.interact.totalHeightPix = this.interact.pieceHeightPix;
+  this.interact.doubling.padding = 7;
+  this.interact.doubling.startX = this.interact.doubling.column * this.interact.pieceWidthPix +this.interact.doubling.padding
+  this.interact.doubling.startY = this.interact.startY + this.interact.doubling.padding;
+  this.interact.doubling.widthPix = this.interact.pieceWidthPix - this.interact.doubling.padding * 2;
+  this.interact.doubling.heightPix =  this.interact.pieceHeightPix - this.interact.doubling.padding * 2;
+  this.interact.doubling.activeColor = "rgba(238, 213, 210, 1)";
+  this.interact.doubling.inactiveColor = "rgba(238, 213, 210, 0.1)"; 
   
   this.drawBoard = function() {
     this.drawingContext.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
@@ -42,6 +65,22 @@ function Drawer(s) {
     for (var y = 0; y <= this.specs.pixelHeight; y += this.specs.pieceHeight) {
       this.drawingContext.fillRect(this.specs.boardWidth * this.specs.pieceWidth + 1, y, this.specs.bearOffWidth, this.specs.pieceHeight);
     }
+    
+    /* interact area... doubling dice, regular dice, etc. */
+    //this.drawingContext.fillStyle = "#f0f";
+    //this.drawingContext.fillRect(this.interact.startX, this.interact.startY, this.interact.totalWidthPix,  this.interact.totalHeightPix);  
+    //this.drawingContext.fillStyle = "#D2B48C";
+    //this.drawingContext.fillRect(this.interact.doubling.startX, this.interact.doubling.startY, this.interact.doubling.widthPix,  this.interact.doubling.heightPix);    
+  }
+  
+  this.drawDoublingDice = function(opts) {
+    var fs = opts.isActive ? this.interact.doubling.activeColor : this.interact.doubling.inactiveColor;
+    this.drawingContext.fillStyle = fs;
+    this.drawingContext.clearRect(this.interact.doubling.startX, this.interact.doubling.startY, this.interact.doubling.widthPix,  this.interact.doubling.heightPix); 
+    this.drawingContext.fillRect(this.interact.doubling.startX, this.interact.doubling.startY, this.interact.doubling.widthPix,  this.interact.doubling.heightPix);    
+    this.drawingContext.font = "15pt Arial";
+    this.drawingContext.fillStyle = "rgba(0, 0, 0, .3)";
+    this.drawingContext.fillText(opts.value, this.interact.doubling.startX + this.interact.doubling.widthPix/2 - this.interact.doubling.padding, this.interact.doubling.startY + this.interact.doubling.heightPix/2 + this.interact.doubling.padding);
   }
 
   this.drawTriangles = function(theTriangles) {  

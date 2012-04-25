@@ -1,4 +1,4 @@
-
+//once cleaned up, this file needs to go into index.html
 function getCursorPosition(e) {
   var x;
   var y;
@@ -14,22 +14,43 @@ function getCursorPosition(e) {
   y -= bggame.board.drawer.canvasElement.offsetTop;
   x = Math.min(x, bggame.board.specs.boardWidth * bggame.board.specs.pieceWidth);
   y = Math.min(y, bggame.board.specs.boardHeight * bggame.board.specs.pieceHeight);
-
+  
+  // used for triangle and bar
   var checker = new Checker(Math.floor(y/bggame.board.specs.pieceHeight), Math.floor(x/bggame.board.specs.pieceWidth));
-  return [checker.findTriangleNum(bggame.board), checker.findBarNum(bggame.board)]
+
+  // check for double dice click
+  var doubling = false;
+  if ( x >= bggame.board.drawer.interact.doubling.startX && x <= bggame.board.drawer.interact.doubling.startX + bggame.board.drawer.interact.doubling.widthPix &&
+       y >= bggame.board.drawer.interact.doubling.startY && y <= bggame.board.drawer.interact.doubling.startY + bggame.board.drawer.interact.doubling.heightPix)
+  {
+    doubling = true;
+  }
+  
+  return { triangle: checker.findTriangleNum(bggame.board), bar: checker.findBarNum(bggame.board), doublingDice: doubling }
 }
 
 function bgOnClick(e) {
   // move logic to check for correct player in here!
   // this should eliminate ALL player hcecking in updates
+  var info = getCursorPosition(e);
+  
+  
+  // check to see if user doubled
+  if (info.doublingDice) {
+    if (bggame.board.canDouble) {
+      socket.emit( 'double sent', { room: selectedRoom, requestingPlayer: me.num } );
+    }
+  }
+  
   if (me.num == bggame.board.playerTurn()) {
     var mePlayer = bggame.board.getPlayerByNum(me.num);
     var meBar = bggame.board.getBarByNum(me.num);
-    var info = getCursorPosition(e);
-    var triangle = bggame.board.getTriangleByNum(info[0]); 
+    //var info = getCursorPosition(e);
+    var triangle = bggame.board.getTriangleByNum(info.triangle); 
     var bearOff = bggame.board.getBearOffByPlayerNum(me.num); // refactor to get from "getCursorPosition"
-    var bar = bggame.board.getBarByNum(info[1]);
+    var bar = bggame.board.getBarByNum(info.bar);
     var selectedBar = bggame.board.getSelectedBar();
+
 
   
     if (meBar.isEmpty()) {
@@ -71,7 +92,7 @@ function initGame(canvasElement, data) {
 
     $("#game_area_input").append( '<p id="iam">I am Player: <span id="iam-player">null</span></p>' + 
                                   '<p id="c-dice">Current Dice: <span id="current-dice">null</span></p>' +
-                                  '<div id="roll-buttons"><button id="roll">roll dice</button><button id="double">double</button><button id="confirm">confirm roll</button></div>' +
+                                  '<div id="roll-buttons"><button id="roll">roll dice</button><button id="confirm">confirm roll</button></div>' +
                                   '<div id="u-button"><button id="undo">undo move</button></div>' +
                                   '<input type="text" id="f-inp" value="00" size="2"/><div id="force-dice"><button id="force-sub">force roll</button></div>');//for debugging only
                                
