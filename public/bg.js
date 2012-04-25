@@ -53,8 +53,9 @@ function bgOnClick(e) {
         } 
       }
     } 
-  }
   bggame.board.update({forPlayer : me.num, draw:true,confirm:true,drawDice:true,undo:true});
+  }
+  
     
 }
 
