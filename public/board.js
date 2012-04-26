@@ -166,7 +166,7 @@ function Board(opts) {
       this.updateDraw();
     }
     if (opts.drawDice) {
-      this.drawDice();
+      this.drawDice(opts.forPlayer);
       this.drawDoublingDice(opts.forPlayer);
     }
     if (opts.undo) {
@@ -182,7 +182,7 @@ function Board(opts) {
   }
 
   this.drawDice = function(forPlayerNum) {
-    this.drawer.drawDice( { diceCopy : this.dice.diceCopy, dice: this.dice, currentPlayer: this.getPlayerByNum(this.playerTurn()), meNum: forPlayerNum }  );
+    this.drawer.drawDice( { diceCopy : this.dice.diceCopy, dice: this.dice, currentPlayer: this.getPlayerByNum(this.playerTurn()), mePlayer: this.getPlayerByNum(forPlayerNum), pCanConfirm: this.canConfirm(forPlayerNum), pCanRoll: this.canRoll(forPlayerNum) }  );
   }    
   
   

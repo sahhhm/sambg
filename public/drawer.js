@@ -15,7 +15,7 @@ function Drawer(s) {
       {
         column: 6
       },
-      dice :
+      dice:
       {
         column: 8,
         columns: 4
@@ -95,7 +95,7 @@ function Drawer(s) {
   }
 
   this.drawDice = function(opts) {
-  //{ diceCopy : diceCopy (array) , dice: Dice (array), currentPlayer: Player, mePlayer: integer } 
+  //{ diceCopy : diceCopy (array) , dice: Dice (array), currentPlayer: Player, mePlayer: Player, pCanConfirm: boolean, pCanRoll: boolean } 
     
     // generate dice "text"
     var i;
@@ -106,16 +106,31 @@ function Drawer(s) {
     for (var i = 0; i < opts.dice.dice.length; i++) i == opts.dice.dice.length -1 ? text += opts.dice.dice[i]  : text += opts.dice.dice[i] + " - ";   
     
     this.drawingContext.save();    
-      
+
     // bounding box 
     this.drawingContext.fillStyle = opts.currentPlayer.color;
     this.drawingContext.globalAlpha = 0.3;
     this.drawingContext.clearRect(this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix,  this.interact.dice.heightPix); 
     this.drawingContext.fillRect(this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix,  this.interact.dice.heightPix); 
-
+    
+    // do we need to "highlight" to indicate an action?
+    if (opts.pCanConfirm || opts.pCanRoll) {
+      if ( opts.pCanConfirm ) {
+        this.drawingContext.strokeStyle = opts.currentPlayer.color;
+      }
+      else if ( opts.pCanRoll ) {
+        this.drawingContext.strokeStyle = opts.mePlayer.color; 
+      }        
+ 
+      this.drawingContext.globalAlpha = 0.9;
+      this.drawingContext.lineWidth = 2;
+      this.drawingContext.strokeRect( this.interact.dice.startX + this.drawingContext.lineWidth, this.interact.dice.startY + this.drawingContext.lineWidth, 
+                                      this.interact.dice.widthPix - 2*this.drawingContext.lineWidth,  this.interact.dice.heightPix - 2*this.drawingContext.lineWidth );   
+    }
+    
+    // draw/write the actual dice values
     this.drawingContext.globalAlpha = 1;
     this.drawingContext.font = "12pt Arial";
-    //this.drawingContext.fillStyle = "rgba(0, 0, 0, .3)";
     this.drawingContext.fillText(text, this.interact.dice.startX , this.interact.dice.startY + this.interact.dice.heightPix/2 + this.interact.padding );       
     
     this.drawingContext.restore();
