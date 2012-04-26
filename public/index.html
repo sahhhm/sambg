@@ -148,16 +148,6 @@
      socket.emit('join room', {room: selectedRoom});
    });  
 
-   $("#game_area_input").on("click", "#confirm", function(e) {
-      socket.emit('moved', { room: selectedRoom, moves:bggame.board.turns.currentTurn});
-      bggame.board.drawer.confirmButtonElement.disabled = true; // force confirm button to be disabled once user clicks it. change code?
-   });
-   
-   $("#game_area_input").on("click", "#roll", function(e) {
-      socket.emit( 'dice request', { room: selectedRoom } );
-      bggame.board.update({forPlayer : me.num, canRoll: true });
-   });   
-   
    $("#game_area_input").on("click", "#undo", function(e) {
       bggame.board.undoMove();
       bggame.board.update({forPlayer : me.num, draw:true,confirm:true,drawDice:true,undo:true});

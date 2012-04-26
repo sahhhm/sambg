@@ -4,10 +4,7 @@ function Drawer(s) {
   this.canvasElement = document.getElementById('bg_canvas');
   this.canvasElement.addEventListener("click", bgOnClick, false);		  
   this.drawingContext = this.canvasElement.getContext("2d")
-  this.currentDiceElement = document.getElementById('current-dice');
-  this.confirmButtonElement = document.getElementById('confirm');
   this.undoButtonElement = document.getElementById('undo');
-  this.rollButtonElement = document.getElementById('roll');
   
   // initialize interacting row
   this.interact =
@@ -17,6 +14,11 @@ function Drawer(s) {
       doubling: 
       {
         column: 6
+      },
+      dice :
+      {
+        column: 8,
+        columns: 4
       }
     }
   this.interact.pieceWidthPix = this.specs.pieceWidth;
@@ -25,13 +27,20 @@ function Drawer(s) {
   this.interact.startY = this.interact.row * this.interact.pieceHeightPix  - this.interact.pieceHeightPix/2;
   this.interact.totalWidthPix = this.interact.pieceWidthPix * this.interact.columns;
   this.interact.totalHeightPix = this.interact.pieceHeightPix;
-  this.interact.doubling.padding = 7;
-  this.interact.doubling.startX = this.interact.doubling.column * this.interact.pieceWidthPix +this.interact.doubling.padding
-  this.interact.doubling.startY = this.interact.startY + this.interact.doubling.padding;
-  this.interact.doubling.widthPix = this.interact.pieceWidthPix - this.interact.doubling.padding * 2;
-  this.interact.doubling.heightPix =  this.interact.pieceHeightPix - this.interact.doubling.padding * 2;
+  this.interact.padding = 7;
+  this.interact.doubling.startX = this.interact.doubling.column * this.interact.pieceWidthPix +this.interact.padding
+  this.interact.doubling.startY = this.interact.startY + this.interact.padding;
+  this.interact.doubling.widthPix = this.interact.pieceWidthPix - this.interact.padding * 2;
+  this.interact.doubling.heightPix =  this.interact.pieceHeightPix - this.interact.padding * 2;
   this.interact.doubling.activeColor = "rgba(238, 213, 210, 1)";
   this.interact.doubling.inactiveColor = "rgba(238, 213, 210, 0.1)"; 
+  
+  this.interact.dice.startX = this.interact.dice.column * this.interact.pieceWidthPix +this.interact.padding
+  this.interact.dice.startY = this.interact.startY + this.interact.padding;
+  this.interact.dice.widthPix = this.interact.dice.columns * this.interact.pieceWidthPix - this.interact.padding * 2;
+  this.interact.dice.heightPix =  this.interact.pieceHeightPix - this.interact.padding * 2;
+  this.interact.dice.activeColor = "rgba(238, 213, 210, 1)";
+  this.interact.dice.inactiveColor = "rgba(238, 213, 210, 0.1)";   
   
   this.drawBoard = function() {
     this.drawingContext.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
@@ -71,6 +80,8 @@ function Drawer(s) {
     //this.drawingContext.fillRect(this.interact.startX, this.interact.startY, this.interact.totalWidthPix,  this.interact.totalHeightPix);  
     //this.drawingContext.fillStyle = "#D2B48C";
     //this.drawingContext.fillRect(this.interact.doubling.startX, this.interact.doubling.startY, this.interact.doubling.widthPix,  this.interact.doubling.heightPix);    
+    //this.drawingContext.fillStyle = this.interact.dice.activeColor;
+    //this.drawingContext.fillRect(this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix,  this.interact.dice.heightPix);    
   }
   
   this.drawDoublingDice = function(opts) {
@@ -80,9 +91,36 @@ function Drawer(s) {
     this.drawingContext.fillRect(this.interact.doubling.startX, this.interact.doubling.startY, this.interact.doubling.widthPix,  this.interact.doubling.heightPix);    
     this.drawingContext.font = "15pt Arial";
     this.drawingContext.fillStyle = "rgba(0, 0, 0, .3)";
-    this.drawingContext.fillText(opts.value, this.interact.doubling.startX + this.interact.doubling.widthPix/2 - this.interact.doubling.padding, this.interact.doubling.startY + this.interact.doubling.heightPix/2 + this.interact.doubling.padding);
+    this.drawingContext.fillText(opts.value, this.interact.doubling.startX + this.interact.doubling.widthPix/2 - this.interact.padding, this.interact.doubling.startY + this.interact.doubling.heightPix/2 + this.interact.padding);
   }
 
+  this.drawDice = function(opts) {
+  //{ diceCopy : diceCopy (array) , dice: Dice (array), currentPlayer: Player, mePlayer: integer } 
+    
+    // generate dice "text"
+    var i;
+    var text = "";
+    text += " [ ";
+    for (var i = 0; i < opts.diceCopy.length; i++) i == opts.diceCopy.length -1 ? text += opts.diceCopy[i]  : text += opts.diceCopy[i] + " - ";
+    text += " ] ";
+    for (var i = 0; i < opts.dice.dice.length; i++) i == opts.dice.dice.length -1 ? text += opts.dice.dice[i]  : text += opts.dice.dice[i] + " - ";   
+    
+    this.drawingContext.save();    
+      
+    // bounding box 
+    this.drawingContext.fillStyle = opts.currentPlayer.color;
+    this.drawingContext.globalAlpha = 0.3;
+    this.drawingContext.clearRect(this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix,  this.interact.dice.heightPix); 
+    this.drawingContext.fillRect(this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix,  this.interact.dice.heightPix); 
+
+    this.drawingContext.globalAlpha = 1;
+    this.drawingContext.font = "12pt Arial";
+    //this.drawingContext.fillStyle = "rgba(0, 0, 0, .3)";
+    this.drawingContext.fillText(text, this.interact.dice.startX , this.interact.dice.startY + this.interact.dice.heightPix/2 + this.interact.padding );       
+    
+    this.drawingContext.restore();
+  }
+  
   this.drawTriangles = function(theTriangles) {  
     /* draw pieces in each triangle */
     for (var i = 0; i < theTriangles.length; i++) {

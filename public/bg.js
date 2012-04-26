@@ -26,7 +26,15 @@ function getCursorPosition(e) {
     doubling = true;
   }
   
-  return { triangle: checker.findTriangleNum(bggame.board), bar: checker.findBarNum(bggame.board), doublingDice: doubling }
+  // check for regular dice click (either to confirm or to roll)
+  var dice = false;
+  if ( x >= bggame.board.drawer.interact.dice.startX && x <= bggame.board.drawer.interact.dice.startX + bggame.board.drawer.interact.dice.widthPix &&
+       y >= bggame.board.drawer.interact.dice.startY && y <= bggame.board.drawer.interact.dice.startY + bggame.board.drawer.interact.dice.heightPix)
+  {
+    dice = true;
+  }  
+  
+  return { triangle: checker.findTriangleNum(bggame.board), bar: checker.findBarNum(bggame.board), doublingDice: doubling, regularDice: dice }
 }
 
 function bgOnClick(e) {
@@ -39,6 +47,20 @@ function bgOnClick(e) {
   if (info.doublingDice) {
     if (bggame.board.canDouble) {
       socket.emit( 'double sent', { room: selectedRoom, requestingPlayer: me.num } );
+    }
+  }
+  
+  // check to see if uesr clicked on dice area
+  if (info.regularDice) {
+    if (bggame.board.playerCanConfirm) {
+      console.log("confirming move...");
+      socket.emit('moved', { room: selectedRoom, moves:bggame.board.turns.currentTurn});
+      bggame.board.playerCanConfirm = false;
+    } else if (bggame.board.playerCanRoll) {
+      socket.emit( 'dice request', { room: selectedRoom } );
+      //bggame.board.update({forPlayer : me.num, canRoll: true }); 
+      console.log("rolling dice...");
+      bggame.board.playerCanRoll = false;
     }
   }
   
@@ -91,8 +113,6 @@ function initGame(canvasElement, data) {
     canvasElement.id = "bg_canvas";
 
     $("#game_area_input").append( '<p id="iam">I am Player: <span id="iam-player">null</span></p>' + 
-                                  '<p id="c-dice">Current Dice: <span id="current-dice">null</span></p>' +
-                                  '<div id="roll-buttons"><button id="roll">roll dice</button><button id="confirm">confirm roll</button></div>' +
                                   '<div id="u-button"><button id="undo">undo move</button></div>' +
                                   '<input type="text" id="f-inp" value="00" size="2"/><div id="force-dice"><button id="force-sub">force roll</button></div>');//for debugging only
                                

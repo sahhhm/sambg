@@ -5,6 +5,8 @@ function Board(opts) {
   this.selectedTriangleNum = -1;
   
   this.canDouble = false;
+  this.playerCanConfirm = false;
+  this.playerCanRoll = false;
   
   this.dice;
   this.drawer;
@@ -171,26 +173,16 @@ function Board(opts) {
       this.turns.currentTurn.length ? this.drawer.undoButtonElement.disabled = false : this.drawer.undoButtonElement.disabled = true;
     }
     if (opts.confirm) {
-      this.canConfirm() ? this.drawer.confirmButtonElement.disabled = false : this.drawer.confirmButtonElement.disabled = true;;
+      this.canConfirm(opts.forPlayer) ? this.playerCanConfirm = true : this.playerCanConfirm = false;
     }
     if (opts.canRoll) {
       // canRoll data format ==> {num : playerNum}
-      this.canRoll(opts.forPlayer) ? this.drawer.rollButtonElement.disabled = false : this.drawer.rollButtonElement.disabled = true;
+      this.canRoll(opts.forPlayer) ? this.playerCanRoll = true : this.playerCanRoll = false;
     }
   }
 
-  this.drawDice = function() {
-    // game dice
-    var i;
-    var text = "";
-    text += " [ ";
-    for (var i = 0; i < this.dice.diceCopy.length; i++) 
-      i == this.dice.diceCopy.length -1 ? text += this.dice.diceCopy[i]  : text += this.dice.diceCopy[i] + " - ";
-    text += " ] ";
-    for (var i = 0; i < this.dice.dice.length; i++)
-      i == this.dice.dice.length -1 ? text += this.dice.dice[i]  : text += this.dice.dice[i] + " - ";
-    this.drawer.currentDiceElement.innerHTML = text;
-    this.drawer.currentDiceElement.style.color = this.getPlayerByNum(this.playerTurn()).color;
+  this.drawDice = function(forPlayerNum) {
+    this.drawer.drawDice( { diceCopy : this.dice.diceCopy, dice: this.dice, currentPlayer: this.getPlayerByNum(this.playerTurn()), meNum: forPlayerNum }  );
   }    
   
   
@@ -204,11 +196,11 @@ function Board(opts) {
     }
   }
   
-  this.canConfirm = function() {
+  this.canConfirm = function(num) {
     // returns true if the user is able to confirm the move.
     // Either all dice moves have been played, or no valid
     // moves exist.
-    return (!this.dice.dice.length || !this.anyMovesLeft());
+    return ( ( !this.dice.dice.length || !this.anyMovesLeft() ) && ( num == this.playerTurn() ) );
   }  
 
   this.canRoll = function(num) {
