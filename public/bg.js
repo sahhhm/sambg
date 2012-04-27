@@ -34,51 +34,44 @@ function getCursorPosition(e) {
     dice = true;
   }  
   
-  return { triangle: checker.findTriangleNum(bggame.board), bar: checker.findBarNum(bggame.board), doublingDice: doubling, regularDice: dice }
+  return { triangle: checker.findTriangleNum(bggame.board), bar: checker.findBarNum(bggame.board), doublingDiceSend: doubling, regularDice: dice }
 }
 
 function bgOnClick(e) {
-  // move logic to check for correct player in here!
-  // this should eliminate ALL player hcecking in updates
+  // all info on the user's click
   var info = getCursorPosition(e);
   
-  ////////
+
   if (me.num == bggame.board.playerTurn()) {
   
-  // check to see if user doubled
-  if (info.doublingDice) {
-    if (bggame.board.canDouble) {
-      socket.emit( 'double sent', { room: selectedRoom, requestingPlayer: me.num } );
+    // check to see if user doubled
+    if (info.doublingDiceSend) {
+      if (bggame.board.canDouble) {
+        socket.emit( 'double sent', { room: selectedRoom, requestingPlayer: me.num } );
+      }
+    }
+  
+    // check to see if uesr clicked on dice area
+    if (info.regularDice) {
+      if (bggame.board.playerCanConfirm) {
+        console.log("confirming move...");
+        socket.emit('moved', { room: selectedRoom, moves:bggame.board.turns.currentTurn});
+        bggame.board.playerCanConfirm = false;
+      } else if (bggame.board.playerCanRoll) {
+        console.log("rolling dice...");
+        socket.emit( 'dice request', { room: selectedRoom } );
+        bggame.board.playerCanRoll = false;
+      }
     }
   }
-  
-  // check to see if uesr clicked on dice area
-  if (info.regularDice) {
-    if (bggame.board.playerCanConfirm) {
-      console.log("confirming move...");
-      socket.emit('moved', { room: selectedRoom, moves:bggame.board.turns.currentTurn});
-      bggame.board.playerCanConfirm = false;
-    } else if (bggame.board.playerCanRoll) {
-      socket.emit( 'dice request', { room: selectedRoom } );
-      //bggame.board.update({forPlayer : me.num, canRoll: true }); 
-      console.log("rolling dice...");
-      bggame.board.playerCanRoll = false;
-    }
-  }
-  
-  }
-  ///////
-  
-  if (me.num == bggame.board.playerTurn()) {
+
+  if (me.num == bggame.board.playerTurn() && bggame.board.dice.isRolled) {
     var mePlayer = bggame.board.getPlayerByNum(me.num);
     var meBar = bggame.board.getBarByNum(me.num);
-    //var info = getCursorPosition(e);
     var triangle = bggame.board.getTriangleByNum(info.triangle); 
     var bearOff = bggame.board.getBearOffByPlayerNum(me.num); // refactor to get from "getCursorPosition"
     var bar = bggame.board.getBarByNum(info.bar);
     var selectedBar = bggame.board.getSelectedBar();
-
-
   
     if (meBar.isEmpty()) {
       if (bggame.board.getSelectedTriangle().num == -1 && triangle.isEmpty()) {
