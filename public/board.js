@@ -213,7 +213,7 @@ function Board(opts) {
 
   this.canRoll = function(num) {
     // if it's the next players turn, let them request new dice.
-    return ( !this.dice.dice.length && num == this.playerTurn() );
+    return ( (!this.dice.dice.length || !this.dice.isRolled) && num == this.playerTurn() );
     
   }
   
@@ -488,10 +488,13 @@ function Board(opts) {
     console.log("undo move from " + from.entry + " to " + to.entry);
   }
   
-  this.anyMovesLeft = function() {
+  this.anyMovesLeft = function(forPlayer) {
     var any = false;
-    var player = this.playerTurn();
-    
+    if (forPlayer) {
+      var player = forPlayer;
+    } else {
+      var player = this.playerTurn();
+    }
     if (this.getBarByNum(player).isEmpty()) {
       for (var i = 1 ; i < this.getTriangles().length + 1; i++) {
         var curTri = this.getTriangleByNum(i);

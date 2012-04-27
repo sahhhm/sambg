@@ -42,6 +42,8 @@ function bgOnClick(e) {
   // this should eliminate ALL player hcecking in updates
   var info = getCursorPosition(e);
   
+  ////////
+  if (me.num == bggame.board.playerTurn()) {
   
   // check to see if user doubled
   if (info.doublingDice) {
@@ -63,6 +65,9 @@ function bgOnClick(e) {
       bggame.board.playerCanRoll = false;
     }
   }
+  
+  }
+  ///////
   
   if (me.num == bggame.board.playerTurn()) {
     var mePlayer = bggame.board.getPlayerByNum(me.num);
