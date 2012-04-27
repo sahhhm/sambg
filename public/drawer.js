@@ -95,7 +95,7 @@ function Drawer(s) {
   }
 
   this.drawDice = function(opts) {
-  //{ diceCopy : diceCopy (array) , dice: Dice (array), currentPlayer: Player, mePlayer: Player, pCanConfirm: boolean, pCanRoll: boolean } 
+  //{ diceCopy : diceCopy (array) , dice: Dice (array), currentPlayer: Player, mePlayer: Player, otherPlayer: Player, pCanConfirm: boolean, pCanRoll: boolean } 
     
     // generate dice "text"
     var i;
@@ -108,19 +108,22 @@ function Drawer(s) {
     this.drawingContext.save();    
 
     // bounding box 
-    this.drawingContext.fillStyle = opts.currentPlayer.color;
+    if (opts.dice.isRolled) {
+      this.drawingContext.fillStyle = opts.currentPlayer.color;
+    } else {
+      this.drawingContext.fillStyle = opts.otherPlayer.color;
+    }
     this.drawingContext.globalAlpha = 0.3;
     this.drawingContext.clearRect(this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix,  this.interact.dice.heightPix); 
     this.drawingContext.fillRect(this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix,  this.interact.dice.heightPix); 
     
     // do we need to "highlight" to indicate an action?
-    if (opts.pCanConfirm || opts.pCanRoll) {
+    if ( opts.pCanConfirm || opts.pCanRoll ) {
       if ( opts.pCanConfirm ) {
         this.drawingContext.strokeStyle = opts.currentPlayer.color;
-      }
-      else if ( opts.pCanRoll ) {
+      } else if ( opts.pCanRoll ) {
         this.drawingContext.strokeStyle = opts.mePlayer.color; 
-      }        
+      }    
  
       this.drawingContext.globalAlpha = 0.9;
       this.drawingContext.lineWidth = 2;

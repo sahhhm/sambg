@@ -7,6 +7,7 @@ function Board(opts) {
   this.canDouble = false;
   this.playerCanConfirm = false;
   this.playerCanRoll = false;
+  this.numMoves = 0;
   
   this.dice;
   this.drawer;
@@ -159,6 +160,11 @@ function Board(opts) {
     if (!opts.forPlayer) {
       opts.forPlayer = -1;
     }
+    if (opts.updateTurn) {
+      this.turns.clearCurrentToHistory();
+      this.dice.isRolled = false;
+      this.numMoves += 1;    
+    }
     if (opts.roll) {
       this.dice.roll({die1 : opts.die1, die2 : opts.die2});
     }
@@ -167,6 +173,8 @@ function Board(opts) {
     }
     if (opts.drawDice) {
       this.drawDice(opts.forPlayer);
+    }
+    if (opts.drawDoublingDice) {
       this.drawDoublingDice(opts.forPlayer);
     }
     if (opts.undo) {
@@ -182,12 +190,12 @@ function Board(opts) {
   }
 
   this.drawDice = function(forPlayerNum) {
-    this.drawer.drawDice( { diceCopy : this.dice.diceCopy, dice: this.dice, currentPlayer: this.getPlayerByNum(this.playerTurn()), mePlayer: this.getPlayerByNum(forPlayerNum), pCanConfirm: this.canConfirm(forPlayerNum), pCanRoll: this.canRoll(forPlayerNum) }  );
+    this.drawer.drawDice( { diceCopy : this.dice.diceCopy, dice: this.dice, currentPlayer: this.getPlayerByNum(this.playerTurn()), mePlayer: this.getPlayerByNum(forPlayerNum), otherPlayer: this.getPlayerByNum((this.playerTurn() % 2 + 1)), pCanConfirm: this.canConfirm(forPlayerNum), pCanRoll: this.canRoll(forPlayerNum) }  );
   }    
   
   
   this.drawDoublingDice = function(playerNum) {
-    if (playerNum == ((this.playerTurn() %2) +1) && !this.dice.isRolled && this.doublingDice.lastPlayerToDoubleNum != playerNum) {
+    if (playerNum == this.playerTurn() && !this.dice.isRolled && this.doublingDice.lastPlayerToDoubleNum != playerNum) {
       this.canDouble = true;
       this.drawer.drawDoublingDice( { isActive: this.canDouble, value: this.doublingDice.value } );
     } else {
@@ -200,12 +208,13 @@ function Board(opts) {
     // returns true if the user is able to confirm the move.
     // Either all dice moves have been played, or no valid
     // moves exist.
-    return ( ( !this.dice.dice.length || !this.anyMovesLeft() ) && ( num == this.playerTurn() ) );
+    return ( ( !this.dice.dice.length || !this.anyMovesLeft() ) && ( num == this.playerTurn() ) && this.dice.isRolled );
   }  
 
   this.canRoll = function(num) {
-    // if it's about to be the next players turn, let them request new dice.
-    return (!this.dice.dice.length && num == (( this.playerTurn() % 2 ) + 1 ));
+    // if it's the next players turn, let them request new dice.
+    return ( !this.dice.dice.length && num == this.playerTurn() );
+    
   }
   
   this.updateDraw = function() {
@@ -502,7 +511,7 @@ function Board(opts) {
   }  
   
   this.playerTurn = function() {
-    return this.dice.confirmedRolls % 2 ? 1: 2;
+    return bggame.board.numMoves % 2 + 1
   }  
   
 }

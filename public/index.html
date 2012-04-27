@@ -70,13 +70,13 @@
    
    socket.on('dice', function(data) {
      console.log("got dice event");
-     bggame.board.update({forPlayer : me.num, roll:true, drawDice:true, confirm:true, die1: data.die1, die2: data.die2, undo:false, canRoll : true });
+     bggame.board.update({forPlayer : me.num, roll:true, drawDice:true, confirm:true, die1: data.die1, die2: data.die2, drawDoublingDice: true, undo:false, canRoll : true });
    });
    
    //for debugging only
    socket.on('fdice', function(data) {
      bggame.board.dice.froll(data);
-     bggame.board.update({forPlayer : me.num, draw:true,confirm:true,drawDice:true,undo:false});
+     bggame.board.update({forPlayer : me.num, draw:true,confirm:true,drawDice:true,drawDoublingDice: true,undo:false});
    });
    
    socket.on('update', function(data) {
@@ -88,7 +88,7 @@
      for (i = 0; i < moves.length; i++) {
        var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].toType, moves[i].isToHit, moves[i].diceValue);
        bggame.board.move(tempMove);
-       bggame.board.update({forPlayer : me.num, draw:true,confirm:false,drawDice:true,undo:false});
+       bggame.board.update({forPlayer : me.num, draw:true,confirm:false,drawDice:true,drawDoublingDice: true,undo:false});
      }
    });
    
@@ -105,7 +105,7 @@
      if (data.action == "accept") {
        bggame.board.doublingDice.doubleDice((data.choosingPlayer % 2) + 1);
        $('#doubling-area').html('');
-       bggame.board.update( {forPlayer: me.num, drawDice: true} );
+       bggame.board.update( {forPlayer: me.num, drawDoublingDice: true} );
      } else if (data.action == "reject") {
        console.log("need to implement double reject once end game is selected");
      }
@@ -113,9 +113,8 @@
    
    socket.on('update turns', function() {
       console.log("got update turns event");
-      bggame.board.turns.clearCurrentToHistory();
-      bggame.board.dice.isRolled = false;
-      bggame.board.update({ forPlayer:me.num, draw:true, confirm:false, drawDice:true, undo:true, canRoll: true});
+      bggame.board.update({ forPlayer:me.num, draw:true, confirm:false, drawDice:true, drawDoublingDice: true,undo:true, canRoll: true, updateTurn: true});
+
    });
    
    socket.on('force leave room', function() {
@@ -150,7 +149,7 @@
 
    $("#game_area_input").on("click", "#undo", function(e) {
       bggame.board.undoMove();
-      bggame.board.update({forPlayer : me.num, draw:true,confirm:true,drawDice:true,undo:true});
+      bggame.board.update({forPlayer : me.num, draw:true,confirm:true,drawDice:true,drawDoublingDice: true,undo:true});
    });   
    
    $("#doubling-area").on("click", "button[id^='double-']", function(e) {

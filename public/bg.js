@@ -96,14 +96,14 @@ function bgOnClick(e) {
         } 
       }
     } 
-  bggame.board.update({forPlayer : me.num, draw:true,confirm:true,drawDice:true,undo:true});
+  bggame.board.update({forPlayer : me.num, draw:true,confirm:true,drawDice:true,drawDoublingDice: true,undo:true});
   }
   
     
 }
 
 function newGame() {
-  bggame.board.update({forPlayer : me.num, roll:false,confirm:true,draw:true,drawDice:true,undo:true});
+  bggame.board.update({forPlayer : me.num, roll:false,confirm:true,drawDoublingDice: true,draw:true,drawDice:true, undo:true});
 }
 
 
