@@ -41,9 +41,7 @@ function bgOnClick(e) {
   // all info on the user's click
   var info = getCursorPosition(e);
   
-
   if (me.num == bggame.board.playerTurn()) {
-  
     // check to see if user doubled
     if (info.doublingDiceSend) {
       if (bggame.board.canDouble) {
@@ -66,12 +64,8 @@ function bgOnClick(e) {
   }
 
   if (me.num == bggame.board.playerTurn() && bggame.board.dice.isRolled) {
-    var mePlayer = bggame.board.getPlayerByNum(me.num);
     var meBar = bggame.board.getBarByNum(me.num);
     var triangle = bggame.board.getTriangleByNum(info.triangle); 
-    var bearOff = bggame.board.getBearOffByPlayerNum(me.num); // refactor to get from "getCursorPosition"
-    var bar = bggame.board.getBarByNum(info.bar);
-    var selectedBar = bggame.board.getSelectedBar();
   
     if (meBar.isEmpty()) {
       if (bggame.board.getSelectedTriangle().num == -1 && triangle.isEmpty()) {
@@ -79,31 +73,28 @@ function bgOnClick(e) {
       } else {
           if (bggame.board.getSelectedTriangle().num == -1 && triangle.player == me.num) {
             bggame.board.selectedTriangleNum = triangle.num;
-          } else if (bggame.board.getSelectedTriangle().num != -1 && triangle.num != -1 && (triangle.player == me.num || triangle.numCheckers < 2)) { //eh....    
+          } else if (bggame.board.getSelectedTriangle().num != -1 && triangle.num != -1) {
             bggame.board.updateSpace(bggame.board.getSelectedTriangle(), triangle);
-          } else if (bggame.board.getSelectedTriangle().num != -1 && (bearOff.player == me.num)) {
-            bggame.board.updateSpace(bggame.board.getSelectedTriangle(), bearOff);
+          } else if (bggame.board.getSelectedTriangle().num != -1) {
+            bggame.board.updateSpace(bggame.board.getSelectedTriangle(), bggame.board.getBearOffByPlayerNum(me.num));
           }
       }
     } else {
-      if (bar.player == me.num && bggame.board.getSelectedBar().num == -1) {
-        bggame.board.selectedBarNum = bar.player;
+      if (bggame.board.getSelectedBar().num == -1) {
+        bggame.board.selectedBarNum = me.num;
       } else {
         if (bggame.board.getSelectedBar().num != -1 && triangle.num >= 1) {
           bggame.board.updateSpace(bggame.board.getSelectedBar(), triangle);
         } 
       }
     } 
-  bggame.board.update({forPlayer : me.num, draw:true,confirm:true,drawDice:true,drawDoublingDice: true,undo:true});
-  }
-  
-    
+    bggame.board.update({forPlayer : me.num, draw:true,confirm:true,drawDice:true,drawDoublingDice: true,undo:true});
+  } 
 }
 
 function newGame() {
   bggame.board.update({forPlayer : me.num, roll:false,confirm:true,drawDoublingDice: true,draw:true,drawDice:true, undo:true});
 }
-
 
 function initGame(canvasElement, data) { 
   if (!canvasElement) {
