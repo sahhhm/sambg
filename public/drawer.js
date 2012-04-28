@@ -46,18 +46,32 @@ function Drawer(s) {
     this.drawingContext.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
     this.drawingContext.beginPath();
     this.drawingContext.lineWidth =  1;
-    
-    /* vertical lines */
+ 
+    // board triangles, decoration
     for (var x = 0; x <= this.specs.pixelWidth; x += this.specs.pieceWidth) {
-      this.drawingContext.moveTo(0.5 + x, 0);
-      this.drawingContext.lineTo(0.5 + x, this.specs.pixelHeight);
-    }
+      this.drawingContext.save();
+      this.drawingContext.globalAlpha = .3;
+      this.drawingContext.strokeStyle = "black";
+      
+      // top triangles
+      this.drawingContext.beginPath();
+      this.drawingContext.moveTo(x, 0);
+      this.drawingContext.lineTo(x + this.specs.pieceWidth/2, this.specs.maxPiecesPerTriangle * this.specs.pieceHeight);
+      this.drawingContext.lineTo(x + this.specs.pieceWidth, 0);
+      this.drawingContext.lineTo(x, 0);
+      
+      //botton triangles
+      this.drawingContext.stroke();
+      this.drawingContext.beginPath();
+      this.drawingContext.moveTo(x, this.specs.pixelHeight);
+      this.drawingContext.lineTo(x + this.specs.pieceWidth/2, this.specs.pixelHeight - (this.specs.maxPiecesPerTriangle * this.specs.pieceHeight));
+      this.drawingContext.lineTo(x + this.specs.pieceWidth, this.specs.pixelHeight);
+      this.drawingContext.lineTo(x, this.specs.pixelHeight);
+      this.drawingContext.stroke();
+      
+      this.drawingContext.restore();
+    }    
 
-    /* horizontal lines */
-    for (var y = 0; y <= this.specs.pixelHeight; y += this.specs.pieceHeight) {
-     this.drawingContext.moveTo(0, 0.5 + y);
-      this.drawingContext.lineTo(this.specs.pixelWidth, 0.5 +  y);
-    }
     
     /* draw it! */
     this.drawingContext.strokeStyle = "#ccc";
