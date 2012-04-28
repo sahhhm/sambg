@@ -11,10 +11,7 @@
     <div id="list_of_rooms"></div>
   </div>
   
-  <div id="game_area">
-    <div id="game_area_input"></div>
-    <div id="doubling-area"></div>
-  </div>
+  <div id="game_area"></div>
   
 </body>
 </html>
@@ -100,7 +97,6 @@
      }
    });
    
-   
    socket.on( 'double action', function( data ) {
      if (data.action == "accept") {
        bggame.board.doublingDice.doubleDice((data.choosingPlayer % 2) + 1);
@@ -147,18 +143,18 @@
      socket.emit('join room', {room: selectedRoom});
    });  
 
-   $("#game_area_input").on("click", "#undo", function(e) {
+   $("div").on("click", "button[id='undo']", function(e) {
       bggame.board.undoMove();
       bggame.board.update({forPlayer : me.num, draw:true,confirm:true,drawDice:true,drawDoublingDice: true,undo:true});
    });   
    
-   $("#doubling-area").on("click", "button[id^='double-']", function(e) {
+   $("div").on("click", "button[id^='double-']", function(e) {
      var act = this.id.split('-')[1]; // action is either 'accept' or 'reject'
      socket.emit( 'double chosen', { room: selectedRoom, choosingPlayer: me.num, action: act } );
    });
 
    // for debugging only
-   $("#game_area_input").on("click", "#force-sub", function(e) {
+   $("div").on("click", "button[id='force-sub']", function(e) {
       var inp = $("#f-inp").val();
       if (inp != "00") {
         socket.emit('force dice', { room: selectedRoom, str: inp });

@@ -100,7 +100,10 @@ function initGame(canvasElement, data) {
   if (!canvasElement) {
     canvasElement = document.createElement("canvas");
     canvasElement.id = "bg_canvas";
-
+    
+    $("#game_area").append("<div id='game_area_input'></div>");
+    $("#game_area").append("<div id='doubling-area'></div>");
+    
     $("#game_area_input").append( '<p id="iam">I am Player: <span id="iam-player">null</span></p>' + 
                                   '<div id="u-button"><button id="undo">undo move</button></div>' +
                                   '<input type="text" id="f-inp" value="00" size="2"/><div id="force-dice"><button id="force-sub">force roll</button></div>');//for debugging only
