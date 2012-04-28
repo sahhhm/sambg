@@ -67,7 +67,8 @@
    
    socket.on('dice', function(data) {
      console.log("got dice event");
-     bggame.board.update({forPlayer : me.num, roll:true, die1: data.die1, die2: data.die2 });
+     bggame.board.roll( { die1: data.die1, die2 : data.die2 } );
+     bggame.board.update( { forPlayer : me.num });
    });
    
    //for debugging only
@@ -109,8 +110,9 @@
    
    socket.on('update turns', function() {
       console.log("got update turns event");
-      bggame.board.update({ forPlayer : me.num, updateTurn : true });
-
+     // bggame.board.update({ forPlayer : me.num, updateTurn : true });
+      bggame.board.updateTurn();  
+      bggame.board.update({ forPlayer: me.num });
    });
    
    socket.on('force leave room', function() {

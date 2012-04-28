@@ -155,18 +155,21 @@ function Board(opts) {
     return this.getPlayers()[n-1];
   }
   
+  this.roll = function(opts) {
+    this.dice.roll({die1 : opts.die1, die2 : opts.die2});
+  }
+ 
+  this.updateTurn = function() {
+    this.turns.clearCurrentToHistory();
+    this.dice.isRolled = false;
+    this.numMoves += 1;
+  }
+
   this.update = function(opts) {
     if (!opts.forPlayer) {
       opts.forPlayer = -1;
     }
-    if (opts.updateTurn) {
-      this.turns.clearCurrentToHistory();
-      this.dice.isRolled = false;
-      this.numMoves += 1;    
-    }
-    if (opts.roll) {
-      this.dice.roll({die1 : opts.die1, die2 : opts.die2});
-    }
+
     this.updateDraw();
     this.turns.currentTurn.length ? this.drawer.undoButtonElement.disabled = false : this.drawer.undoButtonElement.disabled = true;
     this.canConfirm(opts.forPlayer) ? this.playerCanConfirm = true : this.playerCanConfirm = false;
