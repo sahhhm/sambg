@@ -167,24 +167,12 @@ function Board(opts) {
     if (opts.roll) {
       this.dice.roll({die1 : opts.die1, die2 : opts.die2});
     }
-    if (opts.draw) {
-      this.updateDraw();
-    }
-    if (opts.drawDice) {
-      this.drawDice(opts.forPlayer);
-    }
-    if (opts.drawDoublingDice) {
-      this.drawDoublingDice(opts.forPlayer);
-    }
-    if (opts.undo) {
-      this.turns.currentTurn.length ? this.drawer.undoButtonElement.disabled = false : this.drawer.undoButtonElement.disabled = true;
-    }
-    if (opts.confirm) {
-      this.canConfirm(opts.forPlayer) ? this.playerCanConfirm = true : this.playerCanConfirm = false;
-    }
-    if (opts.canRoll) {
-      this.canRoll(opts.forPlayer) ? this.playerCanRoll = true : this.playerCanRoll = false;
-    }
+    this.updateDraw();
+    this.turns.currentTurn.length ? this.drawer.undoButtonElement.disabled = false : this.drawer.undoButtonElement.disabled = true;
+    this.canConfirm(opts.forPlayer) ? this.playerCanConfirm = true : this.playerCanConfirm = false;
+    this.canRoll(opts.forPlayer) ? this.playerCanRoll = true : this.playerCanRoll = false;
+    this.drawDice(opts.forPlayer);
+    this.drawDoublingDice(opts.forPlayer);
   }
 
   this.drawDice = function(forPlayerNum) {
