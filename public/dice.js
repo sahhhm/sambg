@@ -51,7 +51,7 @@ function Dice() {
   
   this.updateDiceOnMove = function(num) {
     for ( var i = 0; i < this.dice.length; i++ ) {
-      if ( this.dice[i].value == num ) {
+      if ( this.dice[i].value == num && this.dice[i].isUsed == false ) {
         this.dice[i].isUsed = true;
         break;
       }
@@ -60,8 +60,9 @@ function Dice() {
   
   this.replaceDiceOnUndo = function(num) {
     for ( var i = 0; i < this.dice.length; i++ ) {
-      if ( this.dice[i].value == num ) {
+      if ( this.dice[i].value == num  && this.dice[i].isUsed == true ) {
         this.dice[i].isUsed = false;
+        break;
       }
     } 
   }

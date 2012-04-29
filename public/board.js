@@ -47,6 +47,7 @@ function Board(opts) {
   this.bPlayers = opts.players;
       
   this.gTriangles = 
+  
     [new Triangle(1, this.specs.boardWidth-1,   1, 2),
      new Triangle(2, this.specs.boardWidth-2,   0, 0),
      new Triangle(3, this.specs.boardWidth-3,   0, 0),
@@ -253,7 +254,7 @@ function Board(opts) {
     var combinedFromTriangleNum; // for combined moves, this variable represents the current entry point
 
     
-    for (var t = 0; t < 2; t++) {
+    for (var t = 0; t < this.dice.dice.length; t++) {
       if ( !this.dice.dice[t].isUsed ) {
       // ******************************
       // NORMAL, NON-BEAR MOVES *******
@@ -334,7 +335,7 @@ function Board(opts) {
               var fromNormalized = ( Math.abs( from.num - player.homeEndNum ) + 1 );
               var startNormalized = ( Math.abs(start - player.homeEndNum) + 1 );
               var tempBear = this.getBearOffByPlayerNum( player.num );
-              if ( this.dice.dice[t].value + from.num * player.direction  == 0 || this.dice.dice[t].value + from.num * player.direction == 25 ) {
+              if ( this.dice.dice[t].value + from.num * player.direction  == 0 || this.dice.dice[t].value + from.num * player.direction == 25 ) { // CLEAN UP
                 console.log("CAN BEAR OFF FROM", from.num);
                 bears.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tempBear.num, tempBear.type, false, Math.abs( from.entry - tempBear.entry ) )] } );
               } else if (fromNormalized  == startNormalized && this.dice.dice[t].value > startNormalized) {
