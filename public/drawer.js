@@ -39,8 +39,11 @@ function Drawer(s) {
   this.interact.dice.startY = this.interact.startY + this.interact.padding;
   this.interact.dice.widthPix = this.interact.dice.columns * this.interact.pieceWidthPix - this.interact.padding * 2;
   this.interact.dice.heightPix =  this.interact.pieceHeightPix - this.interact.padding * 2;
-  this.interact.dice.activeColor = "rgba(238, 213, 210, 1)";
-  this.interact.dice.inactiveColor = "rgba(238, 213, 210, 0.1)";   
+  this.interact.dice.pieceWidth = this.interact.dice.heightPix 
+  this.interact.dice.pieceHeight = this.interact.dice.heightPix;
+  this.interact.dice.piecePadding = Math.abs((this.interact.dice.widthPix - 4*this.interact.dice.pieceWidth) / 5);
+  this.interact.dice.alphaUsed = 0.2;
+  this.interact.dice.alphaUnused = 0.8;
   
   this.drawBoard = function() {
     this.drawingContext.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
@@ -90,12 +93,16 @@ function Drawer(s) {
     }
     
     /* interact area... doubling dice, regular dice, etc. */
-    //this.drawingContext.fillStyle = "#f0f";
+    this.drawingContext.fillStyle = "#f0f";
     //this.drawingContext.fillRect(this.interact.startX, this.interact.startY, this.interact.totalWidthPix,  this.interact.totalHeightPix);  
     //this.drawingContext.fillStyle = "#D2B48C";
     //this.drawingContext.fillRect(this.interact.doubling.startX, this.interact.doubling.startY, this.interact.doubling.widthPix,  this.interact.doubling.heightPix);    
     //this.drawingContext.fillStyle = this.interact.dice.activeColor;
-    //this.drawingContext.fillRect(this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix,  this.interact.dice.heightPix);    
+    //this.drawingContext.fillRect(this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix,  this.interact.dice.heightPix);  
+    //this.drawingContext.fillRect(this.interact.dice.startX + this.interact.dice.piecePadding +  0*(this.interact.dice.pieceWidth  + this.interact.dice.piecePadding), this.interact.dice.startY, this.interact.dice.pieceWidth, this.interact.dice.pieceHeight);
+    //this.drawingContext.fillRect(this.interact.dice.startX + this.interact.dice.piecePadding +  1*(this.interact.dice.pieceWidth  + this.interact.dice.piecePadding), this.interact.dice.startY, this.interact.dice.pieceWidth, this.interact.dice.pieceHeight);
+    //this.drawingContext.fillRect(this.interact.dice.startX + this.interact.dice.piecePadding +  2*(this.interact.dice.pieceWidth  + this.interact.dice.piecePadding), this.interact.dice.startY, this.interact.dice.pieceWidth, this.interact.dice.pieceHeight);
+    //this.drawingContext.fillRect(this.interact.dice.startX + this.interact.dice.piecePadding +  3*(this.interact.dice.pieceWidth  + this.interact.dice.piecePadding), this.interact.dice.startY, this.interact.dice.pieceWidth, this.interact.dice.pieceHeight);
   }
   
   this.drawDoublingDice = function(opts) {
@@ -111,31 +118,32 @@ function Drawer(s) {
   this.drawDice = function(opts) {
   //{ dice: Dice (array of DicePieces), currentPlayer: Player, mePlayer: Player, otherPlayer: Player, pCanConfirm: boolean, pCanRoll: boolean } 
     
-    // generate dice "text"
-    var i;
-    var text = "";
-    text += " [ ";
-    for (var i = 0; i < opts.dice.dice.length; i++) i == opts.dice.dice.length -1 ? text += opts.dice.dice[i].value  : text += opts.dice.dice[i].value + " - ";
-    text += " ] ";
-    for (var i = 0; i < opts.dice.dice.length; i++) {
-      if ( !opts.dice.dice[i].isUsed ) {
-        i == opts.dice.dice.length -1 ? text += opts.dice.dice[i].value  : text += opts.dice.dice[i].value + " - ";   
-      }
-    }
-    
     this.drawingContext.save();    
-
-    // bounding box 
-    if (opts.dice.isRolled) {
-      this.drawingContext.fillStyle = opts.currentPlayer.color;
-    } else {
-      this.drawingContext.fillStyle = opts.otherPlayer.color;
-    }
-    this.drawingContext.globalAlpha = 0.3;
-    this.drawingContext.clearRect(this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix,  this.interact.dice.heightPix); 
-    this.drawingContext.fillRect(this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix,  this.interact.dice.heightPix); 
     
-    // do we need to "highlight" to indicate an action?
+    // clear entire dice area
+    this.drawingContext.clearRect(this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix,  this.interact.dice.heightPix); 
+
+    // draw each individual dice
+    var fs  = ( opts.dice.isRolled ) ? opts.currentPlayer.color : opts.otherPlayer.color;
+    for ( var d = 0; d < opts.dice.dice.length; d++ ) {
+      var pos = ( d + 1 ) % 4; // center the dice when there are only two... current looks funny when you have doubles and you move one at a time...
+      this.drawingContext.globalAlpha = ( opts.dice.dice[d].isUsed ) ? this.interact.dice.alphaUsed : this.interact.dice.alphaUnused;
+      this.drawingContext.fillStyle = fs;
+      this.drawingContext.fillRect(this.interact.dice.startX + this.interact.dice.piecePadding +  pos * (this.interact.dice.pieceWidth  + this.interact.dice.piecePadding), 
+                                   this.interact.dice.startY, 
+                                   this.interact.dice.pieceWidth, this.interact.dice.pieceHeight);
+      
+      // display dice value
+      this.drawingContext.fillStyle = "white";
+      this.drawingContext.globalAlpha = 1;
+      this.drawingContext.font = "12pt Arial";
+      this.drawingContext.fillText(opts.dice.dice[d].value, 
+                                  this.interact.dice.startX + this.interact.dice.piecePadding +  pos * (this.interact.dice.pieceWidth  + this.interact.dice.piecePadding) + ((this.interact.dice.pieceWidth - this.interact.dice.piecePadding )/2) , 
+                                  this.interact.dice.startY + ( (this.interact.dice.pieceHeight + this.interact.padding) / 2 ));       
+    }
+    
+    /*
+    // do we need to "highlight" to indicate an action? not right now
     if ( opts.pCanConfirm || opts.pCanRoll ) {
       if ( opts.pCanConfirm ) {
         this.drawingContext.strokeStyle = opts.currentPlayer.color;
@@ -148,12 +156,7 @@ function Drawer(s) {
       this.drawingContext.strokeRect( this.interact.dice.startX + this.drawingContext.lineWidth, this.interact.dice.startY + this.drawingContext.lineWidth, 
                                       this.interact.dice.widthPix - 2*this.drawingContext.lineWidth,  this.interact.dice.heightPix - 2*this.drawingContext.lineWidth );   
     }
-    
-    // draw/write the actual dice values
-    this.drawingContext.globalAlpha = 1;
-    this.drawingContext.font = "12pt Arial";
-    this.drawingContext.fillText(text, this.interact.dice.startX , this.interact.dice.startY + this.interact.dice.heightPix/2 + this.interact.padding );       
-    
+    */
     this.drawingContext.restore();
   }
   
