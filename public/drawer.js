@@ -109,15 +109,19 @@ function Drawer(s) {
   }
 
   this.drawDice = function(opts) {
-  //{ diceCopy : diceCopy (array) , dice: Dice (array), currentPlayer: Player, mePlayer: Player, otherPlayer: Player, pCanConfirm: boolean, pCanRoll: boolean } 
+  //{ dice: Dice (array of DicePieces), currentPlayer: Player, mePlayer: Player, otherPlayer: Player, pCanConfirm: boolean, pCanRoll: boolean } 
     
     // generate dice "text"
     var i;
     var text = "";
     text += " [ ";
-    for (var i = 0; i < opts.diceCopy.length; i++) i == opts.diceCopy.length -1 ? text += opts.diceCopy[i]  : text += opts.diceCopy[i] + " - ";
+    for (var i = 0; i < opts.dice.dice.length; i++) i == opts.dice.dice.length -1 ? text += opts.dice.dice[i].value  : text += opts.dice.dice[i].value + " - ";
     text += " ] ";
-    for (var i = 0; i < opts.dice.dice.length; i++) i == opts.dice.dice.length -1 ? text += opts.dice.dice[i]  : text += opts.dice.dice[i] + " - ";   
+    for (var i = 0; i < opts.dice.dice.length; i++) {
+      if ( !opts.dice.dice[i].isUsed ) {
+        i == opts.dice.dice.length -1 ? text += opts.dice.dice[i].value  : text += opts.dice.dice[i].value + " - ";   
+      }
+    }
     
     this.drawingContext.save();    
 

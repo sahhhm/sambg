@@ -179,7 +179,7 @@ function Board(opts) {
   }
 
   this.drawDice = function(forPlayerNum) {
-    this.drawer.drawDice( { diceCopy : this.dice.diceCopy, dice: this.dice, currentPlayer: this.getPlayerByNum(this.playerTurn()), mePlayer: this.getPlayerByNum(forPlayerNum), otherPlayer: this.getPlayerByNum((this.playerTurn() % 2 + 1)), pCanConfirm: this.canConfirm(forPlayerNum), pCanRoll: this.canRoll(forPlayerNum) }  );
+    this.drawer.drawDice( { dice: this.dice, currentPlayer: this.getPlayerByNum(this.playerTurn()), mePlayer: this.getPlayerByNum(forPlayerNum), otherPlayer: this.getPlayerByNum((this.playerTurn() % 2 + 1)), pCanConfirm: this.canConfirm(forPlayerNum), pCanRoll: this.canRoll(forPlayerNum) }  );
   }    
   
   this.drawDoublingDice = function(playerNum) {
@@ -191,12 +191,12 @@ function Board(opts) {
     // returns true if the user is able to confirm the move.
     // Either all dice moves have been played, or no valid
     // moves exist.
-    return ( ( !this.dice.dice.length || !this.anyMovesLeft() ) && ( num == this.playerTurn() ) && this.dice.isRolled );
+    return ( ( !this.dice.numUnusedDice() || !this.anyMovesLeft() ) && ( num == this.playerTurn() ) && this.dice.isRolled );
   }  
 
   this.canRoll = function(num) {
     // if it's the next players turn, let them request new dice.
-    return ( (!this.dice.dice.length || !this.dice.isRolled) && num == this.playerTurn() );
+    return ( (!this.dice.numUnusedDice() || !this.dice.isRolled) && num == this.playerTurn() );
     
   }
   
@@ -254,96 +254,102 @@ function Board(opts) {
 
     
     for (var t = 0; t < 2; t++) {
-    // ******************************
-    // NORMAL, NON-BEAR MOVES *******
-    // ******************************  
+      if ( !this.dice.dice[t].isUsed ) {
       // ******************************
-      // ******* DIRECT MOVES SECTION
-      // ******************************
-      // ensure the direct moves are valid
-      if (from.validMoveTo(this.getTriangleByNum(entry + (this.dice.dice[t] * player.direction)))) {
-        
-        // add the direct move
-        tnum = entry + (this.dice.dice[t] * player.direction);
-        tempTo = this.getTriangleByNum(tnum);
-        directs.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tnum, tempTo.type, false, Math.abs( from.entry - tempTo.entry ) )] } );
-        curSum = this.dice.dice[t];
-  
-      
-        // now begin to look at any potential combined moves after this initial direct move
-        combinedFromTriangleNum = entry;
-        tnum = combinedFromTriangleNum + (this.dice.dice[t] * player.direction);
-        
-        // begin looking for combined moves only if the player has 1 or less chekers in their bar
-        if (playerBar.numCheckers <= 1) {
+      // NORMAL, NON-BEAR MOVES *******
+      // ******************************  
         // ******************************
-        // ******* COMBINED MOVES SECTION
+        // ******* DIRECT MOVES SECTION
         // ******************************
-          // add the initialial direct move
-          tempTo = this.getTriangleByNum( tnum );
-          tempFrom = this.getTriangleByNum( combinedFromTriangleNum );
-          combineds.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, tempFrom.num, tempFrom.type, tnum, tempTo.type, false, Math.abs( tempFrom.entry - tempTo.entry ) )] } );
-          combinedFromTriangleNum = tnum;   
-          for (var i = 0; i < this.dice.dice.length; i++) {
+        // ensure the direct moves are valid
+        if (from.validMoveTo(this.getTriangleByNum(entry + (this.dice.dice[t].value * player.direction)))) {
+          
+          // add the direct move
+          tnum = entry + (this.dice.dice[t].value * player.direction);
+          tempTo = this.getTriangleByNum(tnum);
+          directs.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tnum, tempTo.type, false, Math.abs( from.entry - tempTo.entry ) )] } );
+          curSum = this.dice.dice[t].value;
+    
         
-            // make sure we don't try to move on the same dice twice
-            if (i != t) {
-             
-              // make sure combined move is valid
-              if (from.validMoveTo(this.getTriangleByNum(entry + ((curSum + this.dice.dice[i]) * player.direction)))) {
-           
-                tnum = entry + ((curSum + this.dice.dice[i]) * player.direction);
-                tempTo = this.getTriangleByNum( tnum );
-                tempFrom = this.getTriangleByNum( combinedFromTriangleNum );
-                // create a copy of the most recent combined move and build/add the combined move off of that
-                var movecpy = combineds[combineds.length-1].moves.slice();
-                combineds.push( { moves: movecpy });
-                combineds[combineds.length - 1].moves.push(new AMove(this.dice.confirmedRolls, from.player, tempFrom.num, tempFrom.type, tnum, tempTo.type, false, Math.abs ( tempFrom.entry - tempTo.entry ) ));
-                combinedFromTriangleNum = tnum;
-                curSum += this.dice.dice[i];	
-              
-              } else {
-                break;
+          // now begin to look at any potential combined moves after this initial direct move
+          combinedFromTriangleNum = entry;
+          tnum = combinedFromTriangleNum + (this.dice.dice[t].value * player.direction);
+          
+          // begin looking for combined moves only if the player has 1 or less chekers in their bar
+          if (playerBar.numCheckers <= 1) {
+          // ******************************
+          // ******* COMBINED MOVES SECTION
+          // ******************************
+            // add the initialial direct move
+            tempTo = this.getTriangleByNum( tnum );
+            tempFrom = this.getTriangleByNum( combinedFromTriangleNum );
+            combineds.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, tempFrom.num, tempFrom.type, tnum, tempTo.type, false, Math.abs( tempFrom.entry - tempTo.entry ) )] } );
+            combinedFromTriangleNum = tnum;   
+            for (var i = 0; i < this.dice.dice.length; i++) {
+              if ( !this.dice.dice[i].isUsed ) {
+                // make sure we don't try to move on the same dice twice
+                if (i != t) {
+                 
+                  // make sure combined move is valid
+                  if (from.validMoveTo(this.getTriangleByNum(entry + ((curSum + this.dice.dice[i].value) * player.direction)))) {
+               
+                    tnum = entry + ((curSum + this.dice.dice[i].value) * player.direction);
+                    tempTo = this.getTriangleByNum( tnum );
+                    tempFrom = this.getTriangleByNum( combinedFromTriangleNum );
+                    // create a copy of the most recent combined move and build/add the combined move off of that
+                    var movecpy = combineds[combineds.length-1].moves.slice();
+                    combineds.push( { moves: movecpy });
+                    combineds[combineds.length - 1].moves.push(new AMove(this.dice.confirmedRolls, from.player, tempFrom.num, tempFrom.type, tnum, tempTo.type, false, Math.abs ( tempFrom.entry - tempTo.entry ) ));
+                    combinedFromTriangleNum = tnum;
+                    curSum += this.dice.dice[i].value;	
+                  
+                  } else {
+                    break;
+                  }
+                }
               }
             }
           }
         }
+      
+    
+        // ******************************
+        // ******* BEAR OFF MOVES SECTION
+        // ****************************** 
+        if (this.playerReadyToBearOff(player)) {
+          for (var t = 0; t < this.dice.dice.length; t++) {
+            if ( !this.dice.dice[t].isUsed ) {
+              var start = -1;
+              //determine the first space from where the player can bar off from
+              for (var i = 0; i < 6; i++) {
+              var tr = this.getTriangleByNum(player.homeStartNum + (i * player.direction))
+                if (tr.numCheckers > 0 && tr.player == player.num) {
+                  start = tr.num;
+                  //console.log("potential bear off start", start);
+                  break;
+                }
+              }	
+
+              // check to see if the player can directly bear off
+              var fromNormalized = ( Math.abs( from.num - player.homeEndNum ) + 1 );
+              var startNormalized = ( Math.abs(start - player.homeEndNum) + 1 );
+              var tempBear = this.getBearOffByPlayerNum( player.num );
+              if ( this.dice.dice[t].value + from.num * player.direction  == 0 || this.dice.dice[t].value + from.num * player.direction == 25 ) {
+                console.log("CAN BEAR OFF FROM", from.num);
+                bears.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tempBear.num, tempBear.type, false, Math.abs( from.entry - tempBear.entry ) )] } );
+              } else if (fromNormalized  == startNormalized && this.dice.dice[t].value > startNormalized) {
+                console.log("CAN BEAR OFF due greater dice FROM", from.num);
+                bears.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tempBear.num, tempBear.type, false, this.dice.dice[t].value )] } );
+              }
+            }		
+          }      
+        }
       }
     }
-	
-    // ******************************
-    // ******* BEAR OFF MOVES SECTION
-    // ****************************** 
-    if (this.playerReadyToBearOff(player)) {
-      for (var t = 0; t < this.dice.dice.length; t++) {
-	      var start = -1;
-	      //determine the first space from where the player can bar off from
-	      for (var i = 0; i < 6; i++) {
-		    var tr = this.getTriangleByNum(player.homeStartNum + (i * player.direction))
-          if (tr.numCheckers > 0 && tr.player == player.num) {
-		        start = tr.num;
-			      //console.log("potential bear off start", start);
-			      break;
-		      }
-        }	
-
-	      // check to see if the player can directly bear off
-	      var fromNormalized = ( Math.abs( from.num - player.homeEndNum ) + 1 );
-	      var startNormalized = ( Math.abs(start - player.homeEndNum) + 1 );
-        var tempBear = this.getBearOffByPlayerNum( player.num );
-	      if ( this.dice.dice[t] + from.num * player.direction  == 0 || this.dice.dice[t] + from.num * player.direction == 25 ) {
-	        console.log("CAN BEAR OFF FROM", from.num);
-	        bears.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tempBear.num, tempBear.type, false, Math.abs( from.entry - tempBear.entry ) )] } );
-	      } else if (fromNormalized  == startNormalized && this.dice.dice[t] > startNormalized) {
-	        console.log("CAN BEAR OFF due greater dice FROM", from.num);
-	        bears.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tempBear.num, tempBear.type, false, this.dice.dice[t] )] } );
-	      }
-      }		  
-    }
-    
     //combine and return all potential moves
     directs = directs.concat(bears);
     return directs.concat(combineds);	
+ 
   }  
   
   this.playerReadyToBearOff = function(p) {
