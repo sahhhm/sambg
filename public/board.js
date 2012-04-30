@@ -271,21 +271,21 @@ function Board(opts) {
           directs.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tnum, tempTo.type, false, Math.abs( from.entry - tempTo.entry ) )] } );
           curSum = this.dice.dice[t].value;
     
-        
-          // now begin to look at any potential combined moves after this initial direct move
-          combinedFromTriangleNum = entry;
-          tnum = combinedFromTriangleNum + (this.dice.dice[t].value * player.direction);
           
-          // begin looking for combined moves only if the player has 1 or less chekers in their bar
-          if (playerBar.numCheckers <= 1) {
           // ******************************
           // ******* COMBINED MOVES SECTION
           // ******************************
+          
+          // begin looking for combined moves only if the player has 1 or less chekers in their bar
+          if (playerBar.numCheckers <= 1) {
+          
             // add the initialial direct move
-            tempTo = this.getTriangleByNum( tnum );
-            tempFrom = this.getTriangleByNum( combinedFromTriangleNum );
-            combineds.push( { moves : [new AMove(this.dice.confirmedRolls, from.player, tempFrom.num, tempFrom.type, tnum, tempTo.type, false, Math.abs( tempFrom.entry - tempTo.entry ) )] } );
+            var dircpy = directs[ directs.length - 1 ].moves.slice();
+            combineds.push( { moves: dircpy  });
+            //combineds.push( directs[ directs.length - 1 ] );
+            tnum = entry + (this.dice.dice[t].value * player.direction);
             combinedFromTriangleNum = tnum;   
+            
             for (var i = 0; i < this.dice.dice.length; i++) {
               if ( !this.dice.dice[i].isUsed ) {
                 // make sure we don't try to move on the same dice twice
