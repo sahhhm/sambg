@@ -35,4 +35,27 @@ function Checker(row, column, player) {
     return bnum;	 
   }
   
+  this.draw = function(ctx, selected) {
+    var x = (this.column * this.drawInfo.pieceWidth) + (this.drawInfo.pieceWidth/2);
+    var y = (this.row * this.drawInfo.pieceHeight) + (this.drawInfo.pieceHeight/2);
+    var radius = (this.drawInfo.pieceWidth/2) - (this.drawInfo.pieceWidth/9);
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI*2, false);
+    ctx.closePath();
+
+    // make radial glare
+    var color = this.player == 1 ? this.drawInfo.p1color : this.drawInfo.p2color;
+    var grd = ctx.createRadialGradient(x, y, radius, x + 3, y - 5, radius-3);
+    grd.addColorStop(0, "white");
+    grd.addColorStop(1, color);
+    ctx.fillStyle = grd;
+    ctx.fill();
+    
+    if ( selected ) {
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "#0f0";
+      ctx.stroke();
+    }
+  }
+  
 }

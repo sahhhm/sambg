@@ -45,6 +45,26 @@ function Drawer(s) {
   this.interact.dice.alphaUsed = 0.2;
   this.interact.dice.alphaUnused = 0.8;
   
+  Checker.prototype.drawInfo = { pieceWidth : this.specs.pieceWidth,
+                                 pieceHeight: this.specs.pieceHeight,
+                                 p1color: this.specs.p1color,
+                                 p2color: this.specs.p2color 
+                               };
+  
+  Triangle.prototype.drawInfo = { maxPiecesPerTriangle: this.specs.maxPiecesPerTriangle,
+                                  boardHeight: this.specs.boardHeight,
+                                  pieceWidth : this.specs.pieceWidth,
+                                  pieceHeight: this.specs.pieceHeight
+                                }
+  
+  Bar.prototype.drawInfo = { maxPiecesPerTriangle: this.specs.maxPiecesPerTriangle,
+                                  boardHeight: this.specs.boardHeight,
+                                  pieceWidth : this.specs.pieceWidth,
+                                  pieceHeight: this.specs.pieceHeight
+                                }
+  
+                            
+                                
   this.drawBoard = function() {
     this.drawingContext.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
     this.drawingContext.beginPath();
@@ -132,16 +152,14 @@ function Drawer(s) {
   }
   
   this.drawTriangles = function(theTriangles) {  
-    /* draw pieces in each triangle */
     for (var i = 0; i < theTriangles.length; i++) {
-      this.drawTriangle(theTriangles[i]);
+      theTriangles[i].draw( this.drawingContext );
     }
   }
 
   this.drawBars = function(theBars) {
-    /* draw hit pieces */
     for (var j = 0; j < theBars.length; j++) {
-      this.drawBar(theBars[j]);
+      theBars[j].draw( this.drawingContext );
     }
   }
   
@@ -152,7 +170,7 @@ function Drawer(s) {
     }
   }  
 
-  this.highlight = function(space, width, isPotential) {
+  this.highlight = function(space) {
     var base, x;
     x = space.column * this.specs.pieceWidth;
     base = space.isTop() ? 0 : this.specs.pixelHeight;
@@ -171,44 +189,17 @@ function Drawer(s) {
 
   this.highlightTriangles = function(selected, potentials) {
     this.highlightSelectedSpace(selected);
-    for (var i = 0; i < potentials.length; i++) this.highlight(potentials[i], 3, true)
+    for (var i = 0; i < potentials.length; i++) this.highlight(potentials[i])
   }  
   
   this.highlightBars = function(selected, potentials) {
     this.highlightSelectedSpace(selected);
-    for (var i = 0; i < potentials.length; i++) this.highlight(potentials[i], 3, true)
+    for (var i = 0; i < potentials.length; i++) this.highlight(potentials[i])
   }      
   
   this.highlightBearOff = function (bo) {
-    this.highlight(bo, 10, true);
+    this.highlight(bo);
   }
-  
-  this.drawTriangle = function(t) { 
-    var thresh = this.specs.maxPiecesPerTriangle; // limit number of actual checkers drawn
-    var num = (t.numCheckers <= thresh) ? t.numCheckers : thresh;
-
-    for (var i = 0; i <= num - 1; i++) {
-      t.isTop() ? this.drawPiece(new Checker(i, t.column, t.player), false) : this.drawPiece(new Checker(this.specs.boardHeight - i - 1, t.column, t.player), false);
-    }
-    
-    if (t.numCheckers > (thresh)) {
-      t.isTop() ? this.drawThreshNum( { column: t.column, row: thresh - 1, isTop: t.isTop(), numCheckers: t.numCheckers } ) : 
-                  this.drawThreshNum( { column: t.column, row: this.specs.boardHeight - thresh, isTop: t.isTop(), numCheckers: t.numCheckers } ) ;
-    }
-  }  
-
-  this.drawThreshNum = function(opts) {
-    var x = (opts.column * this.specs.pieceWidth) + (this.specs.pieceWidth/2) - 5;
-    var y = (opts.row * this.specs.pieceHeight) + (this.specs.pieceHeight/2) + 5;  
-    this.drawingContext.font = "15pt Arial";
-    this.drawingContext.fillStyle = "white";
-    this.drawingContext.fillText(opts.numCheckers, x, y);
-  }  
-  
-  this.drawBar = function(b) {
-    for (var k = 0; k < b.numCheckers; k++) 
-      b.isTop() ? this.drawPiece(new Checker(k, b.column, b.player), false) : this.drawPiece(new Checker(this.specs.boardHeight - k - 1, b.column, b.player), false);	
-  }  
   
   this.drawBearOff = function(b) {
     for (var k = 0; k < b.numCheckers; k++) 
@@ -216,32 +207,12 @@ function Drawer(s) {
   }  
   
   this.highlightSelectedSpace = function(sp) {
-    sp.isTop() ? 
-      this.drawPiece(new Checker(sp.numCheckers - 1, sp.column, sp.player), true) : 
-      this.drawPiece(new Checker(this.specs.boardHeight - sp.numCheckers, sp.column, sp.player), true);
-  }
-  
-  this.drawPiece = function(ch, selected) {
-    var x = (ch.column * this.specs.pieceWidth) + (this.specs.pieceWidth/2);
-    var y = (ch.row * this.specs.pieceHeight) + (this.specs.pieceHeight/2);
-    var radius = (this.specs.pieceWidth/2) - (this.specs.pieceWidth/9);
-    this.drawingContext.beginPath();
-    this.drawingContext.arc(x, y, radius, 0, Math.PI*2, false);
-    this.drawingContext.closePath();
-
-    // make radial glare
-    var color = ch.player == 1 ? this.specs.p1color : this.specs.p2color;
-    var grd = this.drawingContext.createRadialGradient(x, y, radius, x + 3, y - 5, radius-3);
-    grd.addColorStop(0, "white");
-    grd.addColorStop(1, color);
-    this.drawingContext.fillStyle = grd;
-    this.drawingContext.fill();
-    
-    if ( selected ) {
-      this.drawingContext.lineWidth = 4;
-      this.drawingContext.strokeStyle = "#0f0";
-      this.drawingContext.stroke();
-    }
+    var row, col, player;
+    row = sp.isTop() ? sp.numCheckers - 1 : pos = this.specs.boardHeight - sp.numCheckers;
+    col = sp.column
+    player = sp.player
+    ch = new Checker( row, col, player );
+    ch.draw( this.drawingContext, true );
   }
 
   this.drawBearPiece = function(ch) {
