@@ -48,68 +48,51 @@ function Drawer(s) {
   Checker.prototype.drawInfo = { pieceWidth : this.specs.pieceWidth,
                                  pieceHeight: this.specs.pieceHeight,
                                  p1color: this.specs.p1color,
-                                 p2color: this.specs.p2color 
+                                 p2color: this.specs.p2color,
+                                 bearOffWidth : this.specs.bearOffWidth,
+                                 bearOffHeight : this.specs.bearOffHeight                                 
                                };
   
   Triangle.prototype.drawInfo = { maxPiecesPerTriangle: this.specs.maxPiecesPerTriangle,
                                   boardHeight: this.specs.boardHeight,
                                   pieceWidth : this.specs.pieceWidth,
-                                  pieceHeight: this.specs.pieceHeight
+                                  pieceHeight: this.specs.pieceHeight,
+                                  pixelHeight: this.specs.pixelHeight
                                 }
   
   Bar.prototype.drawInfo = { maxPiecesPerTriangle: this.specs.maxPiecesPerTriangle,
                                   boardHeight: this.specs.boardHeight,
                                   pieceWidth : this.specs.pieceWidth,
-                                  pieceHeight: this.specs.pieceHeight
+                                  pieceHeight: this.specs.pieceHeight,
+                                  pixelHeight : this.specs.pixelHeight,
+                                  barColumn : this.specs.barColumn
                                 }
   
-                            
+  BearOff.prototype.drawInfo = { maxPiecesPerTriangle: this.specs.maxPiecesPerTriangle,
+                                  boardHeight: this.specs.boardHeight,
+                                  pieceWidth : this.specs.pieceWidth,
+                                  pieceHeight: this.specs.pieceHeight,
+                                  bearOffWidth : this.specs.bearOffWidth,
+                                  bearOffHeight : this.specs.bearOffHeight,
+                                  pixelHeight : this.specs.pixelHeight,
+                                  bearOffColumn : this.specs.bearOffColumn
+                                }
                                 
-  this.drawBoard = function() {
+  this.drawBoard = function(tris, bars, bears, from, pots) {
     this.drawingContext.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
     this.drawingContext.beginPath();
     this.drawingContext.lineWidth =  1;
- 
-    this.drawingContext.save();
-    // board triangles
-    for (var x = 0; x <= this.specs.pixelWidth; x += this.specs.pieceWidth) {
+    
+    var spaces = tris.concat( bars ).concat( bears );
+    for ( var i = 0; i < spaces.length; i++ ) {
+      spaces[i].draw(this.drawingContext);
+    }
 
-      this.drawingContext.globalAlpha = .3;
-      this.drawingContext.strokeStyle = "black";
-      
-      // top triangles
-      this.drawingContext.beginPath();
-      this.drawingContext.moveTo(x, 0);
-      this.drawingContext.lineTo(x + this.specs.pieceWidth/2, this.specs.maxPiecesPerTriangle * this.specs.pieceHeight);
-      this.drawingContext.lineTo(x + this.specs.pieceWidth, 0);
-      this.drawingContext.lineTo(x, 0);
-      this.drawingContext.stroke();
-    
-      //botton triangles
-      this.drawingContext.beginPath();
-      this.drawingContext.moveTo(x, this.specs.pixelHeight);
-      this.drawingContext.lineTo(x + this.specs.pieceWidth/2, this.specs.pixelHeight - (this.specs.maxPiecesPerTriangle * this.specs.pieceHeight));
-      this.drawingContext.lineTo(x + this.specs.pieceWidth, this.specs.pixelHeight);
-      this.drawingContext.lineTo(x, this.specs.pixelHeight);
-      this.drawingContext.stroke();
-    }    
-    this.drawingContext.restore();
-    
-    /* draw it! */
-    this.drawingContext.strokeStyle = "#ccc";
-    this.drawingContext.stroke();
-  
-    /* bar */
-    this.drawingContext.fillStyle = "#ccc";
-    for (var y = 0; y <= this.specs.pixelHeight; y += this.specs.pieceHeight) {
-      this.drawingContext.fillRect(this.specs.pieceWidth * Math.floor(this.specs.boardWidth/2), y, this.specs.pieceWidth, this.specs.pieceHeight);
+    if ( from ) {
+      from.select( this.drawingContext );
+      for (var i = 0; i < pots.length; i++) pots[i].highlight( this.drawingContext );
     }
     
-    /* bear off area */
-    this.drawingContext.fillStyle = "#0f0";
-    for (var y = 0; y <= this.specs.pixelHeight; y += this.specs.pieceHeight) {
-      this.drawingContext.fillRect(this.specs.boardWidth * this.specs.pieceWidth + 1, y, this.specs.bearOffWidth, this.specs.pieceHeight);
-    }
   }
   
   this.drawDoublingDice = function(opts) {
@@ -123,7 +106,7 @@ function Drawer(s) {
   }
 
   this.drawDice = function(opts) {
-  //{ dice: Dice (array of DicePieces), currentPlayer: Player, mePlayer: Player, otherPlayer: Player, pCanConfirm: boolean, pCanRoll: boolean } 
+    // { dice: Dice (array of DicePieces), currentPlayer: Player, mePlayer: Player, otherPlayer: Player, pCanConfirm: boolean, pCanRoll: boolean } 
     
     this.drawingContext.save();    
     
@@ -151,93 +134,4 @@ function Drawer(s) {
     this.drawingContext.restore();
   }
   
-  this.drawTriangles = function(theTriangles) {  
-    for (var i = 0; i < theTriangles.length; i++) {
-      theTriangles[i].draw( this.drawingContext );
-    }
-  }
-
-  this.drawBars = function(theBars) {
-    for (var j = 0; j < theBars.length; j++) {
-      theBars[j].draw( this.drawingContext );
-    }
-  }
-  
-  this.drawBearOffs = function(theBOs) {
-    /* draw bear off area pieces */
-    for (var k = 0; k < theBOs.length; k++) {
-      this.drawBearOff(theBOs[k]);
-    }
-  }  
-
-  this.highlight = function(space) {
-    var base, x;
-    x = space.column * this.specs.pieceWidth;
-    base = space.isTop() ? 0 : this.specs.pixelHeight;
-
-    this.drawingContext.beginPath();
-    this.drawingContext.moveTo(x, base);
-    this.drawingContext.lineTo(x + this.specs.pieceWidth/2, Math.abs(base - (this.specs.maxPiecesPerTriangle * this.specs.pieceHeight)));
-    this.drawingContext.lineTo(x + this.specs.pieceWidth, base);
-    this.drawingContext.lineTo(x, base);
-    this.drawingContext.stroke();
-
-    this.drawingContext.lineWidth = 3;
-    this.drawingContext.strokeStyle = "#a020f0";
-    this.drawingContext.stroke();      
-  }
-
-  this.highlightTriangles = function(selected, potentials) {
-    this.highlightSelectedSpace(selected);
-    for (var i = 0; i < potentials.length; i++) this.highlight(potentials[i])
-  }  
-  
-  this.highlightBars = function(selected, potentials) {
-    this.highlightSelectedSpace(selected);
-    for (var i = 0; i < potentials.length; i++) this.highlight(potentials[i])
-  }      
-  
-  this.highlightBearOff = function (bo) {
-    this.highlight(bo);
-  }
-  
-  this.drawBearOff = function(b) {
-    for (var k = 0; k < b.numCheckers; k++) 
-      b.isTop() ? this.drawBearPiece(new Checker(k * this.specs.bearOffHeight, b.column, b.player)) : this.drawBearPiece(new Checker((this.specs.boardHeight * this.specs.pieceHeight) - ((k+1) * this.specs.bearOffHeight) - 1, b.column, b.player));	
-  }  
-  
-  this.highlightSelectedSpace = function(sp) {
-    var row, col, player;
-    row = sp.isTop() ? sp.numCheckers - 1 : pos = this.specs.boardHeight - sp.numCheckers;
-    col = sp.column
-    player = sp.player
-    ch = new Checker( row, col, player );
-    ch.draw( this.drawingContext, true );
-  }
-
-  this.drawBearPiece = function(ch) {
-    var kappa = .5522848;
-    var x = this.specs.pieceWidth * ch.column;
-    var y = ch.row;
-    var w = this.specs.bearOffWidth;
-    var h = this.specs.bearOffHeight;
-      ox = (w / 2) * kappa, // control point offset horizontal
-      oy = (h / 2) * kappa, // control point offset vertical
-      xe = x + w,           // x-end
-      ye = y + h,           // y-end
-      xm = x + w / 2,       // x-middle
-      ym = y + h / 2;       // y-middle
-
-    this.drawingContext.beginPath();
-    this.drawingContext.moveTo(x, ym);
-    this.drawingContext.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
-    this.drawingContext.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
-    this.drawingContext.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
-    this.drawingContext.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
-    this.drawingContext.closePath();
-    this.drawingContext.stroke();    
-    
-    ch.player == 1 ? this.drawingContext.fillStyle = this.specs.p1color : this.drawingContext.fillStyle = this.specs.p2color;
-    this.drawingContext.fill();   
-  }   
 }

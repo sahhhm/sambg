@@ -98,11 +98,11 @@ function Board(opts) {
              new Triangle(23, this.specs.boardWidth-2,  1, 3),
              new Triangle(24, this.specs.boardWidth-1,  1, 0)]; // player 1 home ends
       */
-  this.gBars = [new Bar(1, 0, this.specs.barColumn, 0), 
-                new Bar(2, this.specs.boardHeight - 1, this.specs.barColumn, 0)];
+  this.gBars = [new Bar(1, this.specs.barColumn, 0), 
+                new Bar(2, this.specs.barColumn, 0)];
   
-  this.gBearOffs = [new BearOff(1, 25, this.specs.boardHeight - 1, this.specs.bearOffColumn, 0),
-                    new BearOff(2, 0, 0, this.specs.bearOffColumn, 0)]; 
+  this.gBearOffs = [new BearOff(1, 25, this.specs.bearOffColumn, 6),
+                    new BearOff(2, 0,  this.specs.bearOffColumn, 3)]; 
                     
   this.getBars = function() {
     return this.gBars;
@@ -202,11 +202,6 @@ function Board(opts) {
   }
   
   this.updateDraw = function() {
-    this.drawer.drawBoard();
-    this.drawer.drawTriangles(this.getTriangles());
-    this.drawer.drawBars(this.getBars());
-    this.drawer.drawBearOffs(this.getBearOffs());
-    
     // highlight moves from either bar or triangle, when applicable
     var from;
     if (this.getSelectedTriangle().num != -1) {
@@ -215,13 +210,13 @@ function Board(opts) {
       from = this.getSelectedBar();
     }
 
+    var pots = [];
     if (from) {
       var tos = [];
       var playerCanBear = false;
       var potentials = this.findPotentialMoves(from);
       var fromPlayer = this.getPlayerByNum(from.player);
 
-      
       // look for all the potential spaces the player can move to and highlight them
       for (var i = 0; i < potentials.length; i++) {
         for (var j = 0; j < potentials[i].moves.length; j++) {
@@ -232,9 +227,13 @@ function Board(opts) {
           }
         }
       }
-      if (tos.length) this.drawer.highlightTriangles(from, tos);
-      if (playerCanBear) this.drawer.highlightBearOff(this.getBearOffByPlayerNum(from.player));
-    }  
+      pots = tos;
+      if (playerCanBear) {
+        pots = tos.concat( [ this.getBearOffByPlayerNum( from.player ) ] );
+      } 
+    }
+    
+    this.drawer.drawBoard(this.getTriangles(), this.getBars(), this.getBearOffs(), from, pots);
   }
   
   this.findPotentialMoves = function(from) {

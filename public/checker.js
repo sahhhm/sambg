@@ -57,5 +57,31 @@ function Checker(row, column, player) {
       ctx.stroke();
     }
   }
+
+  this.drawBear = function(ctx) {
+    var kappa = .5522848;
+    var x = this.drawInfo.pieceWidth * this.column;
+    var y = this.row;
+    var w = this.drawInfo.bearOffWidth;
+    var h = this.drawInfo.bearOffHeight;
+    ox = (w / 2) * kappa, // control point offset horizontal
+    oy = (h / 2) * kappa, // control point offset vertical
+    xe = x + w,           // x-end
+    ye = y + h,           // y-end
+    xm = x + w / 2,       // x-middle
+    ym = y + h / 2;       // y-middle
+
+    ctx.beginPath();
+    ctx.moveTo(x, ym);
+    ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+    ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+    ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+    ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+    ctx.closePath();
+    ctx.stroke();    
+    
+    ctx.fillStyle = this.player == 1 ?  this.drawInfo.p1color : this.drawInfo.p2color;
+    ctx.fill();   
+  }
   
 }
