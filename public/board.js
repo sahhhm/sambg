@@ -45,33 +45,33 @@ function Board(opts) {
   this.drawer.canvasElement.height = this.specs.pixelHeight;
   
   this.bPlayers = opts.players;
-      
+      //function Triangle(num, column, player, numCheckers) {
   this.gTriangles = 
-  
-    [new Triangle(1, this.specs.boardWidth-1,   1, 2),
-     new Triangle(2, this.specs.boardWidth-2,   0, 0),
-     new Triangle(3, this.specs.boardWidth-3,   0, 0),
-     new Triangle(4, this.specs.boardWidth-4,   0, 0),
-     new Triangle(5, this.specs.boardWidth-5,   0, 0),
-     new Triangle(6, this.specs.boardWidth-6,   2, 5),
-     new Triangle(7, this.specs.boardWidth-8,   0, 0),
-     new Triangle(8, this.specs.boardWidth-9,   2, 3),
-     new Triangle(9, this.specs.boardWidth-10,  0, 0),
-     new Triangle(10, this.specs.boardWidth-11, 0, 0),
-     new Triangle(11, this.specs.boardWidth-12, 0, 0),
-     new Triangle(12, this.specs.boardWidth-13, 1, 5),
-     new Triangle(13, this.specs.boardWidth-13, 2, 5),
-     new Triangle(14, this.specs.boardWidth-12, 0, 0),
-     new Triangle(15, this.specs.boardWidth-11, 0, 0),
-     new Triangle(16, this.specs.boardWidth-10, 0, 0),
-     new Triangle(17, this.specs.boardWidth-9,  1, 3),
-     new Triangle(18, this.specs.boardWidth-8,  0, 0),
-     new Triangle(19, this.specs.boardWidth-6,  1, 5),
-     new Triangle(20, this.specs.boardWidth-5,  0, 0),
-     new Triangle(21, this.specs.boardWidth-4,  0, 0),
-     new Triangle(22, this.specs.boardWidth-3,  0, 0),
-     new Triangle(23, this.specs.boardWidth-2,  0, 0),
-     new Triangle(24, this.specs.boardWidth-1,  2, 2)];
+    [Object.create(Triangle, { num : { value : 1 }, column : { value : this.specs.boardWidth-1 } , player : { value : 1, writable : true  }, numCheckers : { value : 2, writable : true } }),
+     Object.create(Triangle, { num : { value : 2 }, column : { value : this.specs.boardWidth-2 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 3 }, column : { value : this.specs.boardWidth-3 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 4 }, column : { value : this.specs.boardWidth-4 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 5 }, column : { value : this.specs.boardWidth-5 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 6 }, column : { value : this.specs.boardWidth-6 } , player : { value : 2, writable : true  }, numCheckers : { value : 5, writable : true } }),
+     Object.create(Triangle, { num : { value : 7 }, column : { value : this.specs.boardWidth-8 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 8 }, column : { value : this.specs.boardWidth-9 } , player : { value : 2, writable : true  }, numCheckers : { value : 3, writable : true } }),
+     Object.create(Triangle, { num : { value : 9 }, column : { value : this.specs.boardWidth-10 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 10 }, column : { value : this.specs.boardWidth-11 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 11 }, column : { value : this.specs.boardWidth-12 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 12 }, column : { value : this.specs.boardWidth-13 } , player : { value : 1, writable : true  }, numCheckers : { value : 5, writable : true } }),
+     Object.create(Triangle, { num : { value : 13 }, column : { value : this.specs.boardWidth-13 } , player : { value : 2, writable : true  }, numCheckers : { value : 5, writable : true } }),
+     Object.create(Triangle, { num : { value : 14 }, column : { value : this.specs.boardWidth-12 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 15 }, column : { value : this.specs.boardWidth-11 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 16 }, column : { value : this.specs.boardWidth-10 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 17 }, column : { value : this.specs.boardWidth-9 } , player : { value : 1, writable : true  }, numCheckers : { value : 3, writable : true } }),
+     Object.create(Triangle, { num : { value : 18 }, column : { value : this.specs.boardWidth-8 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 19 }, column : { value : this.specs.boardWidth-6 } , player : { value : 1, writable : true  }, numCheckers : { value : 5, writable : true } }),
+     Object.create(Triangle, { num : { value : 20 }, column : { value : this.specs.boardWidth-5 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 21 }, column : { value : this.specs.boardWidth-4 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 22 }, column : { value : this.specs.boardWidth-3 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 23 }, column : { value : this.specs.boardWidth-2 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 24 }, column : { value : this.specs.boardWidth-1 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } })];  
+
 	 /*
 	             [new Triangle(1, this.specs.boardWidth-1,   2, 2), // player 2 home begins
              new Triangle(2, this.specs.boardWidth-2,   2, 2),
@@ -98,12 +98,15 @@ function Board(opts) {
              new Triangle(23, this.specs.boardWidth-2,  1, 3),
              new Triangle(24, this.specs.boardWidth-1,  1, 0)]; // player 1 home ends
       */
-  this.gBars = [new Bar(1, this.specs.barColumn, 0), 
-                new Bar(2, this.specs.barColumn, 0)];
-  
-  this.gBearOffs = [new BearOff(1, 25, this.specs.bearOffColumn, 6),
-                    new BearOff(2, 0,  this.specs.bearOffColumn, 3)]; 
-                    
+
+  this.gBars = 
+    [ Object.create(Bar, { player : { value : 1 }, num : { value : 1 }, column : { value : this.specs.barColumn }, numCheckers : { value: 0, writable : true  } }),
+      Object.create(Bar, { player : { value : 2 }, num : { value : 2 }, column : { value : this.specs.barColumn }, numCheckers : { value: 0, writable : true  } }) ];
+
+  this.gBearOffs = 
+    [ Object.create(Bearoff, { player : { value : 1 }, num : { value : 25 }, column : { value : this.specs.bearOffColumn }, numCheckers : { value: 0, writable : true  } }),
+      Object.create(Bearoff, { player : { value : 2 }, num : { value :  0 }, column : { value : this.specs.bearOffColumn }, numCheckers : { value: 0, writable : true  } }) ];
+      
   this.getBars = function() {
     return this.gBars;
   } 
@@ -113,7 +116,7 @@ function Board(opts) {
   }
   
   this.getBearOffByPlayerNum = function(n) {
-    var bearOff = new BearOff(-1, -1, -1, -1);
+    var bearOff = Object.create(Bearoff);
     if (n > 0) {
       bearOff =  this.getBearOffs()[n-1];
     } 
@@ -121,7 +124,7 @@ function Board(opts) {
   } 
   
   this.getBarByNum = function(n) {
-    var bar = new Bar(-1, -1, -1, -1);
+    var bar = Object.create(Bar);
     if (n > 0) {
       bar =  this.getBars()[n-1];
     } 
@@ -137,7 +140,7 @@ function Board(opts) {
   }
   
   this.getTriangleByNum = function(n) {
-    var tri = new Triangle(-1, -1, -1, -1)
+    var tri = Object.create(Triangle);
     if (n >=1  && n <= 24) {
       tri = this.getTriangles()[n-1];
     } 
@@ -243,7 +246,7 @@ function Board(opts) {
     var tnum; 
     var tempTo;
     var tempFrom; 
-    var entry = from.entry;
+    var entry = from.entry();
     var directs = new Array();
     var combineds = new Array();
 	  var bears = new Array();
@@ -267,7 +270,7 @@ function Board(opts) {
           // add the direct move
           tnum = entry + (this.dice.dice[t].value * player.direction);
           tempTo = this.getTriangleByNum(tnum);
-          directs.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tnum, tempTo.type, false, Math.abs( from.entry - tempTo.entry ) )] } );
+          directs.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tnum, tempTo.type, false, Math.abs( from.entry() - tempTo.entry() ) )] } );
           curSum = this.dice.dice[t].value;
     
           
@@ -299,7 +302,7 @@ function Board(opts) {
                     // create a copy of the most recent combined move and build/add the combined move off of that
                     var movecpy = combineds[combineds.length-1].moves.slice();
                     combineds.push( { moves: movecpy });
-                    combineds[combineds.length - 1].moves.push(new AMove(this.dice.confirmedRolls, from.player, tempFrom.num, tempFrom.type, tnum, tempTo.type, false, Math.abs ( tempFrom.entry - tempTo.entry ) ));
+                    combineds[combineds.length - 1].moves.push(new AMove(this.dice.confirmedRolls, from.player, tempFrom.num, tempFrom.type, tnum, tempTo.type, false, Math.abs ( tempFrom.entry() - tempTo.entry() ) ));
                     combinedFromTriangleNum = tnum;
                     curSum += this.dice.dice[i].value;	
                   
@@ -312,7 +315,6 @@ function Board(opts) {
           }
         }
       
-    
         // ******************************
         // ******* BEAR OFF MOVES SECTION
         // ****************************** 
@@ -336,7 +338,7 @@ function Board(opts) {
               var tempBear = this.getBearOffByPlayerNum( player.num );
               if ( this.dice.dice[t].value + from.num * player.direction  == 0 || this.dice.dice[t].value + from.num * player.direction == 25 ) { // CLEAN UP
                 console.log("CAN BEAR OFF FROM", from.num);
-                bears.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tempBear.num, tempBear.type, false, Math.abs( from.entry - tempBear.entry ) )] } );
+                bears.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tempBear.num, tempBear.type, false, Math.abs( from.entry() - tempBear.entry() ) )] } );
               } else if (fromNormalized  == startNormalized && this.dice.dice[t].value > startNormalized) {
                 console.log("CAN BEAR OFF due greater dice FROM", from.num);
                 bears.push( { moves : [new AMove( this.dice.confirmedRolls, from.player, from.num, from.type, tempBear.num, tempBear.type, false, this.dice.dice[t].value )] } );
@@ -472,7 +474,7 @@ function Board(opts) {
     
     // update the dice based on the move
     this.dice.replaceDiceOnUndo( theMove.diceValue );
-    console.log("undo move from " + from.entry + " to " + to.entry);
+    console.log("undo move from " + from.entry() + " to " + to.entry());
   }
   
   this.anyMovesLeft = function() {

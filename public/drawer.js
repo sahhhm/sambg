@@ -44,40 +44,20 @@ function Drawer(s) {
   this.interact.dice.piecePadding = Math.abs((this.interact.dice.widthPix - 4*this.interact.dice.pieceWidth) / 5);
   this.interact.dice.alphaUsed = 0.2;
   this.interact.dice.alphaUnused = 0.8;
-  
-  Checker.prototype.drawInfo = { pieceWidth : this.specs.pieceWidth,
+
+  Drawable.drawInfo = { pieceWidth : this.specs.pieceWidth,
                                  pieceHeight: this.specs.pieceHeight,
                                  p1color: this.specs.p1color,
                                  p2color: this.specs.p2color,
                                  bearOffWidth : this.specs.bearOffWidth,
-                                 bearOffHeight : this.specs.bearOffHeight                                 
+                                 bearOffHeight : this.specs.bearOffHeight,
+                                 boardHeight: this.specs.boardHeight,
+                                 pixelHeight: this.specs.pixelHeight,
+                                 barColumn : this.specs.barColumn,
+                                 bearOffColumn : this.specs.bearOffColumn,
+                                 maxPiecesPerTriangle : this.specs.maxPiecesPerTriangle
                                };
   
-  Triangle.prototype.drawInfo = { maxPiecesPerTriangle: this.specs.maxPiecesPerTriangle,
-                                  boardHeight: this.specs.boardHeight,
-                                  pieceWidth : this.specs.pieceWidth,
-                                  pieceHeight: this.specs.pieceHeight,
-                                  pixelHeight: this.specs.pixelHeight
-                                }
-  
-  Bar.prototype.drawInfo = { maxPiecesPerTriangle: this.specs.maxPiecesPerTriangle,
-                                  boardHeight: this.specs.boardHeight,
-                                  pieceWidth : this.specs.pieceWidth,
-                                  pieceHeight: this.specs.pieceHeight,
-                                  pixelHeight : this.specs.pixelHeight,
-                                  barColumn : this.specs.barColumn
-                                }
-  
-  BearOff.prototype.drawInfo = { maxPiecesPerTriangle: this.specs.maxPiecesPerTriangle,
-                                  boardHeight: this.specs.boardHeight,
-                                  pieceWidth : this.specs.pieceWidth,
-                                  pieceHeight: this.specs.pieceHeight,
-                                  bearOffWidth : this.specs.bearOffWidth,
-                                  bearOffHeight : this.specs.bearOffHeight,
-                                  pixelHeight : this.specs.pixelHeight,
-                                  bearOffColumn : this.specs.bearOffColumn
-                                }
-                                
   this.drawBoard = function(tris, bars, bears, from, pots) {
     this.drawingContext.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
     this.drawingContext.beginPath();

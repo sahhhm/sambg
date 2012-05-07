@@ -16,8 +16,8 @@ function getCursorPosition(e) {
   y = Math.min(y, bggame.board.specs.boardHeight * bggame.board.specs.pieceHeight);
   
   // used for triangle and bar
-  var checker = new Checker(Math.floor(y/bggame.board.specs.pieceHeight), Math.floor(x/bggame.board.specs.pieceWidth));
-
+  var checker = Object.create(Checker, { row : { value : Math.floor(y/bggame.board.specs.pieceHeight) }, column : { value : Math.floor(x/bggame.board.specs.pieceWidth) }, player : { value : 0 } });
+  
   // check for double dice click
   var doubling = false;
   if ( x >= bggame.board.drawer.interact.doubling.startX && x <= bggame.board.drawer.interact.doubling.startX + bggame.board.drawer.interact.doubling.widthPix &&

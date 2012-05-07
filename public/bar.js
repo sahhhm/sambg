@@ -67,7 +67,6 @@ function Bar(player, column, numCheckers) {
   }
 
   this.select = function(ctx) {
-    // same for all (triangle, bar)
     var row, col, player;
     row = this.isTop() ? this.numCheckers - 1 : pos = this.drawInfo.boardHeight - this.numCheckers;
     col = this.column
