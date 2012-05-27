@@ -95,7 +95,7 @@ io.sockets.on('connection', function (socket) {
     }
     
     // tell players to update turn history
-    io.sockets.in(rooms[idx].roomId).emit("update turns");
+    io.sockets.in(rooms[idx].roomId).emit("update turns", { numMoves: data.moves.length });
   });
   
   socket.on("double sent", function(data) {
@@ -201,3 +201,4 @@ function get_room_names() {
   }
   return names;
 }
+

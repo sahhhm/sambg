@@ -11,6 +11,13 @@
 
 var Drawable = { drawinfo: {} };
 
+Drawable.drawCircle = function(ctx, x, y, radius) {
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, Math.PI*2, false);
+  ctx.closePath();
+}
+
+
 var Checker = Object.create(Drawable, { row    :  { value :  -1 }, 
                                         column :  { value :  -1 },
                                         player :  { value :  -1 } });
@@ -47,14 +54,20 @@ Checker.findBarNum = function (b) {
   return bnum;	 
 }
   
+Checker.getX = function() {
+  return (this.column * this.drawInfo.pieceWidth) + (this.drawInfo.pieceWidth/2);
+}   
+  
+Checker.getY = function() {
+  return (this.row * this.drawInfo.pieceHeight) + (this.drawInfo.pieceHeight/2);
+}
+  
 Checker.draw = function(ctx, selected) {
-  var x = (this.column * this.drawInfo.pieceWidth) + (this.drawInfo.pieceWidth/2);
-  var y = (this.row * this.drawInfo.pieceHeight) + (this.drawInfo.pieceHeight/2);
+  var x = this.getX(); //(this.column * this.drawInfo.pieceWidth) + (this.drawInfo.pieceWidth/2);
+  var y = this.getY(); //(this.row * this.drawInfo.pieceHeight) + (this.drawInfo.pieceHeight/2);
   var radius = (this.drawInfo.pieceWidth/2) - (this.drawInfo.pieceWidth/9);
-  ctx.beginPath();
-  ctx.arc(x, y, radius, 0, Math.PI*2, false);
-  ctx.closePath();
-
+  this.drawCircle(ctx, x, y, radius);
+  
   // make radial glare
   var color = this.player == 1 ? this.drawInfo.p1color : this.drawInfo.p2color;
   var grd = ctx.createRadialGradient(x, y, radius, x + 3, y - 5, radius-3);
@@ -94,7 +107,21 @@ Checker.drawBear = function(ctx) {
   
   ctx.fillStyle = this.player == 1 ?  this.drawInfo.p1color : this.drawInfo.p2color;
   ctx.fill();   
-}                                        
+}   
+
+var CheckerXY = Object.create(Checker, { row    :  { value :  -1 }, 
+                                          column :  { value :  -1 },
+                                          player :  { value :  -1 },
+                                          x      :  { value :  -1 },
+                                          y      :  { value :  -1 } });      
+
+CheckerXY.getX = function() {
+  return this.x;
+}
+
+CheckerXY.getY = function() { 
+  return this.y;
+}										  
                                         
 var Space = Object.create(Drawable, {  num          :   { value : -1 }, 
                                        player       :   { value : -1, writable : true },
@@ -192,13 +219,16 @@ Triangle.drawShape = function(ctx) {
   ctx.save();
   var x = this.column * this.drawInfo.pieceWidth;
   var base = this.isTop() ? 0 : this.drawInfo.pixelHeight;
-  ctx.globalAlpha = .3;
+  ctx.fillStyle = "white";
   ctx.strokeStyle = "black";
   ctx.beginPath();
   ctx.moveTo(x, base);
   ctx.lineTo(x + this.drawInfo.pieceWidth/2, Math.abs( base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight) ));
   ctx.lineTo(x + this.drawInfo.pieceWidth, base);
   ctx.lineTo(x, base);
+  ctx.globalAlpha = 1;
+  ctx.fill();
+  ctx.globalAlpha = .3;
   ctx.stroke();
   ctx.restore();  
 }

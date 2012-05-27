@@ -70,25 +70,30 @@ function bgOnClick(e) {
     if (meBar.isEmpty()) {
       if (bggame.board.getSelectedTriangle().num == -1 && triangle.isEmpty()) {
         console.log("Triangle " + triangle.num + " which is empty was selected"); 
+		bggame.board.update({ forPlayer : me.num });
       } else {
           if (bggame.board.getSelectedTriangle().num == -1 && triangle.player == me.num) {
             bggame.board.selectedTriangleNum = triangle.num;
+			bggame.board.update({ forPlayer : me.num });
           } else if (bggame.board.getSelectedTriangle().num != -1 && triangle.num != -1) {
             bggame.board.updateSpace(bggame.board.getSelectedTriangle(), triangle);
           } else if (bggame.board.getSelectedTriangle().num != -1) {
             bggame.board.updateSpace(bggame.board.getSelectedTriangle(), bggame.board.getBearOffByPlayerNum(me.num));
-          }
+          } else {
+		    bggame.board.update({ forPlayer : me.num });
+		  }
       }
     } else {
       if (bggame.board.getSelectedBar().num == -1) {
         bggame.board.selectedBarNum = me.num;
+		bggame.board.update({ forPlayer : me.num });
+      } else if (bggame.board.getSelectedBar().num != -1 && triangle.num >= 1) {
+        bggame.board.updateSpace(bggame.board.getSelectedBar(), triangle);
       } else {
-        if (bggame.board.getSelectedBar().num != -1 && triangle.num >= 1) {
-          bggame.board.updateSpace(bggame.board.getSelectedBar(), triangle);
-        } 
-      }
+	    bggame.board.update({ forPlayer : me.num });
+	  }
     } 
-    bggame.board.update({ forPlayer : me.num });
+    //bggame.board.update({ forPlayer : me.num });
   } 
 }
 
@@ -96,7 +101,7 @@ function newGame() {
   bggame.board.update({ forPlayer : me.num });
 }
 
-function initGame(canvasElement, data) { 
+function initGame(canvasElement, nakedCanvasElement, data) { 
   if (!canvasElement) {
     canvasElement = document.createElement("canvas");
     canvasElement.id = "bg_canvas";
@@ -109,6 +114,15 @@ function initGame(canvasElement, data) {
                                   '<input type="text" id="f-inp" value="00" size="2"/><div id="force-dice"><button id="force-sub">force roll</button></div>');//for debugging only
                                
     $("#game_area").append(canvasElement);
+    
+  }
+  
+  if (!nakedCanvasElement) {
+    nakedCanvasElement = document.createElement("canvas");
+    nakedCanvasElement.id = "bg_naked";
+    //nakedCanvasElement.style.visibility = "visible";
+	nakedCanvasElement.style.visibility = "hidden";
+    $("#game_area").append(nakedCanvasElement);
   }
     
   bggame = new Game(data);

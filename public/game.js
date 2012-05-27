@@ -6,5 +6,4 @@ function Game(gameData) {
   console.log("game room:", this.roomId, "player1: ", this.players[0].id, "player2: ", this.players[1].id);				  
   var boardOpts = {players: this.players, p1color: "#ff0000", p2color: "#0000ff"};
   this.board = new Board(boardOpts);
-
 }

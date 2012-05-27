@@ -38,14 +38,9 @@ function Board(opts) {
   this.doublingDice = new DoublingDice();
     
   this.turns = new TurnHistory();
-
-  this.drawer = new Drawer(this.specs);	  
-      
-  this.drawer.canvasElement.width = this.specs.pixelWidth;
-  this.drawer.canvasElement.height = this.specs.pixelHeight;
   
   this.bPlayers = opts.players;
-      //function Triangle(num, column, player, numCheckers) {
+      
   this.gTriangles = 
     [Object.create(Triangle, { num : { value : 1 }, column : { value : this.specs.boardWidth-1 } , player : { value : 1, writable : true  }, numCheckers : { value : 2, writable : true } }),
      Object.create(Triangle, { num : { value : 2 }, column : { value : this.specs.boardWidth-2 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
@@ -106,6 +101,8 @@ function Board(opts) {
   this.gBearOffs = 
     [ Object.create(Bearoff, { player : { value : 1 }, num : { value : 25 }, column : { value : this.specs.bearOffColumn }, numCheckers : { value: 0, writable : true  } }),
       Object.create(Bearoff, { player : { value : 2 }, num : { value :  0 }, column : { value : this.specs.bearOffColumn }, numCheckers : { value: 0, writable : true  } }) ];
+
+  this.drawer = new Drawer(this.specs, this.gTriangles, this.gBars, this.gBearOffs);	  
       
   this.getBars = function() {
     return this.gBars;
@@ -168,6 +165,10 @@ function Board(opts) {
     this.dice.isRolled = false;
     this.numMoves += 1;
   }
+  
+  this.updateNakedBoard = function() {
+    this.drawer.drawNakedBoard( this.getTriangles(), this.getBars(), this.getBearOffs() );
+  }
 
   this.update = function(opts) {
     if (!opts.forPlayer) {
@@ -175,11 +176,16 @@ function Board(opts) {
     }
 
     this.updateDraw();
+	this.checkElements(opts.forPlayer);
+    
+  }
+  
+  this.checkElements = function(forPlayer) {
     this.turns.currentTurn.length ? this.drawer.undoButtonElement.disabled = false : this.drawer.undoButtonElement.disabled = true;
-    this.canConfirm(opts.forPlayer) ? this.playerCanConfirm = true : this.playerCanConfirm = false;
-    this.canRoll(opts.forPlayer) ? this.playerCanRoll = true : this.playerCanRoll = false;
-    this.drawDice(opts.forPlayer);
-    this.drawDoublingDice(opts.forPlayer);
+    this.canConfirm(forPlayer) ? this.playerCanConfirm = true : this.playerCanConfirm = false;
+    this.canRoll(forPlayer) ? this.playerCanRoll = true : this.playerCanRoll = false;
+    this.drawDice(forPlayer);
+    this.drawDoublingDice(forPlayer);  
   }
 
   this.drawDice = function(forPlayerNum) {
@@ -236,7 +242,7 @@ function Board(opts) {
       } 
     }
     
-    this.drawer.drawBoard(this.getTriangles(), this.getBars(), this.getBearOffs(), from, pots);
+	this.drawer.drawBoard(from, pots);
   }
   
   this.findPotentialMoves = function(from) {
@@ -249,7 +255,7 @@ function Board(opts) {
     var entry = from.entry();
     var directs = new Array();
     var combineds = new Array();
-	  var bears = new Array();
+	var bears = new Array();
     var player = this.getPlayerByNum(from.player);
     var playerBar = this.getBarByNum(from.player);
     var curSum; // count of the number of spaces moved for the potential move
@@ -377,6 +383,7 @@ function Board(opts) {
   
   this.updateSpace = function(from, to) {
     var foundPotential;
+	var moves = [];
     
     // search potential moves to find the move that ends at to.num
     var potentials = this.findPotentialMoves(from);
@@ -390,16 +397,20 @@ function Board(opts) {
 	
     if (foundPotential) {
       for (var j = 0; j < foundPotential.moves.length; j++) {
-        this.move(foundPotential.moves[j]);
+		moves.push(foundPotential.moves[j]);
       }
     } else {
       this.selectedTriangleNum = -1;
       this.selectedBarNum = -1;
     } 
+	
+	this.move(moves);
   }  
 
-  
-  this.move = function(aMove) {
+  this.move = function(moves) {
+    var aMove = moves[0];
+	moves.shift();
+	
     // initialize the from and to areas
     if ( aMove.fromType == "triangle" ) {
       from = this.getTriangleByNum( aMove.fromNo );
@@ -417,10 +428,13 @@ function Board(opts) {
       aMove.isToHit = true;
     }
     
+    //this.drawer.animateMove(from, to);
+
     // adjust triangle checker counts
     from.numCheckers -= 1;
+	this.updateNakedBoard();  
     to.numCheckers += 1;
-
+	
     // if the to player is hit, update accordingly
     if (aMove.isToHit) {
       this.getBarByNum(to.player).numCheckers += 1;
@@ -429,7 +443,10 @@ function Board(opts) {
     
     // ensure player type is correct
     to.player = from.player;    
-    
+	
+    this.updateNakedBoard();  
+    this.drawer.animateMove(from, to);	
+	
     // since we just moved, nothing should be active
     this.selectedBarNum = -1;
     this.selectedTriangleNum = -1;
@@ -440,6 +457,17 @@ function Board(opts) {
     // add the move to the history
     console.log("Moved from " + from.num + " to " + to.num);
     this.turns.addAMove(aMove);
+	
+	this.drawDice(-1);
+    this.drawDoublingDice(-1);	
+	
+	this.checkElements(from.player);
+	
+	if (moves.length) {
+	  var self = this;
+	  setTimeout( function() { self.move(moves); }, 750 );
+	} 
+	
   }
   
   this.undoMove = function() {
@@ -453,9 +481,9 @@ function Board(opts) {
     }
     if ( theMove.toType == "bearoff" ) {
 	    from = this.getBearOffByPlayerNum( to.player );
-	  } else {
+	} else {
 	    from = this.getTriangleByNum( theMove.toNo );
-	  }
+	}
 
     from.numCheckers -= 1;
     to.numCheckers += 1;

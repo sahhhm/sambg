@@ -81,8 +81,6 @@ function DicePiece(aNum) {
   this.isUsed = false;
 }
 
-
-
 function DoublingDice() {
   this.lastPlayerToDoubleNum = -1;
   this.value = 1;

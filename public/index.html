@@ -11,7 +11,7 @@
     <div id="list_of_rooms"></div>
   </div>
   
-  <div id="game_area"></div>
+  <div id="game_area" width='2000px' height='2000px'></div>
   
 </body>
 </html>
@@ -58,14 +58,14 @@
    
    socket.on('load game', function(data){
      $('#lobby').hide();
-     initGame(null, data);
+     initGame(null, null, data);
      newGame();
    });
    
    socket.on('dice', function(data) {
      console.log("got dice event");
      bggame.board.roll( { die1: data.die1, die2 : data.die2 } );
-     bggame.board.update( { forPlayer : me.num });
+     bggame.board.update( { forPlayer : me.num } );
    });
    
    //for debugging only
@@ -79,12 +79,15 @@
      var i;
      var tempMove;
      var moves = data.moves;
-     
+     var aMoves = [];
+	 
      for (i = 0; i < moves.length; i++) {
        var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].toType, moves[i].isToHit, moves[i].diceValue);
-       bggame.board.move(tempMove);
-       bggame.board.update({ forPlayer : me.num });
+       //bggame.board.move(tempMove);
+	   aMoves.push(tempMove);
+       //bggame.board.update({ forPlayer : me.num });
      }
+	 bggame.board.move(aMoves);
    });
    
    socket.on( 'double request', function( data ) {
@@ -105,11 +108,14 @@
      }
    });   
    
-   socket.on('update turns', function() {
+   socket.on('update turns', function(data) {
       console.log("got update turns event");
-     // bggame.board.update({ forPlayer : me.num, updateTurn : true });
-      bggame.board.updateTurn();  
-      bggame.board.update({ forPlayer: me.num });
+	  var time = 750 * data.numMoves;
+	  setTimeout( function() {
+	    console.log(time);
+        bggame.board.updateTurn();  
+        bggame.board.update({ forPlayer: me.num });
+	  }, time);
    });
    
    socket.on('force leave room', function() {
