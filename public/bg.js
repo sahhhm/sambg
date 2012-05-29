@@ -72,16 +72,16 @@ function bgOnClick(e) {
         console.log("Triangle " + triangle.num + " which is empty was selected"); 
 		bggame.board.update({ forPlayer : me.num });
       } else {
-          if (bggame.board.getSelectedTriangle().num == -1 && triangle.player == me.num) {
-            bggame.board.selectedTriangleNum = triangle.num;
-			bggame.board.update({ forPlayer : me.num });
-          } else if (bggame.board.getSelectedTriangle().num != -1 && triangle.num != -1) {
-            bggame.board.updateSpace(bggame.board.getSelectedTriangle(), triangle);
-          } else if (bggame.board.getSelectedTriangle().num != -1) {
-            bggame.board.updateSpace(bggame.board.getSelectedTriangle(), bggame.board.getBearOffByPlayerNum(me.num));
-          } else {
-		    bggame.board.update({ forPlayer : me.num });
-		  }
+        if (bggame.board.getSelectedTriangle().num == -1 && triangle.player == me.num) {
+          bggame.board.selectedTriangleNum = triangle.num;
+          bggame.board.update({ forPlayer : me.num });
+        } else if (bggame.board.getSelectedTriangle().num != -1 && triangle.num != -1) {
+          bggame.board.updateSpace(bggame.board.getSelectedTriangle(), triangle);
+        } else if (bggame.board.getSelectedTriangle().num != -1) {
+          bggame.board.updateSpace(bggame.board.getSelectedTriangle(), bggame.board.getBearOffByPlayerNum(me.num));
+        } else {
+          bggame.board.update({ forPlayer : me.num });
+        }
       }
     } else {
       if (bggame.board.getSelectedBar().num == -1) {

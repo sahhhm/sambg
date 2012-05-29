@@ -109,13 +109,13 @@
    });   
    
    socket.on('update turns', function(data) {
-      console.log("got update turns event");
-	  var time = 750 * data.numMoves;
-	  setTimeout( function() {
+     console.log("got update turns event");
+	   var time = 750 * data.numMoves;
+	   setTimeout( function() {
 	    console.log(time);
-        bggame.board.updateTurn();  
-        bggame.board.update({ forPlayer: me.num });
-	  }, time);
+      bggame.board.updateTurn();  
+      bggame.board.update({ forPlayer: me.num });
+	   }, time);
    });
    
    socket.on('force leave room', function() {

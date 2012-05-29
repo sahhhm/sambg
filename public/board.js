@@ -383,7 +383,7 @@ function Board(opts) {
   
   this.updateSpace = function(from, to) {
     var foundPotential;
-	var moves = [];
+	  var moves = [];
     
     // search potential moves to find the move that ends at to.num
     var potentials = this.findPotentialMoves(from);
@@ -397,19 +397,21 @@ function Board(opts) {
 	
     if (foundPotential) {
       for (var j = 0; j < foundPotential.moves.length; j++) {
-		moves.push(foundPotential.moves[j]);
+		    moves.push(foundPotential.moves[j]);
       }
     } else {
       this.selectedTriangleNum = -1;
       this.selectedBarNum = -1;
-    } 
-	
-	this.move(moves);
+    }
+
+	  this.move(moves);
   }  
 
   this.move = function(moves) {
     var aMove = moves[0];
 	  moves.shift();
+
+	  this.drawer.undoDecorations();
 	
     // initialize the from and to areas
     if ( aMove.fromType == "triangle" ) {
@@ -440,8 +442,7 @@ function Board(opts) {
     
     // ensure player type is correct
     to.player = from.player;    
-	
-    this.updateNakedBoard();  
+ 
     this.drawer.animateMove(from, to);	
 	
     // since we just moved, nothing should be active
@@ -463,7 +464,8 @@ function Board(opts) {
 	  if (moves.length) {
 	   var self = this;
 	    setTimeout( function() { self.move(moves); }, 750 );
-	  } 	
+	  } 
+    
   }
   
   this.undoMove = function() {

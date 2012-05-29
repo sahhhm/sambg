@@ -73,11 +73,8 @@ function Drawer(s, triangles, bars, bearoffs) {
   
   this.drawNakedBoard = function() {
     this.nakedCtx.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
-  this.nakedCtx.fillStyle = "white";
-  this.nakedCtx.fillRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
-
-    this.nakedCtx.beginPath();
-    this.nakedCtx.lineWidth =  1;
+    this.nakedCtx.fillStyle = "white";
+    this.nakedCtx.fillRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
     
     var spaces = this.triangles.concat( this.bars ).concat( this.bearoffs );
     for ( var i = 0; i < spaces.length; i++ ) {
@@ -95,10 +92,7 @@ function Drawer(s, triangles, bars, bearoffs) {
       spaces[i].draw(this.drawingContext);
     }
 
-    if ( from ) {
-      from.select( this.drawingContext );
-      for (var i = 0; i < pots.length; i++) pots[i].highlight( this.drawingContext );
-    }
+    this.drawPotentials(from, pots);
   }
   
   this.drawPotentials = function(from, pots) {
@@ -125,10 +119,10 @@ function Drawer(s, triangles, bars, bearoffs) {
   }
   
   this.animateMove = function(from, to) {
-    this.undoDecorations(); 
+    this.drawNakedBoard();
 
     var rowStart, checksStart,  chStart, xStart, yStart; 
-    var rowEnd,  checksEnd, chEnd, xEnd, yEnd; 
+    var rowEnd, checksEnd, chEnd, xEnd, yEnd; 
     
     checksStart = from.numCheckers > this.specs.maxPiecesPerTriangle ? this.specs.maxPiecesPerTriangle : from.numCheckers;
     rowStart = from.isTop() ? checksStart  : this.specs.boardHeight - checksStart - 1;
@@ -156,11 +150,11 @@ function Drawer(s, triangles, bars, bearoffs) {
     var self = this;
   
     setTimeout( function() { 
-      self.movePiece(xAnim, dx, yAnim, dy, off, side, from.player, 0); 
+      self.movePiece(xAnim, dx, yAnim, dy, off, side, from.player, from, to, 0); 
     }, 15);
+    
   }
   
-
   this.drawDoublingDice = function(opts) {
     var fs = opts.isActive ? this.interact.doubling.activeColor : this.interact.doubling.inactiveColor;
     this.drawingContext.fillStyle = fs;
@@ -200,7 +194,7 @@ function Drawer(s, triangles, bars, bearoffs) {
     this.drawingContext.restore();
   }
   
-  this.movePiece = function(x, dx, y, dy, off, side, playerNum, count) {
+  this.movePiece = function(x, dx, y, dy, off, side, playerNum, from, to, count) {
     this.drawingContext.clearRect(x - off, y - off, side, side );
     this.drawingContext.drawImage(this.nakedCanvasElement, x - off, y - off, side, side, x - off, y - off, side, side);        	
     xAnim = x + dx;
@@ -209,10 +203,12 @@ function Drawer(s, triangles, bars, bearoffs) {
     drawCh.draw(this.drawingContext, false);
     if (++count == 15) {
       // piece moving is over... handle stuff here!
+      from.draw(this.drawingContext);
+      to.draw(this.drawingContext);
     } else {
       var self = this;
       setTimeout( function() { 
-        self.movePiece(xAnim, dx, yAnim, dy, off, side, from.player, count); 
+        self.movePiece(xAnim, dx, yAnim, dy, off, side, from.player, from, to, count); 
       }, 15);
     }	
   }
