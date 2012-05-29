@@ -46,11 +46,13 @@ Checker.findBarNum = function (b) {
   var x = this.column;
   var y = this.row;
   var bnum = -1;
-  if (x == b.specs.barColumn) 
+  if (x == b.specs.barColumn) {
     if (y < b.specs.maxPiecesPerTriangle) bnum = 1;
     else if (y > b.specs.boardHeight - b.specs.maxPiecesPerTriangle - 1) bnum = 2;
     else bnum = -1;
-  else bnum = -1;
+  } else {
+    bnum = -1;
+  }
   return bnum;	 
 }
   
@@ -127,6 +129,7 @@ var Space = Object.create(Drawable, {  num          :   { value : -1 },
                                        player       :   { value : -1, writable : true },
                                        numCheckers  :   { value : -1, writable : true },
                                        column       :   { value : -1 },
+                     highlighted  :   { value : false },
                                        type         :   { value : "Space" } });
                       
 Space.isTop = function() {}
@@ -135,7 +138,8 @@ Space.isEmpty = function() {return this.numCheckers <= 0 };
 //****
 //**** Selectable
 //****
-var Selectable = Object.create(Space, { type : { value : "Selectable" } });
+var Selectable = Object.create(Space, { type     : { value : "Selectable" },
+                                        selected : { value : false, writeable: true } } );
 
 Selectable.validMoveTo = function(to) {
   var isValid = false;
@@ -150,11 +154,11 @@ Selectable.validMoveTo = function(to) {
 }
 
 Selectable.select = function(ctx) {
+  this.selected = true;
   var r, c, p;
   r = this.isTop() ? this.numCheckers - 1 : pos = this.drawInfo.boardHeight - this.numCheckers;
   c = this.column
   p = this.player
-  //ch = new Checker( row, col, player );
   ch = Object.create(Checker, { row : { value : r }, column : { value : c }, player : { value : p } });
   ch.draw( ctx, true );
 }    
@@ -184,6 +188,8 @@ Selectable.draw = function(ctx) {
 }  
 
 Selectable.highlight = function(ctx) {
+  this.highlighted = true;
+  
   // same for bar, triange... different for bearOff
   var base, x;
   x = this.column * this.drawInfo.pieceWidth;
@@ -219,11 +225,19 @@ Triangle.drawShape = function(ctx) {
   ctx.save();
   var x = this.column * this.drawInfo.pieceWidth;
   var base = this.isTop() ? 0 : this.drawInfo.pixelHeight;
+
+  var height = Math.abs( base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight) );
+  var topPixel = this.isTop() ? 0 : height;  
+  
+  ctx.clearRect(x, topPixel, this.drawInfo.pieceWidth, height); 
+
+  // draw triangle
+  ctx.lineWidth =  1;
   ctx.fillStyle = "white";
   ctx.strokeStyle = "black";
   ctx.beginPath();
   ctx.moveTo(x, base);
-  ctx.lineTo(x + this.drawInfo.pieceWidth/2, Math.abs( base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight) ));
+  ctx.lineTo(x + this.drawInfo.pieceWidth/2, height);
   ctx.lineTo(x + this.drawInfo.pieceWidth, base);
   ctx.lineTo(x, base);
   ctx.globalAlpha = 1;
@@ -259,6 +273,8 @@ Bearoff.drawShape = function(ctx) {
 }  
 
 Bearoff.highlight = function(ctx) {
+  this.highlighted = true;
+  
   var base, x;
   x = this.column * this.drawInfo.pieceWidth;
   base = this.isTop() ? 0 : this.drawInfo.pixelHeight;

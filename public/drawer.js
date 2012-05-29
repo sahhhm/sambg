@@ -73,8 +73,8 @@ function Drawer(s, triangles, bars, bearoffs) {
   
   this.drawNakedBoard = function() {
     this.nakedCtx.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
-	this.nakedCtx.fillStyle = "white";
-	this.nakedCtx.fillRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
+  this.nakedCtx.fillStyle = "white";
+  this.nakedCtx.fillRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
 
     this.nakedCtx.beginPath();
     this.nakedCtx.lineWidth =  1;
@@ -88,9 +88,7 @@ function Drawer(s, triangles, bars, bearoffs) {
   this.drawBoard = function(from, pots) {
     this.drawingContext.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
     this.drawingContext.fillStyle = "white";
-	this.drawingContext.fillRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
-    this.drawingContext.beginPath();
-    this.drawingContext.lineWidth =  1;
+    this.drawingContext.fillRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
     
     var spaces = this.triangles.concat( this.bars ).concat( this.bearoffs );
     for ( var i = 0; i < spaces.length; i++ ) {
@@ -110,38 +108,56 @@ function Drawer(s, triangles, bars, bearoffs) {
     }  
   }
   
+  this.undoDecorations = function() {
+    // function unselects and unhighlights 
+    // any selecteed or highlighted spaces
+    var spaces = this.triangles.concat( this.bars ).concat( this.bearoffs );
+    for ( var i = 0; i < spaces.length; i++ ) {
+      if ( spaces[i].selected ) {
+        spaces[i].selected = false;
+        spaces[i].draw(this.drawingContext);	  
+      }
+      if ( spaces[i].highlighted ) {
+        spaces[i].highlighted = false;
+        spaces[i].draw(this.drawingContext);	  
+      }
+    }	
+  }
+  
   this.animateMove = function(from, to) {
+    this.undoDecorations(); 
+
     var rowStart,  chStart, xStart, yStart; 
     var rowEnd,  chEnd, xEnd, yEnd; 
     
     //rowStart = from.isTop() ? from.numCheckers - 1  : this.specs.boardHeight - from.numCheckers;
-	rowStart = from.isTop() ? from.numCheckers  : this.specs.boardHeight - from.numCheckers - 1;
+    rowStart = from.isTop() ? from.numCheckers  : this.specs.boardHeight - from.numCheckers - 1;
     chStart = Object.create(Checker, { row : { value : rowStart }, column : { value : from.column }, player : { value : from.player } });
     xStart = chStart.getX();
     yStart = chStart.getY();
     
     //rowEnd = to.isTop() ? to.numCheckers : this.specs.boardHeight - to.numCheckers - 1;
-	rowEnd = to.isTop() ? to.numCheckers -1 : this.specs.boardHeight - to.numCheckers;
+    rowEnd = to.isTop() ? to.numCheckers -1 : this.specs.boardHeight - to.numCheckers;
     chEnd = Object.create(Checker, { row : { value : rowEnd }, column : { value : to.column }, player : { value : to.player } });
     xEnd = chEnd.getX();
     yEnd = chEnd.getY();  
 
-	var rise = yEnd - yStart;
-	var run = xEnd - xStart;
-	
-	var dx = run / 15;
-	var dy = rise / 15;
+    var rise = yEnd - yStart;
+    var run = xEnd - xStart;
+  
+    var dx = run / 15;
+    var dy = rise / 15;
 
     var off = (this.specs.pieceWidth/2) - (this.specs.pieceWidth/9) + 15;
     var side = this.specs.pieceWidth + 10;
 
-	var xAnim = xStart;
-	var yAnim = yStart;
-	var self = this;
-	
-	setTimeout( function() { 
-	  self.movePiece(xAnim, dx, yAnim, dy, off, side, from.player, 0); 
-	}, 15);
+    var xAnim = xStart;
+    var yAnim = yStart;
+    var self = this;
+  
+    setTimeout( function() { 
+      self.movePiece(xAnim, dx, yAnim, dy, off, side, from.player, 0); 
+    }, 15);
   }
   
 
@@ -185,16 +201,19 @@ function Drawer(s, triangles, bars, bearoffs) {
   }
   
   this.movePiece = function(x, dx, y, dy, off, side, playerNum, count) {
-	this.drawingContext.drawImage(this.nakedCanvasElement, x - off, y - off, side, side, x - off, y - off, side, side);        	
-	xAnim = x + dx;
-	yAnim = y + dy;
-	drawCh = Object.create(CheckerXY, { x : { value : xAnim }, y : { value : yAnim }, player : { value : playerNum } });
-	drawCh.draw(this.drawingContext, false);
-	if (++count == 15) {
+    this.drawingContext.clearRect(x - off, y - off, side, side );
+    this.drawingContext.drawImage(this.nakedCanvasElement, x - off, y - off, side, side, x - off, y - off, side, side);        	
+    xAnim = x + dx;
+    yAnim = y + dy;
+    drawCh = Object.create(CheckerXY, { x : { value : xAnim }, y : { value : yAnim }, player : { value : playerNum } });
+    drawCh.draw(this.drawingContext, false);
+    if (++count == 15) {
       // piece moving is over... handle stuff here!
-	} else {
-	  var self = this;
-	  setTimeout( function() { self.movePiece(xAnim, dx, yAnim, dy, off, side, from.player, count); }, 15);
-	}	
+    } else {
+      var self = this;
+      setTimeout( function() { 
+        self.movePiece(xAnim, dx, yAnim, dy, off, side, from.player, count); 
+      }, 15);
+    }	
   }
 }
