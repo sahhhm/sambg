@@ -155,8 +155,9 @@ Selectable.validMoveTo = function(to) {
 
 Selectable.select = function(ctx) {
   this.selected = true;
-  var r, c, p;
-  r = this.isTop() ? this.numCheckers - 1 : pos = this.drawInfo.boardHeight - this.numCheckers;
+  var r, c, p, numc;
+  numc = this.numCheckers > this.drawInfo.maxPiecesPerTriangle ? this.drawInfo.maxPiecesPerTriangle : this.numCheckers;
+  r = this.isTop() ? numc - 1 : this.drawInfo.boardHeight - numc;
   c = this.column
   p = this.player
   ch = Object.create(Checker, { row : { value : r }, column : { value : c }, player : { value : p } });

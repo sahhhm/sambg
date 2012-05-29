@@ -409,7 +409,7 @@ function Board(opts) {
 
   this.move = function(moves) {
     var aMove = moves[0];
-	moves.shift();
+	  moves.shift();
 	
     // initialize the from and to areas
     if ( aMove.fromType == "triangle" ) {
@@ -427,12 +427,9 @@ function Board(opts) {
     if (to.numCheckers == 1 && to.player != from.player) {
       aMove.isToHit = true;
     }
-    
-    //this.drawer.animateMove(from, to);
 
     // adjust triangle checker counts
-    from.numCheckers -= 1;
-	this.updateNakedBoard();  
+    from.numCheckers -= 1;  
     to.numCheckers += 1;
 	
     // if the to player is hit, update accordingly
@@ -458,16 +455,15 @@ function Board(opts) {
     console.log("Moved from " + from.num + " to " + to.num);
     this.turns.addAMove(aMove);
 	
-	this.drawDice(-1);
+	  this.drawDice(-1);
     this.drawDoublingDice(-1);	
 	
-	this.checkElements(from.player);
+	  this.checkElements(from.player);
 	
-	if (moves.length) {
-	  var self = this;
-	  setTimeout( function() { self.move(moves); }, 750 );
-	} 
-	
+	  if (moves.length) {
+	   var self = this;
+	    setTimeout( function() { self.move(moves); }, 750 );
+	  } 	
   }
   
   this.undoMove = function() {

@@ -127,17 +127,17 @@ function Drawer(s, triangles, bars, bearoffs) {
   this.animateMove = function(from, to) {
     this.undoDecorations(); 
 
-    var rowStart,  chStart, xStart, yStart; 
-    var rowEnd,  chEnd, xEnd, yEnd; 
+    var rowStart, checksStart,  chStart, xStart, yStart; 
+    var rowEnd,  checksEnd, chEnd, xEnd, yEnd; 
     
-    //rowStart = from.isTop() ? from.numCheckers - 1  : this.specs.boardHeight - from.numCheckers;
-    rowStart = from.isTop() ? from.numCheckers  : this.specs.boardHeight - from.numCheckers - 1;
+    checksStart = from.numCheckers > this.specs.maxPiecesPerTriangle ? this.specs.maxPiecesPerTriangle : from.numCheckers;
+    rowStart = from.isTop() ? checksStart  : this.specs.boardHeight - checksStart - 1;
     chStart = Object.create(Checker, { row : { value : rowStart }, column : { value : from.column }, player : { value : from.player } });
     xStart = chStart.getX();
     yStart = chStart.getY();
     
-    //rowEnd = to.isTop() ? to.numCheckers : this.specs.boardHeight - to.numCheckers - 1;
-    rowEnd = to.isTop() ? to.numCheckers -1 : this.specs.boardHeight - to.numCheckers;
+    checksEnd = to.numCheckers > this.specs.maxPiecesPerTriangle ? this.specs.maxPiecesPerTriangle : to.numCheckers;
+    rowEnd = to.isTop() ? checksEnd - 1 : this.specs.boardHeight - checksEnd;
     chEnd = Object.create(Checker, { row : { value : rowEnd }, column : { value : to.column }, player : { value : to.player } });
     xEnd = chEnd.getX();
     yEnd = chEnd.getY();  
