@@ -7,6 +7,7 @@ function Board(opts) {
   this.playerCanConfirm = false;
   this.playerCanRoll = false;
   this.numMoves = 0;
+  this.gameOverValue = -1; // -1, not over; otherwise, multiplier for doubling dice
   
   this.dice;
   this.drawer;
@@ -68,32 +69,32 @@ function Board(opts) {
      Object.create(Triangle, { num : { value : 24 }, column : { value : this.specs.boardWidth-1 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } })];  
 
 	 /*
-	             [new Triangle(1, this.specs.boardWidth-1,   2, 2), // player 2 home begins
-             new Triangle(2, this.specs.boardWidth-2,   2, 2),
-             new Triangle(3, this.specs.boardWidth-3,   2, 2),
-             new Triangle(4, this.specs.boardWidth-4,   2, 2),
-             new Triangle(5, this.specs.boardWidth-5,   2, 2),
-             new Triangle(6, this.specs.boardWidth-6,   2, 5), // player 2 home ends
-             new Triangle(7, this.specs.boardWidth-8,   0, 0),
-             new Triangle(8, this.specs.boardWidth-9,   2, 0),
-             new Triangle(9, this.specs.boardWidth-10,  0, 0),
-             new Triangle(10, this.specs.boardWidth-11, 0, 0),
-             new Triangle(11, this.specs.boardWidth-12, 0, 0),
-             new Triangle(12, this.specs.boardWidth-13, 1, 0),
-             new Triangle(13, this.specs.boardWidth-13, 2, 0),
-             new Triangle(14, this.specs.boardWidth-12, 0, 0),
-             new Triangle(15, this.specs.boardWidth-11, 0, 0),
-             new Triangle(16, this.specs.boardWidth-10, 0, 0),
-             new Triangle(17, this.specs.boardWidth-9,  1, 0),
-             new Triangle(18, this.specs.boardWidth-8,  0, 0),
-             new Triangle(19, this.specs.boardWidth-6,  1, 3), // player 1 home begins
-             new Triangle(20, this.specs.boardWidth-5,  1, 1),
-             new Triangle(21, this.specs.boardWidth-4,  1, 5),
-             new Triangle(22, this.specs.boardWidth-3,  1, 3),
-             new Triangle(23, this.specs.boardWidth-2,  1, 3),
-             new Triangle(24, this.specs.boardWidth-1,  1, 0)]; // player 1 home ends
-      */
-
+	   this.gTriangles = 
+    [Object.create(Triangle, { num : { value : 1 }, column : { value : this.specs.boardWidth-1 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } }),
+     Object.create(Triangle, { num : { value : 2 }, column : { value : this.specs.boardWidth-2 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } }),
+     Object.create(Triangle, { num : { value : 3 }, column : { value : this.specs.boardWidth-3 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } }),
+     Object.create(Triangle, { num : { value : 4 }, column : { value : this.specs.boardWidth-4 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } }),
+     Object.create(Triangle, { num : { value : 5 }, column : { value : this.specs.boardWidth-5 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } }),
+     Object.create(Triangle, { num : { value : 6 }, column : { value : this.specs.boardWidth-6 } , player : { value : 2, writable : true  }, numCheckers : { value : 4, writable : true } }),
+     Object.create(Triangle, { num : { value : 7 }, column : { value : this.specs.boardWidth-8 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 8 }, column : { value : this.specs.boardWidth-9 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 9 }, column : { value : this.specs.boardWidth-10 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 10 }, column : { value : this.specs.boardWidth-11 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 11 }, column : { value : this.specs.boardWidth-12 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 12 }, column : { value : this.specs.boardWidth-13 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 13 }, column : { value : this.specs.boardWidth-13 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 14 }, column : { value : this.specs.boardWidth-12 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 15 }, column : { value : this.specs.boardWidth-11 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 16 }, column : { value : this.specs.boardWidth-10 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 17 }, column : { value : this.specs.boardWidth-9 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 18 }, column : { value : this.specs.boardWidth-8 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 19 }, column : { value : this.specs.boardWidth-6 } , player : { value : 2, writable : true  }, numCheckers : { value : 1, writable : true } }),
+     Object.create(Triangle, { num : { value : 20 }, column : { value : this.specs.boardWidth-5 } , player : { value : 1, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 21 }, column : { value : this.specs.boardWidth-4 } , player : { value : 1, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 22 }, column : { value : this.specs.boardWidth-3 } , player : { value : 1, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 23 }, column : { value : this.specs.boardWidth-2 } , player : { value : 1, writable : true  }, numCheckers : { value : 0, writable : true } }),
+     Object.create(Triangle, { num : { value : 24 }, column : { value : this.specs.boardWidth-1 } , player : { value : 1, writable : true  }, numCheckers : { value : 15, writable : true } })];  
+*/
   this.gBars = 
     [ Object.create(Bar, { player : { value : 1 }, num : { value : 1 }, column : { value : this.specs.barColumn }, numCheckers : { value: 0, writable : true  } }),
       Object.create(Bar, { player : { value : 2 }, num : { value : 2 }, column : { value : this.specs.barColumn }, numCheckers : { value: 0, writable : true  } }) ];
@@ -360,30 +361,9 @@ function Board(opts) {
  
   }  
   
-  this.playerReadyToBearOff = function(p) {
-    var numChecks = 0;
-    
-    for (var i = 1; i < this.getTriangles().length + 1; i++) {
-	    // get the home start and finish in min,max order
-      var end1 = Math.min(p.homeStartNum, p.homeEndNum);
-      var end2 = Math.max(p.homeStartNum, p.homeEndNum);
-
-      // sum up number of checkers that are not in players home
-      if ( !(i >= end1 && i <= end2) ) { 
-        var t =  this.getTriangleByNum(i);
-        if (t.player == p.num && t.numCheckers > 0) {
-          numChecks += t.numCheckers;
-        }
-      } 
-    }
-    // add number of checkers that are hit
-	  numChecks += this.getBarByNum(p.num).numCheckers;
-    return numChecks == 0;
-  }
-  
   this.updateSpace = function(from, to) {
     var foundPotential;
-	  var moves = [];
+	var moves = [];
     
     // search potential moves to find the move that ends at to.num
     var potentials = this.findPotentialMoves(from);
@@ -409,9 +389,9 @@ function Board(opts) {
 
   this.move = function(moves) {
     var aMove = moves[0];
-	  moves.shift();
-
-	  this.drawer.undoDecorations();
+	moves.shift();
+	
+	this.drawer.undoDecorations();
 	
     // initialize the from and to areas
     if ( aMove.fromType == "triangle" ) {
@@ -456,15 +436,16 @@ function Board(opts) {
     console.log("Moved from " + from.num + " to " + to.num);
     this.turns.addAMove(aMove);
 	
-	  this.drawDice(-1);
+	this.drawDice(-1);
     this.drawDoublingDice(-1);	
 	
-	  this.checkElements(from.player);
+	this.checkElements(from.player);
+	this.gameOverValue = this.getGameOverCode(from.player);
 	
-	  if (moves.length) {
-	   var self = this;
-	    setTimeout( function() { self.move(moves); }, 750 );
-	  } 
+    if (moves.length) {
+      var self = this;
+	  setTimeout( function() { self.move(moves); }, 750 );
+    } 
     
   }
   
@@ -528,5 +509,51 @@ function Board(opts) {
   this.playerTurn = function() {
     return bggame.board.numMoves % 2 + 1
   }  
+  
+  this.getGameOverCode = function(forPlayerNum) {
+    // returns -1 if the game is not over;
+	// otherwise, returns number of points user won by
+	var retval = -1;
+	var factor = 1;
+	var otherPlayerNum = forPlayerNum % 2 + 1;
+	var bearForPlayer = this.getBearOffByPlayerNum( forPlayerNum ); 
+	var bearOtherPlayer = this.getBearOffByPlayerNum( otherPlayerNum )
+	if ( bearForPlayer.numCheckers == this.specs.totalPiecesPerPlayer ) {
+	  if ( bearOtherPlayer.numCheckers <= 0 ) {
+	    if ( this.inquireCheckerNotInAHome( this.getPlayerByNum( otherPlayerNum ), this.getPlayerByNum( forPlayerNum ) ) < this.specs.totalPiecesPerPlayer ) { 
+		  factor = 3;        
+        } else {
+          factor = 2;
+		}
+	  }
+	  retval = this.doublingDice.value * factor;
+	} 
+	return retval;
+  }
+  
+  this.playerReadyToBearOff = function(p) {
+    return this.inquireCheckerNotInAHome( p, p ) == 0;
+  }  
+  
+  this.inquireCheckerNotInAHome = function(inquirePlayer, homePlayer) {
+    // given an inquiring and home player object, returns the number of
+    // checkers the inquriing player does not have in the home players home
+    var numChecks = 0;
+    for (var i = 1; i < this.getTriangles().length + 1; i++) {
+	  // get the home start and finish in min,max order
+      var end1 = Math.min(homePlayer.homeStartNum, homePlayer.homeEndNum);
+      var end2 = Math.max(homePlayer.homeStartNum, homePlayer.homeEndNum);
+
+      // sum up number of checkers that are not in players home
+      if ( !(i >= end1 && i <= end2) ) { 
+        var t =  this.getTriangleByNum(i);
+        if (t.player == inquirePlayer.num && t.numCheckers > 0) {
+          numChecks += t.numCheckers;
+        }
+      } 
+    }
+	numChecks += this.getBarByNum(inquirePlayer.num).numCheckers;
+    return numChecks;	
+  }
   
 }

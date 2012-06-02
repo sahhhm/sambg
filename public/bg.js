@@ -53,6 +53,11 @@ function bgOnClick(e) {
     if (info.regularDice) {
       if (bggame.board.playerCanConfirm) {
         console.log("confirming move...");
+		var gameOver = false;
+		if ( bggame.board.gameOverValue != -1 ) {
+		  alert("gameOver -- " + bggame.board.gameOverValue);
+		  gameOver = true;
+		} 
         socket.emit('moved', { room: selectedRoom, moves:bggame.board.turns.currentTurn});
         bggame.board.playerCanConfirm = false;
       } else if (bggame.board.playerCanRoll) {
@@ -93,7 +98,6 @@ function bgOnClick(e) {
 	    bggame.board.update({ forPlayer : me.num });
 	  }
     } 
-    //bggame.board.update({ forPlayer : me.num });
   } 
 }
 
