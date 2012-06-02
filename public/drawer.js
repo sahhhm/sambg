@@ -195,8 +195,11 @@ function Drawer(s, triangles, bars, bearoffs) {
   }
   
   this.movePiece = function(x, dx, y, dy, off, side, playerNum, from, to, count) {
-    this.drawingContext.clearRect(x - off, y - off, side, side );
-    this.drawingContext.drawImage(this.nakedCanvasElement, x - off, y - off, side, side, x - off, y - off, side, side);        	
+    var tx, ty;
+	tx = x - off < 0 ? off : x - off; 
+	ty = y - off < 0 ? off : y - off;
+    this.drawingContext.clearRect(tx, ty, side, side );
+    this.drawingContext.drawImage(this.nakedCanvasElement, tx, ty, side, side, tx, ty, side, side);        	
     xAnim = x + dx;
     yAnim = y + dy;
     drawCh = Object.create(CheckerXY, { x : { value : xAnim }, y : { value : yAnim }, player : { value : playerNum } });
