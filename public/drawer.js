@@ -208,6 +208,9 @@ function Drawer(s, triangles, bars, bearoffs) {
       // piece moving is over... handle stuff here!
       from.draw(this.drawingContext);
       to.draw(this.drawingContext);
+	  for ( var i = 0; i < this.bars.length; i++ ) {
+	    if ( this.bars[i].player != from.player ) this.bars[i].draw( this.drawingContext );
+	  }
     } else {
       var self = this;
       setTimeout( function() { 

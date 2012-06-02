@@ -214,8 +214,12 @@ Bar.entry = function() { return this.player == 1 ? 0 : 25; };
 Bar.isTop = function() { return this.player == 1; };
 Bar.drawShape = function(ctx) {
   ctx.fillStyle = "#ccc";
-  var top = this.isTop() ? 0 : this.drawInfo.pixelHeight/2;
-  ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.barColumn , top, this.drawInfo.pieceWidth, this.drawInfo.pixelHeight / 2);
+  var top = this.isTop() ? 0 : this.drawInfo.pixelHeight - ( this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight );
+  if ( this.isTop() ) {
+    ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.barColumn , top, this.drawInfo.pieceWidth, this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight);
+  } else {
+    ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.barColumn , top, this.drawInfo.pieceWidth, this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight);
+  }
 }
 
 //**** triangle
