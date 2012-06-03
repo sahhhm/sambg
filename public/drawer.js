@@ -196,9 +196,11 @@ function Drawer(s, triangles, bars, bearoffs) {
   
   this.movePiece = function(x, dx, y, dy, off, side, playerNum, from, to, count) {
     var tx, ty;
-	tx = x - off < 0 ? off : x - off; 
-	ty = y - off < 0 ? off : y - off;
-    this.drawingContext.clearRect(tx, ty, side, side );
+	tx = x - off < 0 ? 0 : x - off; 
+	ty = y - off < 0 ? 0 : y - off;
+	if ( ty + side > this.specs.pixelHeight ) ty = this.specs.pixelHeight - side;
+	
+	this.drawingContext.clearRect(tx, ty, side, side );
     this.drawingContext.drawImage(this.nakedCanvasElement, tx, ty, side, side, tx, ty, side, side);        	
     xAnim = x + dx;
     yAnim = y + dy;
