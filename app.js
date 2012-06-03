@@ -14,17 +14,19 @@ io.configure(function () {
   io.set("transports", ["xhr-polling"]); 
   io.set("polling duration", 10); 
 });
-var rooms = [];
 
-function room(roomId){
+var port = process.env.PORT || 8080;
+app.listen(port, function() {
+  console.log("Listening on " + port);
+});
+
+function room(roomId) {
   this.roomId = roomId;
   this.playerSockets = [];
   this.status = "open";
   this.rng = new mrng.RNG();
 };
-
-app.listen(8080);
-
+var rooms = [];
 io.sockets.on('connection', function (socket) {
   
   socket.join("lobby");
