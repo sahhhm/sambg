@@ -13,9 +13,9 @@ var io = require('socket.io').listen(app);
 var rooms = [];
 
 function room(roomId){
-  //this.roomSocket = roomSocket;
   this.roomId = roomId;
   this.playerSockets = [];
+  this.status = "open";
   this.rng = new mrng.RNG();
 };
 
@@ -61,15 +61,14 @@ io.sockets.on('connection', function (socket) {
     if (idx != -1) {
       rooms[idx].playerSockets.push(socket);
       socket.join(data.room);
-      socket.set('room', rooms[idx].roomId, function(){ 
+      socket.set('room', rooms[idx].roomId, function() { 
         socket.emit('room chosen', {room: rooms[idx].roomId }); 
       });	
       
-      // let everyone else know a room was created
-      io.sockets.in('lobby').emit('room refresh',  get_room_names());
-      
       // load game!
-      if (rooms[idx].playerSockets.length == 2) { 		
+      if (rooms[idx].playerSockets.length == 2) { 
+        rooms[idx].status = "closed";
+		
         // send initial load information/request 
         io.sockets.in(rooms[idx].roomId).emit('load game', {room: rooms[idx].roomId, 
                                                             player1: rooms[idx].playerSockets[0].id, 
@@ -83,6 +82,9 @@ io.sockets.on('connection', function (socket) {
         io.sockets.in(rooms[idx].roomId).emit('dice', {die1: rooms[idx].rng.getADie(),
                                                        die2: rooms[idx].rng.getADie()});
       }
+	  
+      // let everyone else know a room was updated
+      io.sockets.in('lobby').emit('room refresh', get_room_names());
     } 
   });
   
@@ -97,6 +99,15 @@ io.sockets.on('connection', function (socket) {
     // tell players to update turn history
     io.sockets.in(rooms[idx].roomId).emit("update turns", { numMoves: data.moves.length });
   });
+  
+  socket.on("game end", function(data) {
+    var idx = get_room_index(data.room);
+    
+    if (idx != -1) {
+      io.sockets.in(rooms[idx].roomId).emit("game over", data);
+	  rooms[idx].playerSockets = [];
+    }
+  });  
   
   socket.on("double sent", function(data) {
     var idx = get_room_index(data.room);
@@ -164,6 +175,14 @@ io.sockets.on('connection', function (socket) {
     socket.join('lobby');
   });
   
+  socket.on("exit game", function(data) {
+    var idx = get_room_index(data.room);
+    if (idx != -1) {
+      io.sockets.in(rooms[idx].roomId).emit('leave room'); 
+	  io.sockets.in('lobby').emit('room refresh',  get_room_names());
+    }
+  });
+  
   socket.on("disconnect", function(){
     var idx = -1;
     socket.get('room', function (err, name) {
@@ -172,7 +191,7 @@ io.sockets.on('connection', function (socket) {
     if (idx != -1)  {
     
        // let other player in the room know that the room is gone
-       io.sockets.in(idx).emit("force leave room");
+       io.sockets.in(idx).emit("leave room");
     
        // remove room from the rooms list
        rooms.splice(idx, 1);
@@ -197,7 +216,7 @@ function get_room_index(id) {
 function get_room_names() {
   names = [];
   for (var i = 0; i < rooms.length; i++) {
-     names.push(rooms[i].roomId);
+     if (rooms[i].status == "open") names.push(rooms[i].roomId);
   }
   return names;
 }

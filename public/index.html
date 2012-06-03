@@ -68,6 +68,12 @@
      bggame.board.update( { forPlayer : me.num } );
    });
    
+   socket.on('game over', function(data) {
+     console.log("game over");
+	  $('#game-over-area').html( 'Game over... Player ' + data.winnerNum + ' won with ' + data.points + ' points!' +
+                                 '<button id="do-play-again">play again</button><button id="dont-play-again">back to lobby</button>');
+   });   
+   
    //for debugging only
    socket.on('fdice', function(data) {
      bggame.board.dice.froll(data);
@@ -83,9 +89,7 @@
 	 
      for (i = 0; i < moves.length; i++) {
        var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].toType, moves[i].isToHit, moves[i].diceValue);
-       //bggame.board.move(tempMove);
 	   aMoves.push(tempMove);
-       //bggame.board.update({ forPlayer : me.num });
      }
 	 bggame.board.move(aMoves);
    });
@@ -104,7 +108,9 @@
        $('#doubling-area').html('');
        bggame.board.update({ forPlayer : me.num, drawDoublingDice : true} );
      } else if (data.action == "reject") {
-       console.log("need to implement double reject once end game is selected");
+	   console.log( "double rejected" );
+	   $('#doubling-area').html('');
+       socket.emit('game end', { room: selectedRoom, winnerNum: me.num % 2 + 1, points: bggame.board.doublingDice.value });
      }
    });   
    
@@ -113,13 +119,13 @@
 	   var time = 750 * data.numMoves;
 	   setTimeout( function() {
 	    console.log(time);
-      bggame.board.updateTurn();  
-      bggame.board.update({ forPlayer: me.num });
+        bggame.board.updateTurn();  
+        bggame.board.update({ forPlayer: me.num });
 	   }, time);
    });
    
-   socket.on('force leave room', function() {
-     console.log("got force leave room event");
+   socket.on('leave room', function() {
+     console.log("got leave room event");
      resetClient();
      socket.emit('join lobby');
    });
@@ -148,6 +154,16 @@
      socket.emit('join room', {room: selectedRoom});
    });  
 
+   $("div").on("click", "button[id$='play-again']", function(e) {
+     var act = this.id.split('-')[0];
+	 if ( act == "do" ) {
+	   socket.emit('join room', {room: selectedRoom});
+	   $('#game-over-area').html('waiting for other player to want to play with you...');
+	 } else {
+	   socket.emit('exit game', {room: selectedRoom});
+	 }
+   });      
+   
    $("div").on("click", "button[id='undo']", function(e) {
       bggame.board.undoMove();
       bggame.board.update({forPlayer : me.num});

@@ -41,7 +41,7 @@ function Board(opts) {
   this.turns = new TurnHistory();
   
   this.bPlayers = opts.players;
-      
+ 
   this.gTriangles = 
     [Object.create(Triangle, { num : { value : 1 }, column : { value : this.specs.boardWidth-1 } , player : { value : 1, writable : true  }, numCheckers : { value : 2, writable : true } }),
      Object.create(Triangle, { num : { value : 2 }, column : { value : this.specs.boardWidth-2 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
@@ -68,7 +68,7 @@ function Board(opts) {
      Object.create(Triangle, { num : { value : 23 }, column : { value : this.specs.boardWidth-2 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
      Object.create(Triangle, { num : { value : 24 }, column : { value : this.specs.boardWidth-1 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } })];  
 
-	 /*
+/*
 	   this.gTriangles = 
     [Object.create(Triangle, { num : { value : 1 }, column : { value : this.specs.boardWidth-1 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } }),
      Object.create(Triangle, { num : { value : 2 }, column : { value : this.specs.boardWidth-2 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } }),
@@ -89,11 +89,11 @@ function Board(opts) {
      Object.create(Triangle, { num : { value : 17 }, column : { value : this.specs.boardWidth-9 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
      Object.create(Triangle, { num : { value : 18 }, column : { value : this.specs.boardWidth-8 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
      Object.create(Triangle, { num : { value : 19 }, column : { value : this.specs.boardWidth-6 } , player : { value : 2, writable : true  }, numCheckers : { value : 1, writable : true } }),
-     Object.create(Triangle, { num : { value : 20 }, column : { value : this.specs.boardWidth-5 } , player : { value : 1, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 21 }, column : { value : this.specs.boardWidth-4 } , player : { value : 1, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 22 }, column : { value : this.specs.boardWidth-3 } , player : { value : 1, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 23 }, column : { value : this.specs.boardWidth-2 } , player : { value : 1, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 24 }, column : { value : this.specs.boardWidth-1 } , player : { value : 1, writable : true  }, numCheckers : { value : 15, writable : true } })];  
+     Object.create(Triangle, { num : { value : 20 }, column : { value : this.specs.boardWidth-5 } , player : { value : 1, writable : true  }, numCheckers : { value : 1, writable : true } }),
+     Object.create(Triangle, { num : { value : 21 }, column : { value : this.specs.boardWidth-4 } , player : { value : 1, writable : true  }, numCheckers : { value : 1, writable : true } }),
+     Object.create(Triangle, { num : { value : 22 }, column : { value : this.specs.boardWidth-3 } , player : { value : 1, writable : true  }, numCheckers : { value : 1, writable : true } }),
+     Object.create(Triangle, { num : { value : 23 }, column : { value : this.specs.boardWidth-2 } , player : { value : 1, writable : true  }, numCheckers : { value : 1, writable : true } }),
+     Object.create(Triangle, { num : { value : 24 }, column : { value : this.specs.boardWidth-1 } , player : { value : 1, writable : true  }, numCheckers : { value : 11, writable : true } })];  
 */
   this.gBars = 
     [ Object.create(Bar, { player : { value : 1 }, num : { value : 1 }, column : { value : this.specs.barColumn }, numCheckers : { value: 0, writable : true  } }),

@@ -53,13 +53,12 @@ function bgOnClick(e) {
     if (info.regularDice) {
       if (bggame.board.playerCanConfirm) {
         console.log("confirming move...");
-		var gameOver = false;
-		if ( bggame.board.gameOverValue != -1 ) {
-		  alert("gameOver -- " + bggame.board.gameOverValue);
-		  gameOver = true;
-		} 
         socket.emit('moved', { room: selectedRoom, moves:bggame.board.turns.currentTurn});
         bggame.board.playerCanConfirm = false;
+		if ( bggame.board.gameOverValue != -1 ) {
+          var pointsWon = bggame.board.gameOverValue * bggame.board.doublingDice.value;
+          socket.emit('game end', { room: selectedRoom, winnerNum: me.num, points: pointsWon });
+		} 
       } else if (bggame.board.playerCanRoll) {
         console.log("rolling dice...");
         socket.emit( 'dice request', { room: selectedRoom } );
@@ -110,7 +109,9 @@ function initGame(canvasElement, nakedCanvasElement, data) {
     canvasElement = document.createElement("canvas");
     canvasElement.id = "bg_canvas";
     
+	$('#game_area').html('');
     $("#game_area").append("<div id='game_area_input'></div>");
+	$("#game_area").append("<div id='game-over-area'></div>");
     $("#game_area").append("<div id='doubling-area'></div>");
     
     $("#game_area_input").append( '<p id="iam">I am Player: <span id="iam-player">null</span></p>' + 
