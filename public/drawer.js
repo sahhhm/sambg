@@ -58,6 +58,8 @@ function Drawer(s, triangles, bars, bearoffs) {
   this.interact.dice.alphaUsed = 0.2;
   this.interact.dice.alphaUnused = 0.8;
 
+  this.db = Object.create(DrawableBoard); 
+  
   Drawable.drawInfo = { pieceWidth : this.specs.pieceWidth,
                                  pieceHeight: this.specs.pieceHeight,
                                  p1color: this.specs.p1color,
@@ -68,31 +70,19 @@ function Drawer(s, triangles, bars, bearoffs) {
                                  pixelHeight: this.specs.pixelHeight,
                                  barColumn : this.specs.barColumn,
                                  bearOffColumn : this.specs.bearOffColumn,
-                                 maxPiecesPerTriangle : this.specs.maxPiecesPerTriangle
+                                 maxPiecesPerTriangle : this.specs.maxPiecesPerTriangle,
+								 pixelHeight : this.specs.pixelHeight,
+								 pixelWidth : this.specs.pixelWidth
                        };
   
   this.drawNakedBoard = function() {
     this.nakedCtx.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
-    this.nakedCtx.fillStyle = "white";
-    this.nakedCtx.fillRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
-    
-    var spaces = this.triangles.concat( this.bars ).concat( this.bearoffs );
-    for ( var i = 0; i < spaces.length; i++ ) {
-      spaces[i].draw(this.nakedCtx);
-    }    
+	this.db.drawBoard(this.nakedCtx, this.triangles, this.bars, this.bearoffs);
   }
   
-  this.drawBoard = function(from, pots) {
+  this.drawBoard = function() {
     this.drawingContext.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
-    this.drawingContext.fillStyle = "white";
-    this.drawingContext.fillRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
-    
-    var spaces = this.triangles.concat( this.bars ).concat( this.bearoffs );
-    for ( var i = 0; i < spaces.length; i++ ) {
-      spaces[i].draw(this.drawingContext);
-    }
-
-    this.drawPotentials(from, pots);
+	this.db.drawBoard(this.drawingContext, this.triangles, this.bars, this.bearoffs);
   }
   
   this.drawPotentials = function(from, pots) {
@@ -172,7 +162,8 @@ function Drawer(s, triangles, bars, bearoffs) {
     
     // clear entire dice area
     this.drawingContext.clearRect(this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix,  this.interact.dice.heightPix); 
-
+    this.drawingContext.drawImage(this.nakedCanvasElement, this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix, this.interact.dice.widthPix, this.interact.dice.startX, this.interact.dice.startY, this.interact.dice.widthPix, this.interact.dice.widthPix);
+	
     // draw each individual dice
     var fs  = ( opts.dice.isRolled ) ? opts.currentPlayer.color : opts.otherPlayer.color;
     for ( var d = 0; d < opts.dice.dice.length; d++ ) {
@@ -184,9 +175,9 @@ function Drawer(s, triangles, bars, bearoffs) {
                                    this.interact.dice.pieceWidth, this.interact.dice.pieceHeight);
       
       // display dice value
-      this.drawingContext.fillStyle = "white";
-      this.drawingContext.globalAlpha = 1;
-      this.drawingContext.font = "12pt Arial";
+      this.drawingContext.fillStyle = "#FF4040";
+      this.drawingContext.globalAlpha += .2;
+      this.drawingContext.font = "15pt Arial";
       this.drawingContext.fillText(opts.dice.dice[d].value, 
                                   this.interact.dice.startX + this.interact.dice.piecePadding +  pos * (this.interact.dice.pieceWidth  + this.interact.dice.piecePadding) + ((this.interact.dice.pieceWidth - this.interact.dice.piecePadding )/2) , 
                                   this.interact.dice.startY + ( (this.interact.dice.pieceHeight + this.interact.padding) / 2 ));       

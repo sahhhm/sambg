@@ -103,7 +103,7 @@ function Board(opts) {
     [ Object.create(Bearoff, { player : { value : 1 }, num : { value : 25 }, column : { value : this.specs.bearOffColumn }, numCheckers : { value: 0, writable : true  } }),
       Object.create(Bearoff, { player : { value : 2 }, num : { value :  0 }, column : { value : this.specs.bearOffColumn }, numCheckers : { value: 0, writable : true  } }) ];
 
-  this.drawer = new Drawer(this.specs, this.gTriangles, this.gBars, this.gBearOffs);	  
+  this.drawer = new Drawer(this.specs, this.gTriangles, this.gBars, this.gBearOffs);	
       
   this.getBars = function() {
     return this.gBars;
@@ -242,8 +242,8 @@ function Board(opts) {
         pots = tos.concat( [ this.getBearOffByPlayerNum( from.player ) ] );
       } 
     }
-    
-	this.drawer.drawBoard(from, pots);
+    this.drawer.drawPotentials(from, pots);
+	//this.drawer.drawBoard(from, pots);
   }
   
   this.findPotentialMoves = function(from) {

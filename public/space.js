@@ -9,12 +9,42 @@
     - bearoff (draw, highlight)
 */
 
-var Drawable = { drawinfo: {} };
+var Drawable = { drawinfo: {}, 
+                 patterns: {} };
+
+Drawable.patterns.bg = { image: new Image(), loaded: false};
+Drawable.patterns.bg.image.src = 'woodbg.jpg';
+Drawable.patterns.bg.image.onload = function() {
+  Drawable.patterns.bg.loaded = true;
+}
+Drawable.patterns.oddTri = { image: new Image(), loaded: false};
+Drawable.patterns.oddTri.image.src = 'woodlight.gif';
+Drawable.patterns.oddTri.image.onload = function() {
+  Drawable.patterns.oddTri.loaded = true;
+}
+Drawable.patterns.evenTri = { image: new Image(), loaded: false};
+Drawable.patterns.evenTri.image.src = 'wooddark.gif';
+Drawable.patterns.evenTri.image.onload = function() {
+  Drawable.patterns.evenTri.loaded = true;
+}
+
 
 Drawable.drawCircle = function(ctx, x, y, radius) {
   ctx.beginPath();
   ctx.arc(x, y, radius, 0, Math.PI*2, false);
   ctx.closePath();
+}
+
+var DrawableBoard = Object.create(Drawable);
+
+DrawableBoard.drawBoard = function(ctx, triangles, bars, bearoffs) {
+  ctx.fillStyle = ctx.createPattern(this.patterns.bg.image,'repeat');
+  ctx.fillRect(0, 0, this.drawInfo.pixelWidth, this.drawInfo.pixelHeight);	      
+		
+  var spaces = triangles.concat( bars ).concat( bearoffs );
+  for ( var i = 0; i < spaces.length; i++ ) {
+    spaces[i].draw(ctx);
+  }
 }
 
 
@@ -234,11 +264,16 @@ Triangle.drawShape = function(ctx) {
   var height = Math.abs( base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight) );
   var topPixel = this.isTop() ? 0 : height;  
   
-  ctx.clearRect(x, topPixel, this.drawInfo.pieceWidth, height); 
+  //ctx.clearRect(x, topPixel, this.drawInfo.pieceWidth, height); 
 
   // draw triangle
   ctx.lineWidth =  1;
   ctx.fillStyle = "white";
+  if ( this.num % 2 == 0 && this.patterns.evenTri.loaded ) {
+    ctx.fillStyle = ctx.createPattern(this.patterns.evenTri.image,'repeat');
+  } else if (  this.num % 2 == 1 && this.patterns.oddTri.loaded ) {
+    ctx.fillStyle = ctx.createPattern(this.patterns.oddTri.image,'repeat');
+  }
   ctx.strokeStyle = "black";
   ctx.beginPath();
   ctx.moveTo(x, base);

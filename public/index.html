@@ -60,6 +60,8 @@
      $('#lobby').hide();
      initGame(null, null, data);
      newGame();
+	 bggame.board.drawer.drawBoard();
+	 bggame.board.drawer.drawNakedBoard();
    });
    
    socket.on('dice', function(data) {
