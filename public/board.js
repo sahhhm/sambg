@@ -35,8 +35,8 @@ function Board(opts) {
   this.specs.p1color = opts.p1color;
   this.specs.p2color = opts.p2color;
 
-  this.dice = new Dice();
-  this.doublingDice = new DoublingDice();
+  this.dice = Object.create(Dice);
+  this.doublingDice = Object.create(DoublingDice);
     
   this.turns = new TurnHistory();
   
