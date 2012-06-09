@@ -40,13 +40,13 @@ Dice.roll = function(theRoll) {
   this.isRolled = true;
   this.confirmedRolls += 1;
 }  
-Dice.updateDiceOnMove = function(num) {
+Dice.updateDice = function(num, isCurrentlyUsed) {
   for ( var i = 0; i < this.dice.length; i++ ) {
-    if ( this.dice[i].value == num && this.dice[i].isUsed == false ) {
-      this.dice[i].isUsed = true;
+    if ( this.dice[i].value == num  && this.dice[i].isUsed == isCurrentlyUsed) {
+      this.dice[i].isUsed = !isCurrentlyUsed;
       break;
     }
-  }
+  } 
 } 
 Dice.numUnusedDice = function() {
   var num = 0;
@@ -55,6 +55,7 @@ Dice.numUnusedDice = function() {
   }
   return num; 
 } 
+
 
 var DoublingDice = Object.create(Drawable, { lastPlayerToDoubleNum : { value: -1, enumerable: true, writable: true },
                                              value                 : { value: 1,  enumerable: true, writable: true } });

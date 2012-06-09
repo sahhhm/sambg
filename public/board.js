@@ -431,7 +431,7 @@ function Board(opts) {
     this.selectedTriangleNum = -1;
     
     // update the dice based on the move + default to max dice (for bearOff specials)
-    this.dice.updateDiceOnMove( aMove.diceValue );
+    this.dice.updateDice( aMove.diceValue, false );
     
     // add the move to the history
     console.log("Moved from " + from.num + " to " + to.num);
@@ -477,7 +477,7 @@ function Board(opts) {
     this.selectedTriangleNum = -1;    
     
     // update the dice based on the move
-    this.dice.replaceDiceOnUndo( theMove.diceValue );
+    this.dice.updateDice( theMove.diceValue, true );
     console.log("undo move from " + from.entry() + " to " + to.entry());
   }
   
