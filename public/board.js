@@ -187,6 +187,7 @@ function Board(opts) {
     this.canRoll(forPlayer) ? this.playerCanRoll = true : this.playerCanRoll = false;
     this.drawDice(forPlayer);
     this.drawDoublingDice(forPlayer);  
+    this.gameOverValue = this.getGameOverCode(forPlayer);
   }
 
   this.drawDice = function(forPlayerNum) {
@@ -436,11 +437,7 @@ function Board(opts) {
     console.log("Moved from " + from.num + " to " + to.num);
     this.turns.addAMove(aMove);
 	
-	this.drawDice(-1);
-    this.drawDoublingDice(-1);	
-	
 	this.checkElements(from.player);
-	this.gameOverValue = this.getGameOverCode(from.player);
 	
     if (moves.length) {
       var self = this;
