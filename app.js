@@ -198,7 +198,7 @@ io.sockets.on('connection', function (socket) {
     if (idx != -1)  {
     
        // let other player in the room know that the room is gone
-       io.sockets.in(idx).emit("leave room");
+       io.sockets.in(rooms[idx].roomId).emit("leave room");
     
        // remove room from the rooms list
        rooms.splice(idx, 1);
