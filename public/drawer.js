@@ -163,7 +163,7 @@ function Drawer(s, triangles, bars, bearoffs) {
     // clear entire dice area
 	var off = 3;
     this.drawingContext.clearRect(this.interact.dice.startX - off, this.interact.dice.startY - off, this.interact.dice.widthPix + off,  this.interact.dice.heightPix + off); 
-    this.drawingContext.drawImage(this.nakedCanvasElement, this.interact.dice.startX - off, this.interact.dice.startY - off, this.interact.dice.widthPix + off, this.interact.dice.widthPix + off, this.interact.dice.startX - off, this.interact.dice.startY - off, this.interact.dice.widthPix + off, this.interact.dice.widthPix + off);
+    this.drawingContext.drawImage(this.nakedCanvasElement, this.interact.dice.startX - off, this.interact.dice.startY - off, this.interact.dice.widthPix + off, this.interact.dice.heightPix + off, this.interact.dice.startX - off, this.interact.dice.startY - off, this.interact.dice.widthPix + off, this.interact.dice.heightPix + off + 1);
 	
     // draw each individual dice
     var fs  = ( opts.dice.isRolled ) ? opts.currentPlayer.color : opts.otherPlayer.color;
