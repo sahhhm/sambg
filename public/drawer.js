@@ -74,21 +74,27 @@ function Drawer(s, triangles, bars, bearoffs) {
 								 pixelHeight : this.specs.pixelHeight,
 								 pixelWidth : this.specs.pixelWidth
                        };
+
+  Drawable.ctxs = { ctx  : this.drawingContext,
+                    nctx : this.nakedCtx }
+					
+  Drawable.canvasEls = { canvas: this.canvasElement,
+                         nakedCanvas: this.nakedCanvasElement }
   
   this.drawNakedBoard = function() {
-    this.nakedCtx.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
-	this.db.drawBoard(this.nakedCtx, this.triangles, this.bars, this.bearoffs);
+    Drawable.ctxs.nctx.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
+	this.db.drawBoard(Drawable.ctxs.nctx, this.triangles, this.bars, this.bearoffs);
   }
   
   this.drawBoard = function() {
-    this.drawingContext.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
-	this.db.drawBoard(this.drawingContext, this.triangles, this.bars, this.bearoffs);
+    Drawable.ctxs.ctx.clearRect(0, 0, this.specs.pixelWidth, this.specs.pixelHeight);
+	this.db.drawBoard(Drawable.ctxs.ctx, this.triangles, this.bars, this.bearoffs);
   }
   
   this.drawPotentials = function(from, pots) {
     if ( from ) {
-      from.select( this.drawingContext );
-      for (var i = 0; i < pots.length; i++) pots[i].highlight( this.drawingContext );
+      from.select( Drawable.ctxs.ctx );
+      for (var i = 0; i < pots.length; i++) pots[i].highlight( Drawable.ctxs.ctx );
     }  
   }
   
@@ -99,11 +105,11 @@ function Drawer(s, triangles, bars, bearoffs) {
     for ( var i = 0; i < spaces.length; i++ ) {
       if ( spaces[i].selected ) {
         spaces[i].selected = false;
-        spaces[i].draw(this.drawingContext);	  
+        spaces[i].draw( Drawable.ctxs.ctx );	  
       }
       if ( spaces[i].highlighted ) {
         spaces[i].highlighted = false;
-        spaces[i].draw(this.drawingContext);	  
+        spaces[i].draw( Drawable.ctxs.ctx );	  
       }
     }	
   }
@@ -147,73 +153,73 @@ function Drawer(s, triangles, bars, bearoffs) {
   
   this.drawDoublingDice = function(opts) {
     var fs = opts.isActive ? this.interact.doubling.activeColor : this.interact.doubling.inactiveColor;
-    this.drawingContext.fillStyle = fs;
-    this.drawingContext.clearRect(this.interact.doubling.startX, this.interact.doubling.startY, this.interact.doubling.widthPix,  this.interact.doubling.heightPix); 
-    this.drawingContext.fillRect(this.interact.doubling.startX, this.interact.doubling.startY, this.interact.doubling.widthPix,  this.interact.doubling.heightPix);    
-    this.drawingContext.font = "15pt Arial";
-    this.drawingContext.fillStyle = "rgba(0, 0, 0, .3)";
-    this.drawingContext.fillText(opts.value, this.interact.doubling.startX + this.interact.doubling.widthPix/2 - this.interact.padding, this.interact.doubling.startY + this.interact.doubling.heightPix/2 + this.interact.padding);
+    Drawable.ctxs.ctx.fillStyle = fs;
+    Drawable.ctxs.ctx.clearRect(this.interact.doubling.startX, this.interact.doubling.startY, this.interact.doubling.widthPix,  this.interact.doubling.heightPix); 
+    Drawable.ctxs.ctx.fillRect(this.interact.doubling.startX, this.interact.doubling.startY, this.interact.doubling.widthPix,  this.interact.doubling.heightPix);    
+    Drawable.ctxs.ctx.font = "15pt Arial";
+    Drawable.ctxs.ctx.fillStyle = "rgba(0, 0, 0, .3)";
+    Drawable.ctxs.ctx.fillText(opts.value, this.interact.doubling.startX + this.interact.doubling.widthPix/2 - this.interact.padding, this.interact.doubling.startY + this.interact.doubling.heightPix/2 + this.interact.padding);
   }
 
   this.drawDice = function(opts) {
     // { dice: Dice (array of DicePieces), currentPlayer: Player, mePlayer: Player, otherPlayer: Player, pCanConfirm: boolean, pCanRoll: boolean } 
     
-    this.drawingContext.save();    
+    Drawable.ctxs.ctx.save();    
     
     // clear entire dice area
 	var off = 3;
-    this.drawingContext.clearRect(this.interact.dice.startX - off, this.interact.dice.startY - off, this.interact.dice.widthPix + off,  this.interact.dice.heightPix + off); 
-    this.drawingContext.drawImage(this.nakedCanvasElement, this.interact.dice.startX - off, this.interact.dice.startY - off, this.interact.dice.widthPix + off, this.interact.dice.heightPix + off, this.interact.dice.startX - off, this.interact.dice.startY - off, this.interact.dice.widthPix + off, this.interact.dice.heightPix + off + 1);
+    Drawable.ctxs.ctx.clearRect(this.interact.dice.startX - off, this.interact.dice.startY - off, this.interact.dice.widthPix + off,  this.interact.dice.heightPix + off); 
+    Drawable.ctxs.ctx.drawImage(Drawable.canvasEls.nakedCanvas, this.interact.dice.startX - off, this.interact.dice.startY - off, this.interact.dice.widthPix + off, this.interact.dice.heightPix + off, this.interact.dice.startX - off, this.interact.dice.startY - off, this.interact.dice.widthPix + off, this.interact.dice.heightPix + off + 1);
 	
     // draw each individual dice
     var fs  = ( opts.dice.isRolled ) ? opts.currentPlayer.color : opts.otherPlayer.color;
     for ( var d = 0; d < opts.dice.dice.length; d++ ) {
       var pos = ( d + 1 ) % 4; // center the dice when there are only two... current looks funny when you have doubles and you move one at a time...
 
-      this.drawingContext.globalAlpha = ( opts.dice.dice[d].isUsed ) ? this.interact.dice.alphaUsed : this.interact.dice.alphaUnused;
-      this.drawingContext.fillStyle = fs;
-      this.drawingContext.fillRect(this.interact.dice.startX + this.interact.dice.piecePadding +  pos * (this.interact.dice.pieceWidth  + this.interact.dice.piecePadding), 
+      Drawable.ctxs.ctx.globalAlpha = ( opts.dice.dice[d].isUsed ) ? this.interact.dice.alphaUsed : this.interact.dice.alphaUnused;
+      Drawable.ctxs.ctx.fillStyle = fs;
+      Drawable.ctxs.ctx.fillRect(this.interact.dice.startX + this.interact.dice.piecePadding +  pos * (this.interact.dice.pieceWidth  + this.interact.dice.piecePadding), 
                                    this.interact.dice.startY, 
                                    this.interact.dice.pieceWidth, this.interact.dice.pieceHeight);
       var ss = opts.currentPlayer.color;
 	  if ( opts.pCanConfirm && opts.mePlayer.num == opts.otherPlayer.num ) ss = opts.otherPlayer.color;
 	  if ( opts.pCanRoll ) ss = opts.currentPlayer.color;
 	  if (opts.pCanConfirm || opts.pCanRoll) {
-	    this.drawingContext.globalAlpha = .5; //( dice.dice[d].isUsed ) ? this.interact.dice.alphaUsed : this.interact.dice.alphaUnused;
-		this.drawingContext.lineWidth = 3;
-        this.drawingContext.strokeStyle =  ss;
-        this.drawingContext.strokeRect(this.interact.dice.startX + this.interact.dice.piecePadding +  pos * (this.interact.dice.pieceWidth  + this.interact.dice.piecePadding), 
+	    Drawable.ctxs.ctx.globalAlpha = .5; //( dice.dice[d].isUsed ) ? this.interact.dice.alphaUsed : this.interact.dice.alphaUnused;
+		Drawable.ctxs.ctx.lineWidth = 3;
+        Drawable.ctxs.ctx.strokeStyle =  ss;
+        Drawable.ctxs.ctx.strokeRect(this.interact.dice.startX + this.interact.dice.piecePadding +  pos * (this.interact.dice.pieceWidth  + this.interact.dice.piecePadding), 
                                        this.interact.dice.startY, 
                                        this.interact.dice.pieceWidth, this.interact.dice.pieceHeight);
 	  }
 	  
       // display dice value
-      this.drawingContext.fillStyle = "#FF4040";
-      this.drawingContext.globalAlpha += .2;
-      this.drawingContext.font = "15pt Arial";
-      this.drawingContext.fillText(opts.dice.dice[d].value, 
+      Drawable.ctxs.ctx.fillStyle = "#FF4040";
+      Drawable.ctxs.ctx.globalAlpha += .2;
+      Drawable.ctxs.ctx.font = "15pt Arial";
+      Drawable.ctxs.ctx.fillText(opts.dice.dice[d].value, 
                                   this.interact.dice.startX + this.interact.dice.piecePadding +  pos * (this.interact.dice.pieceWidth  + this.interact.dice.piecePadding) + ((this.interact.dice.pieceWidth - this.interact.dice.piecePadding )/2) , 
                                   this.interact.dice.startY + ( (this.interact.dice.pieceHeight + this.interact.padding) / 2 ));       
     }
-    this.drawingContext.restore();
+    Drawable.ctxs.ctx.restore();
   }
   
   this.highlightDice = function(dice) {
     
-    this.drawingContext.save();    
+    Drawable.ctxs.ctx.save();    
     
 	 for ( var d = 0; d < dice.dice.length; d++ ) {
 	       var pos = ( d + 1 ) % 4; // center the dice when there are only two... current looks funny when you have doubles and you move one at a time...
 
-	    this.drawingContext.globalAlpha = .8; //( dice.dice[d].isUsed ) ? this.interact.dice.alphaUsed : this.interact.dice.alphaUnused;
-		this.drawingContext.lineWidth = 3;
-        this.drawingContext.strokeStyle =  "cyan";
-        this.drawingContext.strokeRect(this.interact.dice.startX + this.interact.dice.piecePadding +  pos * (this.interact.dice.pieceWidth  + this.interact.dice.piecePadding), 
+	    Drawable.ctxs.ctx.globalAlpha = .8; //( dice.dice[d].isUsed ) ? this.interact.dice.alphaUsed : this.interact.dice.alphaUnused;
+		Drawable.ctxs.ctx.lineWidth = 3;
+        Drawable.ctxs.ctx.strokeStyle =  "cyan";
+        Drawable.ctxs.ctx.strokeRect(this.interact.dice.startX + this.interact.dice.piecePadding +  pos * (this.interact.dice.pieceWidth  + this.interact.dice.piecePadding), 
                                        this.interact.dice.startY, 
                                        this.interact.dice.pieceWidth, this.interact.dice.pieceHeight);
 	 }
     
-    this.drawingContext.restore();  
+    Drawable.ctxs.ctx.restore();  
   }
   
   this.movePiece = function(x, dx, y, dy, off, side, playerNum, from, to, count) {
@@ -223,15 +229,15 @@ function Drawer(s, triangles, bars, bearoffs) {
 	if ( ty + side > this.specs.pixelHeight ) ty = this.specs.pixelHeight - side;
 	
 	//this.drawingContext.clearRect(tx, ty, side, side );
-    this.drawingContext.drawImage(this.nakedCanvasElement, tx, ty, side, side, tx, ty, side, side);        	
+    Drawable.ctxs.ctx.drawImage(Drawable.canvasEls.nakedCanvas, tx, ty, side, side, tx, ty, side, side);        	
     xAnim = x + dx;
     yAnim = y + dy;
     drawCh = Object.create(CheckerXY, { x : { value : xAnim }, y : { value : yAnim }, player : { value : playerNum } });
-    drawCh.draw(this.drawingContext, false);
+    drawCh.draw(Drawable.ctxs.ctx, false);
     if (++count == 15) {
       // piece moving is over... handle stuff here!
 	  for ( var i = 0; i < this.bars.length; i++ ) {
-	    if ( this.bars[i].player != from.player ) this.bars[i].draw( this.drawingContext );
+	    if ( this.bars[i].player != from.player ) this.bars[i].draw( Drawable.ctxs.ctx );
 	  }
     } else {
       var self = this;

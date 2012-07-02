@@ -10,7 +10,9 @@
 */
 
 var Drawable = { drawinfo: {}, 
-                 patterns: {} };
+                 patterns: {},
+                 ctxs: {},
+                 canvasEls: {} };
 
 Drawable.patterns.bg = { image: new Image(), loaded: false};
 Drawable.patterns.bg.image.src = 'woodbg.jpg';
@@ -261,10 +263,10 @@ Triangle.drawShape = function(ctx) {
   var x = this.column * this.drawInfo.pieceWidth;
   var base = this.isTop() ? 0 : this.drawInfo.pixelHeight;
 
-  var height = Math.abs( base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight) );
-  var topPixel = this.isTop() ? 0 : height;  
-  
-  //ctx.clearRect(x, topPixel, this.drawInfo.pieceWidth, height); 
+  var height = (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight) ;
+  var topPixel = this.isTop() ? 0 : base -  height;  
+
+  ctx.drawImage(this.canvasEls.nakedCanvas, x, topPixel, this.drawInfo.pieceWidth, height, x, topPixel, this.drawInfo.pieceWidth, height)
 
   // draw triangle
   ctx.lineWidth =  1;
@@ -277,7 +279,7 @@ Triangle.drawShape = function(ctx) {
   ctx.strokeStyle = "black";
   ctx.beginPath();
   ctx.moveTo(x, base);
-  ctx.lineTo(x + this.drawInfo.pieceWidth/2, height);
+  ctx.lineTo(x + this.drawInfo.pieceWidth/2, Math.abs( base - height ) );
   ctx.lineTo(x + this.drawInfo.pieceWidth, base);
   ctx.lineTo(x, base);
   ctx.globalAlpha = 1;
@@ -298,9 +300,6 @@ Bearoff.draw = function(ctx) {
   this.drawShape(ctx);
   for (var i = 0; i <= this.numCheckers - 1; i++) {
     var r = this.isTop() ? i * this.drawInfo.bearOffHeight : (this.drawInfo.boardHeight * this.drawInfo.pieceHeight) - ((i+1) * this.drawInfo.bearOffHeight) - 1;
-    //ch = this.isTop() ? 
-      //   new Checker(i * this.drawInfo.bearOffHeight, this.column, this.player) : 
-        // new Checker((this.drawInfo.boardHeight * this.drawInfo.pieceHeight) - ((i+1) * this.drawInfo.bearOffHeight) - 1, this.column, this.player);
     ch = Object.create(Checker, { row : { value : r }, column : { value : this.column }, player : { value : this.player } });
     ch.drawBear(ctx);
   }
