@@ -115,12 +115,14 @@ function Drawer(s, triangles, bars, bearoffs) {
   }
   
   this.animateMove = function(from, to) {
+    // from/to has already been inremented/decremented 
+	
     this.drawNakedBoard();
 
     var rowStart, checksStart,  chStart, xStart, yStart; 
     var rowEnd, checksEnd, chEnd, xEnd, yEnd; 
     
-    checksStart = from.numCheckers > this.specs.maxPiecesPerTriangle ? this.specs.maxPiecesPerTriangle : from.numCheckers;
+    checksStart = from.numCheckers >= this.specs.maxPiecesPerTriangle - 1 ? this.specs.maxPiecesPerTriangle -1 : from.numCheckers;
     rowStart = from.isTop() ? checksStart  : this.specs.boardHeight - checksStart - 1;
     chStart = Object.create(Checker, { row : { value : rowStart }, column : { value : from.column }, player : { value : from.player } });
     xStart = chStart.getX();
@@ -228,7 +230,6 @@ function Drawer(s, triangles, bars, bearoffs) {
 	ty = y - off < 0 ? 0 : y - off;
 	if ( ty + side > this.specs.pixelHeight ) ty = this.specs.pixelHeight - side;
 	
-	//this.drawingContext.clearRect(tx, ty, side, side );
     Drawable.ctxs.ctx.drawImage(Drawable.canvasEls.nakedCanvas, tx, ty, side, side, tx, ty, side, side);        	
     xAnim = x + dx;
     yAnim = y + dy;
@@ -238,6 +239,7 @@ function Drawer(s, triangles, bars, bearoffs) {
       // piece moving is over... handle stuff here!
 	  for ( var i = 0; i < this.bars.length; i++ ) {
 	    if ( this.bars[i].player != from.player ) this.bars[i].draw( Drawable.ctxs.ctx );
+		to.draw( Drawable.ctxs.ctx );
 	  }
     } else {
       var self = this;

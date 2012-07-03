@@ -125,8 +125,8 @@ function initGame(canvasElement, nakedCanvasElement, data) {
   if (!nakedCanvasElement) {
     nakedCanvasElement = document.createElement("canvas");
     nakedCanvasElement.id = "bg_naked";
-    nakedCanvasElement.style.visibility = "visible";
-	//nakedCanvasElement.style.visibility = "hidden";
+    //nakedCanvasElement.style.visibility = "visible";
+	nakedCanvasElement.style.visibility = "hidden";
     $("#game_area").append(nakedCanvasElement);
   }
     

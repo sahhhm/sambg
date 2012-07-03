@@ -187,13 +187,7 @@ Selectable.validMoveTo = function(to) {
 
 Selectable.select = function(ctx) {
   this.selected = true;
-  var r, c, p, numc;
-  numc = this.numCheckers > this.drawInfo.maxPiecesPerTriangle ? this.drawInfo.maxPiecesPerTriangle : this.numCheckers;
-  r = this.isTop() ? numc - 1 : this.drawInfo.boardHeight - numc;
-  c = this.column
-  p = this.player
-  ch = Object.create(Checker, { row : { value : r }, column : { value : c }, player : { value : p } });
-  ch.draw( ctx, true );
+  this.draw( ctx );
 }    
 
 Selectable.draw = function(ctx) { 
@@ -205,17 +199,20 @@ Selectable.draw = function(ctx) {
  
   for (var i = 0; i <= num - 1; i++) {
     var r = this.isTop() ? i : this.drawInfo.boardHeight - i - 1;
-    //this.isTop() ? ch = new Checker(i, this.column, this.player) : ch = new Checker(this.drawInfo.boardHeight - i - 1, this.column, this.player);
     ch = Object.create(Checker, { row : { value : r }, column : { value : this.column }, player : { value : this.player } });
     ch.draw(ctx, false);
   }
+  
+  if ( this.selected ) { 
+    ch.draw( ctx, true ); // will the the top most checker
+  }  
   
   if ( this.numCheckers > thresh ) {
     var row = this.isTop() ? thresh - 1 : this.drawInfo.boardHeight - thresh;
     var x = (this.column * this.drawInfo.pieceWidth) + (this.drawInfo.pieceWidth/2) - 5;
     var y = (row * this.drawInfo.pieceHeight) + (this.drawInfo.pieceHeight/2) + 5;  
     ctx.font = "15pt Arial";
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "#FF4040";
     ctx.fillText(this.numCheckers, x, y);
   }
 }  
