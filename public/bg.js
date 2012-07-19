@@ -20,16 +20,16 @@ function getCursorPosition(e) {
   
   // check for double dice click
   var doubling = false;
-  if ( x >= bggame.board.drawer.interact.doubling.startX && x <= bggame.board.drawer.interact.doubling.startX + bggame.board.drawer.interact.doubling.widthPix &&
-       y >= bggame.board.drawer.interact.doubling.startY && y <= bggame.board.drawer.interact.doubling.startY + bggame.board.drawer.interact.doubling.heightPix)
+  if ( x >= bggame.board.drawer.doublingDice.specs.startX && x <= bggame.board.drawer.doublingDice.specs.startX + bggame.board.drawer.doublingDice.specs.widthPix &&
+       y >= bggame.board.drawer.doublingDice.specs.startY && y <= bggame.board.drawer.doublingDice.specs.startY + bggame.board.drawer.doublingDice.specs.heightPix)
   {
     doubling = true;
   }
   
   // check for regular dice click (either to confirm or to roll)
   var dice = false;
-  if ( x >= bggame.board.drawer.interact.dice.startX && x <= bggame.board.drawer.interact.dice.startX + bggame.board.drawer.interact.dice.widthPix &&
-       y >= bggame.board.drawer.interact.dice.startY && y <= bggame.board.drawer.interact.dice.startY + bggame.board.drawer.interact.dice.heightPix)
+  if ( x >= bggame.board.drawer.dice.specs.startX && x <= bggame.board.drawer.dice.specs.startX + bggame.board.drawer.dice.specs.widthPix &&
+       y >= bggame.board.drawer.dice.specs.startY && y <= bggame.board.drawer.dice.specs.startY + bggame.board.drawer.dice.specs.heightPix)
   {
     dice = true;
   }  

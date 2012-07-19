@@ -37,7 +37,7 @@ function Board(opts) {
 
   this.dice = Object.create(Dice);
   this.doublingDice = Object.create(DoublingDice);
-    
+  
   this.turns = new TurnHistory();
   
   this.bPlayers = opts.players;
@@ -103,7 +103,7 @@ function Board(opts) {
     [ Object.create(Bearoff, { player : { value : 1 }, num : { value : 25 }, column : { value : this.specs.bearOffColumn }, numCheckers : { value: 0, writable : true  } }),
       Object.create(Bearoff, { player : { value : 2 }, num : { value :  0 }, column : { value : this.specs.bearOffColumn }, numCheckers : { value: 0, writable : true  } }) ];
 
-  this.drawer = new Drawer(this.specs, this.gTriangles, this.gBars, this.gBearOffs);	
+  this.drawer = new Drawer(this.specs, this.gTriangles, this.gBars, this.gBearOffs, this.dice, this.doublingDice);	
       
   this.getBars = function() {
     return this.gBars;
@@ -191,12 +191,14 @@ function Board(opts) {
   }
 
   this.drawDice = function(forPlayerNum) {
-    this.drawer.drawDice( { dice: this.dice, currentPlayer: this.getPlayerByNum(this.playerTurn()), mePlayer: this.getPlayerByNum(forPlayerNum), otherPlayer: this.getPlayerByNum((this.playerTurn() % 2 + 1)), pCanConfirm: this.canConfirm(forPlayerNum), pCanRoll: this.canRoll(forPlayerNum) }  );
+    //this.drawer.drawDice( { dice: this.dice, currentPlayer: this.getPlayerByNum(this.playerTurn()), mePlayer: this.getPlayerByNum(forPlayerNum), otherPlayer: this.getPlayerByNum((this.playerTurn() % 2 + 1)), pCanConfirm: this.canConfirm(forPlayerNum), pCanRoll: this.canRoll(forPlayerNum) }  );
+    this.drawer.drawDice( this.getPlayerByNum(this.playerTurn()), this.getPlayerByNum(forPlayerNum), this.getPlayerByNum((this.playerTurn() % 2 + 1)), this.canConfirm(forPlayerNum), this.canRoll(forPlayerNum) );
   }    
   
   this.drawDoublingDice = function(playerNum) {
     this.canDouble = (playerNum == this.playerTurn() && !this.dice.isRolled && this.doublingDice.lastPlayerToDoubleNum != playerNum) ? true : false;
-    this.drawer.drawDoublingDice( { isActive: this.canDouble, value: this.doublingDice.value } );
+    //this.drawer.drawDoublingDice( { isActive: this.canDouble, value: this.doublingDice.value } );
+	this.drawer.drawDoublingDice();
   }
   
   this.canConfirm = function(num) {

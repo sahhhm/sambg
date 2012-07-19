@@ -9,7 +9,7 @@
     - bearoff (draw, highlight)
 */
 
-var Drawable = { drawinfo: {}, 
+var Drawable = { drawInfo: {}, 
                  patterns: {},
                  ctxs: {},
                  canvasEls: {} };
@@ -35,6 +35,28 @@ Drawable.drawCircle = function(ctx, x, y, radius) {
   ctx.beginPath();
   ctx.arc(x, y, radius, 0, Math.PI*2, false);
   ctx.closePath();
+}
+
+var Interactable = Object.create(Drawable, { interact : { 
+                                                          value: 
+                                                            {
+                                                              row: 6,
+															  columns: 13,
+															  padding: 7,
+                                                              doublingColumn: 6,
+															  diceColumn: 8, 
+														      diceColumns: 4
+														    },
+														   writable: true, 
+														   enumerable: true, 
+														   configurable: false 
+														  }});
+							   
+Interactable.init = function() {
+  this.interact.baseX = 0;
+  this.interact.baseY = this.interact.row * this.drawInfo.pieceHeight  - this.drawInfo.pieceHeight/2;
+  this.interact.totalWidthPix = this.drawInfo.pieceWidth * 13;
+  this.interact.totalHeightPix = this.drawInfo.pieceHeight;
 }
 
 var DrawableBoard = Object.create(Drawable);
