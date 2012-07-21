@@ -49,23 +49,6 @@ Drawable.initialize = function(specs) {
 
 }
 
-Drawable.patterns.bg = { image: new Image(), loaded: false};
-Drawable.patterns.bg.image.src = 'woodbg.jpg';
-Drawable.patterns.bg.image.onload = function() {
-  Drawable.patterns.bg.loaded = true;
-}
-Drawable.patterns.oddTri = { image: new Image(), loaded: false};
-Drawable.patterns.oddTri.image.src = 'woodlight.gif';
-Drawable.patterns.oddTri.image.onload = function() {
-  Drawable.patterns.oddTri.loaded = true;
-}
-Drawable.patterns.evenTri = { image: new Image(), loaded: false};
-Drawable.patterns.evenTri.image.src = 'wooddark.gif';
-Drawable.patterns.evenTri.image.onload = function() {
-  Drawable.patterns.evenTri.loaded = true;
-}
-
-
 Drawable.drawCircle = function(ctx, x, y, radius) {
   ctx.beginPath();
   ctx.arc(x, y, radius, 0, Math.PI*2, false);
@@ -102,13 +85,7 @@ Interactable.getTotalWidthPix = function() {
 Interactable.getTotalHeightPix = function() {
   return this.drawInfo.pieceHeight;
 }
-							   
-Interactable.init = function() {
-  this.interact.baseX = 0;
-  this.interact.baseY = this.interact.row * this.drawInfo.pieceHeight  - this.drawInfo.pieceHeight/2;
-  this.interact.totalWidthPix = this.drawInfo.pieceWidth * 13;
-  this.interact.totalHeightPix = this.drawInfo.pieceHeight;
-}
+
 
 var DrawableBoard = Object.create(Drawable);
 
@@ -120,6 +97,22 @@ DrawableBoard.drawBoard = function(ctx, triangles, bars, bearoffs) {
   for ( var i = 0; i < spaces.length; i++ ) {
     spaces[i].draw(ctx);
   }
+}
+
+DrawableBoard.patterns.bg = { image: new Image(), loaded: false};
+DrawableBoard.patterns.bg.image.src = 'woodbg.jpg';
+DrawableBoard.patterns.bg.image.onload = function() {
+  DrawableBoard.patterns.bg.loaded = true;
+}
+DrawableBoard.patterns.oddTri = { image: new Image(), loaded: false};
+DrawableBoard.patterns.oddTri.image.src = 'woodlight.gif';
+DrawableBoard.patterns.oddTri.image.onload = function() {
+  DrawableBoard.patterns.oddTri.loaded = true;
+}
+DrawableBoard.patterns.evenTri = { image: new Image(), loaded: false};
+DrawableBoard.patterns.evenTri.image.src = 'wooddark.gif';
+DrawableBoard.patterns.evenTri.image.onload = function() {
+  DrawableBoard.patterns.evenTri.loaded = true;
 }
 
 
