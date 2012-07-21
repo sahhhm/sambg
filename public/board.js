@@ -8,11 +8,6 @@ function Board(opts) {
   this.playerCanRoll = false;
   this.numMoves = 0;
   this.gameOverValue = -1; // -1, not over; otherwise, multiplier for doubling dice
-  
-  this.dice;
-  this.drawer;
-  
-  this.turns;
 
   this.specs = {
     boardWidth : 13,
@@ -29,14 +24,16 @@ function Board(opts) {
     bearOffWidth : 65,
     bearOffHeight: 15,
   };
-
   this.specs.pixelWidth = this.specs.boardWidth * this.specs.pieceWidth + 1 + this.specs.bearOffWidth;
   this.specs.pixelHeight = this.specs.boardHeight * this.specs.pieceHeight + 1;
   this.specs.p1color = opts.p1color;
   this.specs.p2color = opts.p2color;
+  
+  Drawable.initialize(this.specs);
+  this.drawer = createDrawer();	
 
-  this.dice = Object.create(Dice);
-  this.doublingDice = Object.create(DoublingDice);
+  this.dice = createDice(); 
+  this.doublingDice = createDoublingDice(); 
   
   this.turns = new TurnHistory();
   
@@ -103,8 +100,8 @@ function Board(opts) {
     [ Object.create(Bearoff, { player : { value : 1 }, num : { value : 25 }, column : { value : this.specs.bearOffColumn }, numCheckers : { value: 0, writable : true  } }),
       Object.create(Bearoff, { player : { value : 2 }, num : { value :  0 }, column : { value : this.specs.bearOffColumn }, numCheckers : { value: 0, writable : true  } }) ];
 
-  this.drawer = new Drawer(this.specs, this.gTriangles, this.gBars, this.gBearOffs, this.dice, this.doublingDice);	
-      
+  this.drawer.sets( this.gTriangles, this.gBars, this.gBearOffs, this.dice, this.doublingDice );	
+
   this.getBars = function() {
     return this.gBars;
   } 

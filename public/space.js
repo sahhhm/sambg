@@ -13,6 +13,41 @@ var Drawable = { drawInfo: {},
                  patterns: {},
                  ctxs: {},
                  canvasEls: {} };
+				 
+Drawable.initialize = function(specs) {
+
+  var bgCanvas = document.getElementById('bg_canvas')
+  var nakedCanvas = document.getElementById('bg_naked')
+  var bgCtx = document.getElementById('bg_canvas').getContext("2d")
+  var nakedCtx = document.getElementById('bg_naked').getContext("2d")
+  
+  this.ctxs = { ctx  : bgCtx,
+                nctx : nakedCtx };
+					
+  this.canvasEls = { canvas		: bgCanvas,
+                     nakedCanvas: nakedCanvas}; 
+
+  this.canvasEls.canvas.addEventListener("click", bgOnClick, false);
+  this.canvasEls.canvas.width = specs.pixelWidth;
+  this.canvasEls.canvas.height = specs.pixelHeight;
+  this.canvasEls.nakedCanvas.width = specs.pixelWidth;
+  this.canvasEls.nakedCanvas.height = specs.pixelHeight;
+  
+  this.drawInfo = { pieceWidth : specs.pieceWidth,
+                    pieceHeight: specs.pieceHeight,
+                    p1color: specs.p1color,
+                    p2color: specs.p2color,
+                    bearOffWidth : specs.bearOffWidth,
+                    bearOffHeight : specs.bearOffHeight,
+                    boardHeight: specs.boardHeight,
+                    barColumn : specs.barColumn,
+                    bearOffColumn : specs.bearOffColumn,
+                    maxPiecesPerTriangle : specs.maxPiecesPerTriangle,
+					pixelHeight : specs.pixelHeight,
+					pixelWidth : specs.pixelWidth       
+                   };
+
+}
 
 Drawable.patterns.bg = { image: new Image(), loaded: false};
 Drawable.patterns.bg.image.src = 'woodbg.jpg';
@@ -51,6 +86,22 @@ var Interactable = Object.create(Drawable, { interact : {
 														   enumerable: true, 
 														   configurable: false 
 														  }});
+														  
+Interactable.getBaseX = function() {
+  return 0;
+}
+
+Interactable.getBaseY = function() {
+  return this.interact.row * this.drawInfo.pieceHeight  - this.drawInfo.pieceHeight/2;
+}
+
+Interactable.getTotalWidthPix = function() {
+  return this.drawInfo.pieceWidth * 13;
+}
+
+Interactable.getTotalHeightPix = function() {
+  return this.drawInfo.pieceHeight;
+}
 							   
 Interactable.init = function() {
   this.interact.baseX = 0;

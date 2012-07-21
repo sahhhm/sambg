@@ -3,6 +3,24 @@ function DicePiece(aNum) {
   this.isUsed = false;
 }
 
+function createDice() {
+  var d = Object.create(Dice);
+  
+  // initialize
+  d.specs.baseY = d.interact.row * d.drawInfo.pieceHeight  - d.drawInfo.pieceHeight/2
+  d.specs.startX = d.interact.diceColumn * d.drawInfo.pieceWidth + d.interact.padding
+  d.specs.startY = d.specs.baseY + d.interact.padding;
+  d.specs.widthPix = d.interact.diceColumns * d.drawInfo.pieceWidth - d.interact.padding * 2;
+  d.specs.heightPix =  d.drawInfo.pieceHeight - d.interact.padding * 2;
+  d.specs.pieceWidth = d.specs.heightPix 
+  d.specs.pieceHeight = d.specs.heightPix;
+  d.specs.piecePadding = Math.abs((d.specs.widthPix - 4*d.specs.pieceWidth) / 5);
+  d.specs.alphaUsed = 0.2;
+  d.specs.alphaUnused = 0.8;  
+  
+  return d;
+}
+
 var Dice = Object.create(Interactable, { dice           : { value:  [],   enumerable: true, writable: true },
                                          isRolled       : { value: false, enumerable: true, writable: true },
 										 confirmedRolls : { value: 0,     enumerable: true, writable: true },
@@ -57,18 +75,6 @@ Dice.numUnusedDice = function() {
   return num; 
 } 
 
-Dice.initInteractable = function() {
-  this.specs.startX = this.interact.diceColumn * this.drawInfo.pieceWidth + this.interact.padding
-  this.specs.startY = this.interact.baseY + this.interact.padding;
-  this.specs.widthPix = this.interact.diceColumns * this.drawInfo.pieceWidth - this.interact.padding * 2;
-  this.specs.heightPix =  this.drawInfo.pieceHeight - this.interact.padding * 2;
-  this.specs.pieceWidth = this.specs.heightPix 
-  this.specs.pieceHeight = this.specs.heightPix;
-  this.specs.piecePadding = Math.abs((this.specs.widthPix - 4*this.specs.pieceWidth) / 5);
-  this.specs.alphaUsed = 0.2;
-  this.specs.alphaUnused = 0.8;  
-}
-
 Dice.draw = function( aCtx, currentPlayer, mePlayer, otherPlayer, pCanConfirm, pCanRoll ) {
     aCtx.save();    
     
@@ -110,6 +116,20 @@ Dice.draw = function( aCtx, currentPlayer, mePlayer, otherPlayer, pCanConfirm, p
     aCtx.restore();
 }
 
+function createDoublingDice() {
+  var dd = Object.create(DoublingDice);
+  
+  //initializations
+  dd.specs.baseY = dd.interact.row * dd.drawInfo.pieceHeight  - dd.drawInfo.pieceHeight/2
+  dd.specs.startX = dd.interact.doublingColumn * dd.drawInfo.pieceWidth + dd.interact.padding;
+  dd.specs.startY = dd.specs.baseY + dd.interact.padding;
+  dd.specs.widthPix = dd.drawInfo.pieceWidth - dd.interact.padding * 2;
+  dd.specs.heightPix =  dd.drawInfo.pieceHeight - dd.interact.padding * 2;
+  dd.specs.activeColor = "rgba(238, 213, 210, 1)";
+  dd.specs.inactiveColor = "rgba(238, 213, 210, 0.1)"; 
+  return dd;
+}
+
 var DoublingDice = Object.create(Interactable, { lastPlayerToDoubleNum : { value: -1, enumerable: true, writable: true },
                                                  value                 : { value: 1,  enumerable: true, writable: true },
 												 specs                 : { value: {}, enumerable: true, writable: true }});
@@ -117,15 +137,6 @@ var DoublingDice = Object.create(Interactable, { lastPlayerToDoubleNum : { value
 DoublingDice.doubleDice = function(pNum) {
   this.value *= 2;
   this.lastPlayerToDoubleNum = pNum;
-}
-
-DoublingDice.initInteractable = function() {
-  this.specs.startX = this.interact.doublingColumn * this.drawInfo.pieceWidth + this.interact.padding;
-  this.specs.startY = this.interact.baseY + this.interact.padding;
-  this.specs.widthPix = this.drawInfo.pieceWidth - this.interact.padding * 2;
-  this.specs.heightPix =  this.drawInfo.pieceHeight - this.interact.padding * 2;
-  this.specs.activeColor = "rgba(238, 213, 210, 1)";
-  this.specs.inactiveColor = "rgba(238, 213, 210, 0.1)"; 
 }
 
 DoublingDice.draw = function ( aCtx ) {

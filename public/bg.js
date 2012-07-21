@@ -10,8 +10,8 @@ function getCursorPosition(e) {
     x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
     y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
   }
-  x -= bggame.board.drawer.canvasElement.offsetLeft;
-  y -= bggame.board.drawer.canvasElement.offsetTop;
+  x -= bggame.board.drawer.canvasEls.canvas.offsetLeft;
+  y -= bggame.board.drawer.canvasEls.canvas.offsetTop;
   x = Math.min(x, bggame.board.specs.boardWidth * bggame.board.specs.pieceWidth);
   y = Math.min(y, bggame.board.specs.boardHeight * bggame.board.specs.pieceHeight);
   
