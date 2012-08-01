@@ -40,66 +40,35 @@ function Board(opts) {
   this.bPlayers = opts.players;
  
   this.gTriangles = 
-    [Object.create(Triangle, { num : { value : 1 }, column : { value : this.specs.boardWidth-1 } , player : { value : 1, writable : true  }, numCheckers : { value : 2, writable : true } }),
-     Object.create(Triangle, { num : { value : 2 }, column : { value : this.specs.boardWidth-2 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 3 }, column : { value : this.specs.boardWidth-3 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 4 }, column : { value : this.specs.boardWidth-4 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 5 }, column : { value : this.specs.boardWidth-5 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 6 }, column : { value : this.specs.boardWidth-6 } , player : { value : 2, writable : true  }, numCheckers : { value : 5, writable : true } }),
-     Object.create(Triangle, { num : { value : 7 }, column : { value : this.specs.boardWidth-8 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 8 }, column : { value : this.specs.boardWidth-9 } , player : { value : 2, writable : true  }, numCheckers : { value : 3, writable : true } }),
-     Object.create(Triangle, { num : { value : 9 }, column : { value : this.specs.boardWidth-10 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 10 }, column : { value : this.specs.boardWidth-11 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 11 }, column : { value : this.specs.boardWidth-12 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 12 }, column : { value : this.specs.boardWidth-13 } , player : { value : 1, writable : true  }, numCheckers : { value : 5, writable : true } }),
-     Object.create(Triangle, { num : { value : 13 }, column : { value : this.specs.boardWidth-13 } , player : { value : 2, writable : true  }, numCheckers : { value : 5, writable : true } }),
-     Object.create(Triangle, { num : { value : 14 }, column : { value : this.specs.boardWidth-12 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 15 }, column : { value : this.specs.boardWidth-11 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 16 }, column : { value : this.specs.boardWidth-10 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 17 }, column : { value : this.specs.boardWidth-9 } , player : { value : 1, writable : true  }, numCheckers : { value : 3, writable : true } }),
-     Object.create(Triangle, { num : { value : 18 }, column : { value : this.specs.boardWidth-8 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 19 }, column : { value : this.specs.boardWidth-6 } , player : { value : 1, writable : true  }, numCheckers : { value : 5, writable : true } }),
-     Object.create(Triangle, { num : { value : 20 }, column : { value : this.specs.boardWidth-5 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 21 }, column : { value : this.specs.boardWidth-4 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 22 }, column : { value : this.specs.boardWidth-3 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 23 }, column : { value : this.specs.boardWidth-2 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 24 }, column : { value : this.specs.boardWidth-1 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } })];  
+    [createTriangle( 01, this.specs.boardWidth-01, 1, 2 ),
+     createTriangle( 02 ,this.specs.boardWidth-02, 0, 0 ),
+     createTriangle( 03, this.specs.boardWidth-03, 0, 0 ),
+     createTriangle( 04, this.specs.boardWidth-04, 0, 0 ),
+	 createTriangle( 05, this.specs.boardWidth-05, 0, 0 ),
+	 createTriangle( 06, this.specs.boardWidth-06, 2, 5 ),
+	 createTriangle( 07, this.specs.boardWidth-08, 0, 0 ),
+	 createTriangle( 08, this.specs.boardWidth-09, 2, 3 ),
+	 createTriangle( 09, this.specs.boardWidth-10, 0, 0 ),
+	 createTriangle( 10, this.specs.boardWidth-11, 0, 0 ),
+	 createTriangle( 11, this.specs.boardWidth-12, 0, 0 ),
+	 createTriangle( 12, this.specs.boardWidth-13, 1, 5 ),
+	 createTriangle( 13, this.specs.boardWidth-13, 2, 5 ),
+	 createTriangle( 14, this.specs.boardWidth-12, 0, 0 ),
+	 createTriangle( 15, this.specs.boardWidth-11, 0, 0 ),
+	 createTriangle( 16, this.specs.boardWidth-10, 0, 0 ),
+	 createTriangle( 17, this.specs.boardWidth-09, 1, 3 ),
+	 createTriangle( 18, this.specs.boardWidth-08, 0, 0 ),
+	 createTriangle( 19, this.specs.boardWidth-06, 1, 5 ),
+	 createTriangle( 20, this.specs.boardWidth-05, 0, 0 ),
+	 createTriangle( 21, this.specs.boardWidth-04, 0, 0 ),	
+	 createTriangle( 22, this.specs.boardWidth-03, 0, 0 ),	
+	 createTriangle( 23, this.specs.boardWidth-02, 0, 0 ),	
+	 createTriangle( 24, this.specs.boardWidth-01, 2, 2 )];
 
-/*
-	   this.gTriangles = 
-    [Object.create(Triangle, { num : { value : 1 }, column : { value : this.specs.boardWidth-1 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } }),
-     Object.create(Triangle, { num : { value : 2 }, column : { value : this.specs.boardWidth-2 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } }),
-     Object.create(Triangle, { num : { value : 3 }, column : { value : this.specs.boardWidth-3 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } }),
-     Object.create(Triangle, { num : { value : 4 }, column : { value : this.specs.boardWidth-4 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } }),
-     Object.create(Triangle, { num : { value : 5 }, column : { value : this.specs.boardWidth-5 } , player : { value : 2, writable : true  }, numCheckers : { value : 2, writable : true } }),
-     Object.create(Triangle, { num : { value : 6 }, column : { value : this.specs.boardWidth-6 } , player : { value : 2, writable : true  }, numCheckers : { value : 4, writable : true } }),
-     Object.create(Triangle, { num : { value : 7 }, column : { value : this.specs.boardWidth-8 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 8 }, column : { value : this.specs.boardWidth-9 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 9 }, column : { value : this.specs.boardWidth-10 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 10 }, column : { value : this.specs.boardWidth-11 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 11 }, column : { value : this.specs.boardWidth-12 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 12 }, column : { value : this.specs.boardWidth-13 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 13 }, column : { value : this.specs.boardWidth-13 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 14 }, column : { value : this.specs.boardWidth-12 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 15 }, column : { value : this.specs.boardWidth-11 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 16 }, column : { value : this.specs.boardWidth-10 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 17 }, column : { value : this.specs.boardWidth-9 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 18 }, column : { value : this.specs.boardWidth-8 } , player : { value : 0, writable : true  }, numCheckers : { value : 0, writable : true } }),
-     Object.create(Triangle, { num : { value : 19 }, column : { value : this.specs.boardWidth-6 } , player : { value : 2, writable : true  }, numCheckers : { value : 1, writable : true } }),
-     Object.create(Triangle, { num : { value : 20 }, column : { value : this.specs.boardWidth-5 } , player : { value : 1, writable : true  }, numCheckers : { value : 1, writable : true } }),
-     Object.create(Triangle, { num : { value : 21 }, column : { value : this.specs.boardWidth-4 } , player : { value : 1, writable : true  }, numCheckers : { value : 1, writable : true } }),
-     Object.create(Triangle, { num : { value : 22 }, column : { value : this.specs.boardWidth-3 } , player : { value : 1, writable : true  }, numCheckers : { value : 1, writable : true } }),
-     Object.create(Triangle, { num : { value : 23 }, column : { value : this.specs.boardWidth-2 } , player : { value : 1, writable : true  }, numCheckers : { value : 1, writable : true } }),
-     Object.create(Triangle, { num : { value : 24 }, column : { value : this.specs.boardWidth-1 } , player : { value : 1, writable : true  }, numCheckers : { value : 11, writable : true } })];  
-*/
-  this.gBars = 
-    [ Object.create(Bar, { player : { value : 1 }, num : { value : 1 }, column : { value : this.specs.barColumn }, numCheckers : { value: 0, writable : true  } }),
-      Object.create(Bar, { player : { value : 2 }, num : { value : 2 }, column : { value : this.specs.barColumn }, numCheckers : { value: 0, writable : true  } }) ];
+  this.gBars = [ createBar( 1, 1, this.specs.barColumn, 0 ), createBar (2, 2, this.specs.barColumn, 0 ) ];
 
-  this.gBearOffs = 
-    [ Object.create(Bearoff, { player : { value : 1 }, num : { value : 25 }, column : { value : this.specs.bearOffColumn }, numCheckers : { value: 0, writable : true  } }),
-      Object.create(Bearoff, { player : { value : 2 }, num : { value :  0 }, column : { value : this.specs.bearOffColumn }, numCheckers : { value: 0, writable : true  } }) ];
-
+  this.gBearOffs = [ createBearoff( 1, 25, this.specs.bearOffColumn, 0 ), createBearoff( 2, 0, this.specs.bearOffColumn, 0 ) ];
+     
   this.drawer.sets( this.gTriangles, this.gBars, this.gBearOffs, this.dice, this.doublingDice );	
 
   this.getBars = function() {

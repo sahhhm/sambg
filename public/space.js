@@ -304,6 +304,13 @@ Selectable.highlight = function(ctx) {
 }
 
 //**** bar
+function createBar( pplayer, pnum, pcolumn, pnumCheckers ) {
+  return Object.create( Bar, 
+                  { player      : { value : pplayer }, 
+				    num         : { value : pnum }, 
+				    column      : { value : pcolumn }, 
+				    numCheckers : { value : pnumCheckers, writable: true  } });
+}
 var Bar = Object.create(Selectable, { type : { value: "bar" } });
 Bar.entry = function() { return this.player == 1 ? 0 : 25; };
 Bar.isTop = function() { return this.player == 1; };
@@ -318,6 +325,14 @@ Bar.drawShape = function(ctx) {
 }
 
 //**** triangle
+function createTriangle( pnum, pcolumn, pplayer, pnumCheckers) {
+  return Object.create(Triangle, 
+                  { num         : { value : pnum }, 
+				    column      : { value : pcolumn } , 
+					player      : { value : pplayer, writable : true  }, 
+					numCheckers : { value : pnumCheckers, writable : true } });
+}
+
 var Triangle = Object.create(Selectable, { type : { value: "triangle" } });
 Triangle.isTop = function() { return this.num <= 12; };
 Triangle.entry = function() { return this.num };
@@ -353,6 +368,13 @@ Triangle.drawShape = function(ctx) {
 }
 
 //**** bearoff
+function createBearoff( pplayer, pnum, pcolumn, pnumCheckers) {
+  return Object.create(Bearoff, 
+                   { player      : { value : pplayer }, 
+				     num         : { value : pnum }, 
+					 column      : { value : pcolumn }, 
+					 numCheckers : { value : pnumCheckers, writable : true  } });
+}
 var Bearoff = Object.create(Space, { type : { value: "bearoff" } });
 Bearoff.entry = function() { return this.num; };
 Bearoff.isTop = function() { return this.player == 2; };
