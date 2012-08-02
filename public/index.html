@@ -70,6 +70,7 @@
      console.log("got dice event");
      bggame.board.roll( { die1: data.die1, die2 : data.die2 } );
      bggame.board.update( { forPlayer : me.num } );
+     bggame.board.waitingForNextTurn = false;
    });
    
    socket.on('game over', function(data) {
@@ -96,6 +97,7 @@
 	   aMoves.push(tempMove);
      }
 	 bggame.board.move(aMoves);
+	 bggame.board.waitingForNextTurn = false;
    });
    
    socket.on( 'double request', function( data ) {

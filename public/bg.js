@@ -50,11 +50,12 @@ function bgOnClick(e) {
     }
   
     // check to see if uesr clicked on dice area
-    if (info.regularDice) {
+    if (info.regularDice && !bggame.board.waitingForNextTurn) {
       if (bggame.board.playerCanConfirm) {
         console.log("confirming move...");
         socket.emit('moved', { room: selectedRoom, moves:bggame.board.turns.currentTurn});
         bggame.board.playerCanConfirm = false;
+		bggame.board.waitingForNextTurn = true;
 		if ( bggame.board.gameOverValue != -1 ) {
           var pointsWon = bggame.board.gameOverValue * bggame.board.doublingDice.value;
           socket.emit('game end', { room: selectedRoom, winnerNum: me.num, points: pointsWon });

@@ -6,6 +6,7 @@ function Board(opts) {
   this.canDouble = false;
   this.playerCanConfirm = false;
   this.playerCanRoll = false;
+  this.waitingForNextTurn = false;
   this.numMoves = 0;
   this.gameOverValue = -1; // -1, not over; otherwise, multiplier for doubling dice
 
