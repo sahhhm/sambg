@@ -437,10 +437,16 @@ function Board(opts) {
     if (theMove.isToHit) {
       from.player == 1 ? otherPlayer = 2 : otherPlayer = 1;
       this.getBarByNum(otherPlayer).numCheckers -= 1;
-      from.numCheckers += 1;
+      //from.numCheckers += 1;
       from.player = otherPlayer;
     }   
 
+    this.drawer.animateMove(from, to);	
+	// this moves for hit moves because by the time the drawer draws
+	// the from space, the below incremement will have taken place
+	if ( theMove.isToHit ) from.numCheckers += 1;
+	
+	
     // since we just moved, nothing should be active
     this.selectedBarNum = -1;
     this.selectedTriangleNum = -1;    

@@ -115,9 +115,10 @@ Drawer.movePiece = function(x, dx, y, dy, off, side, playerNum, from, to, count)
   drawCh.draw(Drawable.ctxs.ctx, false);
   if (++count == 15) {
     // piece moving is over... handle stuff here!
-    for ( var i = 0; i < this.bars.length; i++ ) {
-	  if ( this.bars[i].player != from.player ) this.bars[i].draw( Drawable.ctxs.ctx );
+    for ( var i = 0; i < this.bars.length; i++ ) { 
+	  this.bars[i].draw( Drawable.ctxs.ctx );
 	  to.draw( Drawable.ctxs.ctx );
+	  from.draw( Drawable.ctxs.ctx );
     }
   } else {
     var self = this;
