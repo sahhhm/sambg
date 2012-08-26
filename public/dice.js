@@ -81,7 +81,8 @@ Dice.draw = function( aCtx, currentPlayer, mePlayer, otherPlayer, pCanConfirm, p
     // clear entire dice area
 	var off = 3;
     aCtx.clearRect(this.specs.startX - off, this.specs.startY - off, this.specs.widthPix + off,  this.specs.heightPix + off); 
-    aCtx.drawImage(this.canvasEls.nakedCanvas, this.specs.startX - off, this.specs.startY - off, this.specs.widthPix + off, this.specs.heightPix + off, this.specs.startX - off, this.specs.startY - off, this.specs.widthPix + off, this.specs.heightPix + off + 1);
+    aCtx.drawImage(this.canvasEls.nakedCanvas, this.specs.startX - off, this.specs.startY - off, this.specs.widthPix + off, this.specs.heightPix + off, 
+	                                           this.specs.startX - off, this.specs.startY - off, this.specs.widthPix + off, this.specs.heightPix + off+5);
 	
     // draw each individual dice
     var fs  = ( this.isRolled ) ? currentPlayer.color : otherPlayer.color;
