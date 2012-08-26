@@ -196,6 +196,7 @@ Checker.drawBear = function(ctx) {
   xm = x + w / 2,       // x-middle
   ym = y + h / 2;       // y-middle
 
+  ctx.save(); 
   ctx.beginPath();
   ctx.moveTo(x, ym);
   ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
@@ -206,7 +207,10 @@ Checker.drawBear = function(ctx) {
   ctx.stroke();    
   
   ctx.fillStyle = this.player == 1 ?  this.drawInfo.p1color : this.drawInfo.p2color;
-  ctx.fill();   
+  ctx.strokeStyle = ctx.fillStyle;
+  ctx.fill(); 
+
+  ctx.restore();  
 }   
 
 var CheckerXY = Object.create(Checker, { row    :  { value :  -1 }, 
@@ -399,18 +403,24 @@ Bearoff.drawShape = function(ctx) {
 Bearoff.highlight = function(ctx) {
   this.highlighted = true;
   
-  var base, x;
+  var base, x, offset;
   x = this.column * this.drawInfo.pieceWidth;
   base = this.isTop() ? 0 : this.drawInfo.pixelHeight;
-
+  offset = 2;
+  
+  ctx.save();
+  
   ctx.beginPath();
   ctx.moveTo(x, base);
-  ctx.lineTo(x + this.drawInfo.pieceWidth/2, Math.abs(base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight)));
-  ctx.lineTo(x + this.drawInfo.pieceWidth, base);
+  ctx.lineTo(x, Math.abs(base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight)));
+  ctx.lineTo(x + this.drawInfo.bearOffWidth - offset, Math.abs(base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight)));
+  ctx.lineTo(x + this.drawInfo.bearOffWidth - offset, base);
   ctx.lineTo(x, base);
   ctx.stroke();
 
   ctx.lineWidth = 3;
   ctx.strokeStyle = "#a020f0";
-  ctx.stroke();      
+  ctx.stroke();
+  
+  ctx.restore();  
 }
