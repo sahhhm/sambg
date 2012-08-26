@@ -141,12 +141,16 @@ DoublingDice.doubleDice = function(pNum) {
 
 DoublingDice.draw = function ( aCtx ) {
     aCtx.save();
-    var fs = this.isActive ? this.specs.activeColor : this.specs.inactiveColor;
-    aCtx.fillStyle = fs;
-    aCtx.clearRect(this.specs.startX, this.specs.startY, this.drawInfo.pieceWidth,  this.drawInfo.pieceHeight); 
-    aCtx.fillRect(this.specs.startX, this.specs.startY, this.drawInfo.pieceWidth,  this.drawInfo.pieceHeight);    
+	
+	// doubling dice
+    aCtx.fillStyle = this.isActive ? this.specs.activeColor : this.specs.inactiveColor;
+    aCtx.clearRect(this.specs.startX, this.specs.startY, this.specs.widthPix,  this.specs.heightPix); 
+    aCtx.fillRect(this.specs.startX, this.specs.startY, this.specs.widthPix,  this.specs.heightPix);  
+
+    // dice value	
     aCtx.font = "15pt Arial";
     aCtx.fillStyle = "rgba(0, 0, 0, .3)";
-    aCtx.fillText(this.value, this.specs.startX + this.drawInfo.pieceWidth/2 - this.interact.padding, this.specs.startY + this.drawInfo.pieceHeight/2 + this.interact.padding);
+    aCtx.fillText(this.value, this.specs.startX + this.specs.widthPix/2 - this.interact.padding, this.specs.startY + this.specs.heightPix/2 + this.interact.padding);
+	
     aCtx.restore();
 }
