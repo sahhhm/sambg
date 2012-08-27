@@ -154,7 +154,6 @@ function Board(opts) {
     this.canRoll(forPlayer) ? this.playerCanRoll = true : this.playerCanRoll = false;
     this.drawDice(forPlayer);
     this.drawDoublingDice(forPlayer);  
-    this.gameOverValue = this.getGameOverCode(forPlayer);
   }
 
   this.drawDice = function(forPlayerNum) {
@@ -411,7 +410,12 @@ function Board(opts) {
     if (moves.length) {
       var self = this;
 	  setTimeout( function() { self.move(moves); }, 750 );
-    } 
+    } else {
+	  // determine number of points if game is over
+      if ( this.getBearOffByPlayerNum( aMove.player ).numCheckers == this.specs.totalPiecesPerPlayer ) {
+	    this.gameOverValue = this.getGameOverCode( aMove.player )
+	  }
+    }	
     
   }
   
@@ -490,16 +494,14 @@ function Board(opts) {
 	var otherPlayerNum = forPlayerNum % 2 + 1;
 	var bearForPlayer = this.getBearOffByPlayerNum( forPlayerNum ); 
 	var bearOtherPlayer = this.getBearOffByPlayerNum( otherPlayerNum )
-	if ( bearForPlayer.numCheckers == this.specs.totalPiecesPerPlayer ) {
-	  if ( bearOtherPlayer.numCheckers <= 0 ) {
-	    if ( this.inquireCheckerNotInAHome( this.getPlayerByNum( otherPlayerNum ), this.getPlayerByNum( forPlayerNum ) ) < this.specs.totalPiecesPerPlayer ) { 
-		  factor = 3;        
-        } else {
-          factor = 2;
-		}
-	  }
-	  retval = this.doublingDice.value * factor;
-	} 
+    if ( bearOtherPlayer.numCheckers <= 0 ) {
+      if ( this.inquireCheckerNotInAHome( this.getPlayerByNum( otherPlayerNum ), this.getPlayerByNum( forPlayerNum ) ) < this.specs.totalPiecesPerPlayer ) { 
+        factor = 3;        
+      } else {
+        factor = 2;
+      }
+	}
+	retval = this.doublingDice.value * factor;
 	return retval;
   }
   
