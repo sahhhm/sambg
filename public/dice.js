@@ -87,7 +87,13 @@ Dice.draw = function( aCtx, currentPlayer, mePlayer, otherPlayer, pCanConfirm, p
     // draw each individual dice
     var fs  = ( this.isRolled ) ? currentPlayer.color : otherPlayer.color;
     for ( var d = 0; d < this.dice.length; d++ ) {
-      var pos = ( d + 1 ) % 4; // center the dice when there are only two... current looks funny when you have doubles and you move one at a time...
+	  // center the dice when there are only two... current looks funny when you have doubles and you move one at a time...
+	  var pos;
+	  if ( this.dice.length == 2 ) { 
+        pos = ( d + 1 ) % 4;
+	  } else {
+	    pos = d;
+	  }
 
       var ss = currentPlayer.color;
 	  if ( pCanConfirm && mePlayer.num == otherPlayer.num ) ss = otherPlayer.color;
