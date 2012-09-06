@@ -97,9 +97,9 @@ Drawer.drawDoublingDice = function() {
   this.doublingDice.draw( this.ctxs.ctx );
 }
 
-Drawer.drawDice = function(currentPlayer, mePlayer, otherPlayer, pCanConfirm, pCanRoll) {
+Drawer.drawDice = function( currentPlayer, mePlayer, otherPlayer, pCanConfirm, pCanRoll, anyMovesLeft ) {
   // TO-DO: refactor control of dice color selecting here? 
-  this.dice.draw( this.ctxs.ctx, currentPlayer, mePlayer, otherPlayer, pCanConfirm, pCanRoll );
+  this.dice.draw( this.ctxs.ctx, currentPlayer, mePlayer, otherPlayer, pCanConfirm, pCanRoll, anyMovesLeft );
 }
  
 Drawer.movePiece = function(x, dx, y, dy, off, side, playerNum, from, to, count) {

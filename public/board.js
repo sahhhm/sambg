@@ -7,6 +7,7 @@ function Board(opts) {
   this.playerCanConfirm = false;
   this.playerCanRoll = false;
   this.waitingForNextTurn = false;
+  this.anyMovesLeft = false;
   this.numMoves = 0;
   this.gameOverValue = -1; // -1, not over; otherwise, multiplier for doubling dice
 
@@ -150,7 +151,8 @@ function Board(opts) {
   
   this.checkElements = function(forPlayer) {
     this.turns.currentTurn.length ? this.drawer.undoButtonElement.disabled = false : this.drawer.undoButtonElement.disabled = true;
-    this.canConfirm(forPlayer) ? this.playerCanConfirm = true : this.playerCanConfirm = false;
+    this.checkAnyMovesLeft();
+	this.canConfirm(forPlayer) ? this.playerCanConfirm = true : this.playerCanConfirm = false;
     this.canRoll(forPlayer) ? this.playerCanRoll = true : this.playerCanRoll = false;
     this.drawDice(forPlayer);
     this.drawDoublingDice(forPlayer);  
@@ -158,7 +160,7 @@ function Board(opts) {
 
   this.drawDice = function(forPlayerNum) {
     //this.drawer.drawDice( { dice: this.dice, currentPlayer: this.getPlayerByNum(this.playerTurn()), mePlayer: this.getPlayerByNum(forPlayerNum), otherPlayer: this.getPlayerByNum((this.playerTurn() % 2 + 1)), pCanConfirm: this.canConfirm(forPlayerNum), pCanRoll: this.canRoll(forPlayerNum) }  );
-    this.drawer.drawDice( this.getPlayerByNum(this.playerTurn()), this.getPlayerByNum(forPlayerNum), this.getPlayerByNum((this.playerTurn() % 2 + 1)), this.canConfirm(forPlayerNum), this.canRoll(forPlayerNum) );
+    this.drawer.drawDice( this.getPlayerByNum(this.playerTurn()), this.getPlayerByNum(forPlayerNum), this.getPlayerByNum((this.playerTurn() % 2 + 1)), this.canConfirm(forPlayerNum), this.canRoll(forPlayerNum), this.anyMovesLeft );
   }    
   
   this.drawDoublingDice = function(playerNum) {
@@ -171,7 +173,7 @@ function Board(opts) {
     // returns true if the user is able to confirm the move.
     // Either all dice moves have been played, or no valid
     // moves exist.
-    return ( ( !this.dice.numUnusedDice() || !this.anyMovesLeft() ) && ( num == this.playerTurn() ) && this.dice.isRolled );
+    return ( ( !this.dice.numUnusedDice() || !this.anyMovesLeft ) && ( num == this.playerTurn() ) && this.dice.isRolled );
   }  
 
   this.canRoll = function(num) {
@@ -459,8 +461,8 @@ function Board(opts) {
     this.dice.updateDice( theMove.diceValue, true );
     console.log("undo move from " + from.entry() + " to " + to.entry());
   }
-  
-  this.anyMovesLeft = function() {
+
+  this.checkAnyMovesLeft = function() {
     var any = false;
     var player = this.playerTurn();
     
@@ -479,9 +481,9 @@ function Board(opts) {
         any = true;
       }	
     }
-    return any;
+    this.anyMovesLeft = any;
   }  
-  
+    
   this.playerTurn = function() {
     return bggame.board.numMoves % 2 + 1
   }  

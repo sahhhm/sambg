@@ -75,7 +75,7 @@ Dice.numUnusedDice = function() {
   return num; 
 } 
 
-Dice.draw = function( aCtx, currentPlayer, mePlayer, otherPlayer, pCanConfirm, pCanRoll ) {
+Dice.draw = function( aCtx, currentPlayer, mePlayer, otherPlayer, pCanConfirm, pCanRoll, anyMovesLeft ) {
     aCtx.save();    
     
     // clear entire dice area
@@ -89,21 +89,25 @@ Dice.draw = function( aCtx, currentPlayer, mePlayer, otherPlayer, pCanConfirm, p
     for ( var d = 0; d < this.dice.length; d++ ) {
       var pos = ( d + 1 ) % 4; // center the dice when there are only two... current looks funny when you have doubles and you move one at a time...
 
-      aCtx.globalAlpha = ( this.dice[d].isUsed ) ? this.specs.alphaUsed : this.specs.alphaUnused;
-      aCtx.fillStyle = fs;
-      aCtx.fillRect(this.specs.startX + this.specs.piecePadding +  pos * (this.specs.pieceWidth  + this.specs.piecePadding), 
-                                   this.specs.startY, 
-                                   this.specs.pieceWidth, this.specs.pieceHeight);
       var ss = currentPlayer.color;
 	  if ( pCanConfirm && mePlayer.num == otherPlayer.num ) ss = otherPlayer.color;
 	  if ( pCanRoll ) ss = currentPlayer.color;
-	  if (pCanConfirm || pCanRoll) {
-	    aCtx.globalAlpha = .5; //( dice.dice[d].isUsed ) ? this.specs.alphaUsed : this.specs.alphaUnused;
+	  if ( ( pCanConfirm || pCanRoll ) || !anyMovesLeft ) {
+	    aCtx.globalAlpha = this.specs.alphaUsed;
 		aCtx.lineWidth = 3;
-        aCtx.strokeStyle =  ss;
+        aCtx.strokeStyle = ss;
         aCtx.strokeRect(this.specs.startX + this.specs.piecePadding +  pos * (this.specs.pieceWidth  + this.specs.piecePadding), 
                                        this.specs.startY, 
                                        this.specs.pieceWidth, this.specs.pieceHeight);
+		this.dice[d].isUsed = true;
+
+	  } else {
+	  
+        aCtx.globalAlpha = ( this.dice[d].isUsed ) ? this.specs.alphaUsed : this.specs.alphaUnused;
+        aCtx.fillStyle = fs;
+        aCtx.fillRect(this.specs.startX + this.specs.piecePadding +  pos * (this.specs.pieceWidth  + this.specs.piecePadding), 
+                                   this.specs.startY, 
+                                   this.specs.pieceWidth, this.specs.pieceHeight);	  
 	  }
 	  
       // display dice value
