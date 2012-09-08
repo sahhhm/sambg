@@ -105,14 +105,19 @@ DrawableBoard.patterns.bg.image.onload = function() {
   DrawableBoard.patterns.bg.loaded = true;
 }
 DrawableBoard.patterns.oddTri = { image: new Image(), loaded: false};
-DrawableBoard.patterns.oddTri.image.src = 'woodlight.gif';
+DrawableBoard.patterns.oddTri.image.src = 'woodlight-min.gif';
 DrawableBoard.patterns.oddTri.image.onload = function() {
   DrawableBoard.patterns.oddTri.loaded = true;
 }
 DrawableBoard.patterns.evenTri = { image: new Image(), loaded: false};
-DrawableBoard.patterns.evenTri.image.src = 'wooddark.gif';
+DrawableBoard.patterns.evenTri.image.src = 'wooddark-min.gif';
 DrawableBoard.patterns.evenTri.image.onload = function() {
   DrawableBoard.patterns.evenTri.loaded = true;
+}
+DrawableBoard.patterns.bearoff = { image: new Image(), loaded: false};
+DrawableBoard.patterns.bearoff.image.src = 'woodbar.gif';
+DrawableBoard.patterns.bearoff.image.onload = function() {
+  DrawableBoard.patterns.bearoff.loaded = true;
 }
 
 
@@ -319,13 +324,20 @@ var Bar = Object.create(Selectable, { type : { value: "bar" } });
 Bar.entry = function() { return this.player == 1 ? 0 : 25; };
 Bar.isTop = function() { return this.player == 1; };
 Bar.drawShape = function(ctx) {
-  ctx.fillStyle = "#ccc";
+  ctx.save(); 
+  if ( this.patterns.bearoff.loaded ) {
+    ctx.fillStyle = ctx.createPattern(this.patterns.bearoff.image,'repeat');
+  } else {
+    ctx.fillStyle = 'white';
+  }
+
   var top = this.isTop() ? 0 : this.drawInfo.pixelHeight - ( this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight );
   if ( this.isTop() ) {
     ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.barColumn , top, this.drawInfo.pieceWidth, this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight);
   } else {
     ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.barColumn , top, this.drawInfo.pieceWidth, this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight);
   }
+  ctx.restore();
 }
 
 //**** triangle
@@ -395,9 +407,15 @@ Bearoff.draw = function(ctx) {
 }
 
 Bearoff.drawShape = function(ctx) {
-  ctx.fillStyle = "#0f0";
+  ctx.save();
   var top = this.isTop() ? 0 : this.drawInfo.pixelHeight/2;
+  if ( this.patterns.bearoff.loaded ) {
+    ctx.fillStyle = ctx.createPattern(this.patterns.bearoff.image,'repeat');
+  } else {
+    ctx.fillStyle = 'white';
+  }
   ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.bearOffColumn , top, this.drawInfo.bearOffWidth, this.drawInfo.pixelHeight / 2);
+  ctx.restore();
 }  
 
 Bearoff.highlight = function(ctx) {
