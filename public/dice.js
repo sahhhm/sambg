@@ -98,7 +98,7 @@ Dice.draw = function( aCtx, currentPlayer, mePlayer, otherPlayer, pCanConfirm, p
       var ss = currentPlayer.color;
 	  if ( pCanConfirm && mePlayer.num == otherPlayer.num ) ss = otherPlayer.color;
 	  if ( pCanRoll ) ss = currentPlayer.color;
-	  if ( ( pCanConfirm || pCanRoll ) || !anyMovesLeft ) {
+	  if ( ( pCanConfirm || pCanRoll ) || !anyMovesLeft && (!( !pCanConfirm && !pCanRoll ))) {
 	    aCtx.globalAlpha = this.specs.alphaUsed;
 		aCtx.lineWidth = 3;
         aCtx.strokeStyle = ss;
@@ -106,7 +106,7 @@ Dice.draw = function( aCtx, currentPlayer, mePlayer, otherPlayer, pCanConfirm, p
                                        this.specs.startY, 
                                        this.specs.pieceWidth, this.specs.pieceHeight);
 		this.dice[d].isUsed = true;
-
+        
 	  } else {
 	  
         aCtx.globalAlpha = ( this.dice[d].isUsed ) ? this.specs.alphaUsed : this.specs.alphaUnused;
