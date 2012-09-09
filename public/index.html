@@ -122,7 +122,7 @@
    
    socket.on('update turns', function(data) {
      console.log("got update turns event");
-	   var time = 750 * data.numMoves;
+	   var time = ( ( bggame.board.drawer.settings.animationTimeout  * 100 ) / 2 ) * data.numMoves;
 	   setTimeout( function() {
 	    console.log(time);
         bggame.board.updateTurn();  

@@ -3,7 +3,10 @@ function createDrawer() {
   
   draw.undoButtonElement = document.getElementById('undo');
   draw.db = Object.create(DrawableBoard); 
-  	 
+  draw.settings = {
+    animationTimeout : 8
+  };
+  
   return draw;
 }
 
@@ -77,10 +80,10 @@ Drawer.animateMove = function(from, to) {
   var rise = yEnd - yStart;
   var run = xEnd - xStart;
 
-  var dx = run / 15;
-  var dy = rise / 15;
+  var dx = run / this.settings.animationTimeout;
+  var dy = rise / this.settings.animationTimeout;
 
-  var off = (this.drawInfo.pieceWidth/2) - (this.drawInfo.pieceWidth/9) + 15;
+  var off = (this.drawInfo.pieceWidth/2) - (this.drawInfo.pieceWidth/9) + this.settings.animationTimeout;
   var side = this.drawInfo.pieceWidth + 10;
 
   var xAnim = xStart;
@@ -89,7 +92,7 @@ Drawer.animateMove = function(from, to) {
 
   setTimeout( function() { 
     self.movePiece(xAnim, dx, yAnim, dy, off, side, from.player, from, to, 0); 
-  }, 15);
+  }, this.settings.animationTimeout );
 
 }
 
@@ -113,7 +116,7 @@ Drawer.movePiece = function(x, dx, y, dy, off, side, playerNum, from, to, count)
   yAnim = y + dy;
   drawCh = Object.create(CheckerXY, { x : { value : xAnim }, y : { value : yAnim }, player : { value : playerNum } });
   drawCh.draw(Drawable.ctxs.ctx, false);
-  if (++count == 15) {
+  if ( ++count == this.settings.animationTimeout ) {
     // piece moving is over... handle stuff here!
     for ( var i = 0; i < this.bars.length; i++ ) { 
 	  this.bars[i].draw( Drawable.ctxs.ctx );
@@ -124,6 +127,6 @@ Drawer.movePiece = function(x, dx, y, dy, off, side, playerNum, from, to, count)
     var self = this;
     setTimeout( function() { 
 	  self.movePiece(xAnim, dx, yAnim, dy, off, side, from.player, from, to, count); 
-    }, 15);
+    }, this.settings.animationTimeout );
   }	
 }

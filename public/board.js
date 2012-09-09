@@ -411,7 +411,7 @@ function Board(opts) {
 	
     if (moves.length) {
       var self = this;
-	  setTimeout( function() { self.move(moves); }, 750 );
+	  setTimeout( function() { self.move(moves); }, ( ( this.drawer.settings.animationTimeout * 100 ) /2 ) );
     } else {
 	  // determine number of points if game is over
       if ( this.getBearOffByPlayerNum( aMove.player ).numCheckers == this.specs.totalPiecesPerPlayer ) {
