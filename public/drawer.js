@@ -3,9 +3,10 @@ function createDrawer() {
   
   draw.undoButtonElement = document.getElementById('undo');
   draw.db = Object.create(DrawableBoard); 
-  draw.settings = {
-    animationTimeout : 8
-  };
+  
+  // settings that should eventually be customizable by palyer
+  draw.settings.animationTimeout = 8;
+
   
   return draw;
 }

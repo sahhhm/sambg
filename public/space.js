@@ -47,6 +47,12 @@ Drawable.initialize = function(specs) {
 					pixelWidth : specs.pixelWidth       
                    };
 
+  this.settings = {
+    highlightWidth : 3,
+	selectWidth : 3,
+	selectColor : "#75c938",
+    highlightColor : "#8D38C9"
+  };
 }
 
 Drawable.drawCircle = function(ctx, x, y, radius) {
@@ -168,6 +174,7 @@ Checker.getY = function() {
 }
   
 Checker.draw = function(ctx, selected) {
+  ctx.save();
   var x = this.getX(); //(this.column * this.drawInfo.pieceWidth) + (this.drawInfo.pieceWidth/2);
   var y = this.getY(); //(this.row * this.drawInfo.pieceHeight) + (this.drawInfo.pieceHeight/2);
   var radius = (this.drawInfo.pieceWidth/2) - (this.drawInfo.pieceWidth/9);
@@ -175,17 +182,19 @@ Checker.draw = function(ctx, selected) {
   
   // make radial glare
   var color = this.player == 1 ? this.drawInfo.p1color : this.drawInfo.p2color;
-  var grd = ctx.createRadialGradient(x, y, radius, x + 3, y - 5, radius-3);
-  grd.addColorStop(0, "white");
-  grd.addColorStop(1, color);
-  ctx.fillStyle = grd;
+  //var grd = ctx.createRadialGradient(x, y, radius, x + 3, y - 5, radius-3);
+  //grd.addColorStop(0, "white");
+  //grd.addColorStop(1, color);
+  //ctx.fillStyle = grd;
+  ctx.fillStyle = color;
   ctx.fill();
   
   if ( selected ) {
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "#0f0";
+    ctx.lineWidth = this.settings.selectWidth;
+    ctx.strokeStyle = this.settings.selectColor; 
     ctx.stroke();
   }
+  ctx.restore();
 }
 
 Checker.drawBear = function(ctx) {
@@ -307,8 +316,8 @@ Selectable.highlight = function(ctx) {
   ctx.lineTo(x, base);
   ctx.stroke();
 
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = "#a020f0";
+  ctx.lineWidth = this.settings.highlightWidth;
+  ctx.strokeStyle = this.settings.highlightColor;
   ctx.stroke();      
 }
 
