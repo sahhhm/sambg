@@ -8,6 +8,7 @@ function Board(opts) {
   this.playerCanRoll = false;
   this.waitingForNextTurn = false;
   this.anyMovesLeft = false;
+  this.doubleRequested = false;
   this.numMoves = 0;
   this.gameOverValue = -1; // -1, not over; otherwise, multiplier for doubling dice
 
@@ -531,5 +532,32 @@ function Board(opts) {
 	numChecks += this.getBarByNum(inquirePlayer.num).numCheckers;
     return numChecks;	
   }
+  
+  this.doubleRequest = function( currentPlayer, requestingPlayer ) {
+    // function called when a double is requested
+    // currentPlayer (int) - player.num of the game player 
+    // requestingPlayer (int) - player.num of the double requester
+	this.doubleRequested = true;
+	
+	if ( currentPlayer == requestingPlayer ) {
+	  this.drawer.drawMessage("Waiting on player to confirm/deny double",
+	                          { button: false });
+	} else {
+	  this.drawer.drawMessage("Double Requested!", 
+	                           { button: true, acceptText: "accept", denyText: "resign" });
+	}
+	
+  }
+  
+  this.doubleResponse = function( response, choosingPlayerNum ) {
+    this.doubleRequested = false;
+    if ( response == "accept" ) {
+      this.drawer.drawMessage("Double Accepted",
+	                           { button: false }); 
+	} else {
+	  this.drawer.drawMessage("Double Declined",
+	                           { button: false });
+	}
+  }  
   
 }

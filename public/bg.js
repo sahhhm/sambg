@@ -26,6 +26,22 @@ function getCursorPosition(e) {
     doubling = true;
   }
   
+  var accepted = false;
+  if ( x >= bggame.board.drawer.messageArea.getAcceptButtonStartX() && x <= bggame.board.drawer.messageArea.getAcceptButtonStartX() + bggame.board.drawer.messageArea.specs.buttonWidth &&
+       y >= bggame.board.drawer.messageArea.getButtonStartY() && y <= bggame.board.drawer.messageArea.getButtonStartY() + bggame.board.drawer.messageArea.specs.buttonHeight )
+  {
+    accepted = true;
+  }
+
+  var denied = false;
+  if ( x >= bggame.board.drawer.messageArea.getDenyButtonStartX() && x <= bggame.board.drawer.messageArea.getDenyButtonStartX() + bggame.board.drawer.messageArea.specs.buttonWidth &&
+       y >= bggame.board.drawer.messageArea.getButtonStartY() && y <= bggame.board.drawer.messageArea.getButtonStartY() + bggame.board.drawer.messageArea.specs.buttonHeight )
+  {
+    denied = true;
+  }
+
+
+  
   // check for regular dice click (either to confirm or to roll)
   var dice = false;
   if ( x >= bggame.board.drawer.dice.specs.startX && x <= bggame.board.drawer.dice.specs.startX + bggame.board.drawer.dice.specs.widthPix &&
@@ -34,7 +50,12 @@ function getCursorPosition(e) {
     dice = true;
   }  
   
-  return { triangle: checker.findTriangleNum(bggame.board), bar: checker.findBarNum(bggame.board), doublingDiceSend: doubling, regularDice: dice }
+  return { triangle: checker.findTriangleNum(bggame.board), 
+           bar: checker.findBarNum(bggame.board), 
+		   doublingDiceSend: doubling, 
+		   regularDice: dice, 
+		   messageAreaAccept: accepted, 
+		   messageAreaDeny: denied }
 }
 
 function bgOnClick(e) {
@@ -66,6 +87,19 @@ function bgOnClick(e) {
         bggame.board.playerCanRoll = false;
       }
     }
+  } else {
+    // actions that may be performed by the
+	// user whose turn it currently is not
+	
+	// check to see if user responded to double
+	if ( bggame.board.doubleRequested ) {
+	  if ( info.messageAreaAccept ) {
+		socket.emit( 'double chosen', { room: selectedRoom, choosingPlayer: me.num, action: "accept" } );
+	  } else if ( info.messageAreaDeny ) {
+		socket.emit( 'double chosen', { room: selectedRoom, choosingPlayer: me.num, action: "reject" } );
+	  }
+	}
+	
   }
 
   if (me.num == bggame.board.playerTurn() && bggame.board.dice.isRolled) {
@@ -113,7 +147,6 @@ function initGame(canvasElement, nakedCanvasElement, data) {
 	$('#game_area').html('');
     $("#game_area").append("<div id='game_area_input'></div>");
 	$("#game_area").append("<div id='game-over-area'></div>");
-    $("#game_area").append("<div id='doubling-area'></div>");
     
     $("#game_area_input").append( '<p id="iam">I am Player: <span id="iam-player">null</span></p>' + 
                                   '<div id="u-button"><button id="undo">undo move</button></div>' +

@@ -17,6 +17,7 @@
 </html>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<!--<script src="jquery.min.js"></script>-->
 <script src="/socket.io/socket.io.js"></script>
 <script src="game.js"></script>
 
@@ -101,23 +102,19 @@
    });
    
    socket.on( 'double request', function( data ) {
-     if (data.requestingPlayer == me.num) {
-       $('#doubling-area').html("waiting for user to decide on double...");
-     } else if ((((data.requestingPlayer % 2) + 1)) == me.num) {
-       $('#doubling-area').html('double requested...<button id="double-accept">accecpt double</button><button id="double-reject">resign</button>');
-     }
+	   bggame.board.doubleRequest ( me.num, data.requestingPlayer )
    });
    
    socket.on( 'double action', function( data ) {
+     
      if (data.action == "accept") {
        bggame.board.doublingDice.doubleDice((data.choosingPlayer % 2) + 1);
-       $('#doubling-area').html('');
        bggame.board.update({ forPlayer : me.num, drawDoublingDice : true} );
      } else if (data.action == "reject") {
 	   console.log( "double rejected" );
-	   $('#doubling-area').html('');
        socket.emit('game end', { room: selectedRoom, winnerNum: me.num % 2 + 1, points: bggame.board.doublingDice.value });
      }
+     bggame.board.doubleResponse( data.action, data.choosingPlayer );	 
    });   
    
    socket.on('update turns', function(data) {
@@ -175,10 +172,12 @@
       bggame.board.update({forPlayer : me.num});
    });   
    
+   /*
    $("div").on("click", "button[id^='double-']", function(e) {
      var act = this.id.split('-')[1]; // action is either 'accept' or 'reject'
      socket.emit( 'double chosen', { room: selectedRoom, choosingPlayer: me.num, action: act } );
    });
+   */
 
    // for debugging only
    $("div").on("click", "button[id='force-sub']", function(e) {

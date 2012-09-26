@@ -69,7 +69,9 @@ var Interactable = Object.create(Drawable, { interact : {
 															  padding: 7,
                                                               doublingColumn: 6,
 															  diceColumn: 8, 
-														      diceColumns: 4
+														      diceColumns: 4,
+															  messageColumn: 1,
+															  messageColumns: 4
 														    },
 														   writable: true, 
 														   enumerable: true, 
