@@ -16,8 +16,8 @@
 </body>
 </html>
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<!--<script src="jquery.min.js"></script>-->
+<!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>-->
+<script src="jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="game.js"></script>
 
@@ -75,9 +75,10 @@
    });
    
    socket.on('game over', function(data) {
-     console.log("game over");
-	  $('#game-over-area').html( 'Game over... Player ' + data.winnerNum + ' won with ' + data.points + ' points!' +
-                                 '<button id="do-play-again">play again</button><button id="dont-play-again">back to lobby</button>');
+      console.log("game over");
+	  bggame.board.gameEnded( data.winnerNum, data.points );
+	  //$('#game-over-area').html( 'Game over... Player ' + data.winnerNum + ' won with ' + data.points + ' points!' +
+      //                           '<button id="do-play-again">play again</button><button id="dont-play-again">back to lobby</button>');
    });   
    
    //for debugging only
@@ -114,7 +115,13 @@
 	   console.log( "double rejected" );
        socket.emit('game end', { room: selectedRoom, winnerNum: me.num % 2 + 1, points: bggame.board.doublingDice.value });
      }
-     bggame.board.doubleResponse( data.action, data.choosingPlayer );	 
+     bggame.board.doubleResponse( data.action, data.choosingPlayer );	
+	 
+   });   
+   
+   socket.on('display message', function(data) {
+     console.log("display message");
+     bggame.board.drawer.drawMessage(data.message, { button: data.button, acceptText: data.buttonL, denyText: data.buttonR });
    });   
    
    socket.on('update turns', function(data) {
@@ -157,6 +164,7 @@
      socket.emit('join room', {room: selectedRoom});
    });  
 
+   /*
    $("div").on("click", "button[id$='play-again']", function(e) {
      var act = this.id.split('-')[0];
 	 if ( act == "do" ) {
@@ -166,6 +174,7 @@
 	   socket.emit('exit game', {room: selectedRoom});
 	 }
    });      
+   */
    
    $("div").on("click", "button[id='undo']", function(e) {
       bggame.board.undoMove();

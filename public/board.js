@@ -555,9 +555,20 @@ function Board(opts) {
       this.drawer.drawMessage("Double Accepted",
 	                           { button: false }); 
 	} else {
+	  this.gameOverValue = 1;
 	  this.drawer.drawMessage("Double Declined",
 	                           { button: false });
 	}
   }  
+  
+  this.gameEnded = function ( winningPlayer, pointsWon ) {
+      this.drawer.drawMessage("Game Over! Player " + winningPlayer + " won with " + pointsWon + " points",
+	                           { button: true, acceptText: "rematch", denyText: "lobby" });    
+  }
+  
+  this.isGameOver = function() {
+    // returns true if game is over; false otherwise
+    return this.gameOverValue > 0;
+  }
   
 }

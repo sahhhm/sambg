@@ -26,6 +26,7 @@ function getCursorPosition(e) {
     doubling = true;
   }
   
+  // check if user responded with acceptance/positive button click
   var accepted = false;
   if ( x >= bggame.board.drawer.messageArea.getAcceptButtonStartX() && x <= bggame.board.drawer.messageArea.getAcceptButtonStartX() + bggame.board.drawer.messageArea.specs.buttonWidth &&
        y >= bggame.board.drawer.messageArea.getButtonStartY() && y <= bggame.board.drawer.messageArea.getButtonStartY() + bggame.board.drawer.messageArea.specs.buttonHeight )
@@ -33,14 +34,13 @@ function getCursorPosition(e) {
     accepted = true;
   }
 
+  // check if user responded with deny/negative button click
   var denied = false;
   if ( x >= bggame.board.drawer.messageArea.getDenyButtonStartX() && x <= bggame.board.drawer.messageArea.getDenyButtonStartX() + bggame.board.drawer.messageArea.specs.buttonWidth &&
        y >= bggame.board.drawer.messageArea.getButtonStartY() && y <= bggame.board.drawer.messageArea.getButtonStartY() + bggame.board.drawer.messageArea.specs.buttonHeight )
   {
     denied = true;
   }
-
-
   
   // check for regular dice click (either to confirm or to roll)
   var dice = false;
@@ -62,7 +62,17 @@ function bgOnClick(e) {
   // all info on the user's click
   var info = getCursorPosition(e);
   
-  if (me.num == bggame.board.playerTurn()) {
+	// check to see if user made a decision on game over
+	if ( bggame.board.isGameOver() ) {
+	  if ( info.messageAreaAccept ) {
+		socket.emit('rejoin room', {room: selectedRoom, playerNum: me.num});
+		socket.emit('join room', {room: selectedRoom});
+	  } else if ( info.messageAreaDeny ) {
+		socket.emit('exit game', {room: selectedRoom});
+	  }
+	}  
+  
+  if (me.num == bggame.board.playerTurn()) {	
     // check to see if user doubled
     if (info.doublingDiceSend) {
       if (bggame.board.canDouble) {

@@ -95,6 +95,17 @@ io.sockets.on('connection', function (socket) {
     } 
   });
   
+  socket.on("rejoin room", function(data) {
+    // event processed when player rejoins room 
+	var playerNum = data.playerNum;
+	var idx = get_room_index(data.room);
+	if (idx != -1) {
+	  socket.emit('display message', { message: "waiting on other player to rejoin", button: false, buttonL: "", buttonR: "" });
+	  if (rooms[idx].playerSockets.length != 1)
+	    socket.broadcast.to(rooms[idx].roomId).emit('display message', { message: "other player has already rejoined", button: true, buttonL: "rematch", buttonR: "lobby"});
+	}
+  });
+  
   socket.on("moved", function(data) {
     var idx = get_room_index(data.room);
     
