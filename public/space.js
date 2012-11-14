@@ -377,7 +377,10 @@ Triangle.drawShape = function(ctx) {
   var height = (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight) ;
   var topPixel = this.isTop() ? 0 : base -  height;  
 
-  ctx.drawImage(this.canvasEls.nakedCanvas, x, topPixel, this.drawInfo.pieceWidth, height, x, topPixel, this.drawInfo.pieceWidth, height)
+  var off = 3;
+  ctx.drawImage(this.canvasEls.nakedCanvas, 
+                x - off, Math.max(topPixel, topPixel - off), this.drawInfo.pieceWidth + off*2, height + off*2, 
+				x - off, Math.max(topPixel, topPixel - off), this.drawInfo.pieceWidth + off*2, height + off*2)
 
   // draw triangle
   ctx.lineWidth =  1;
