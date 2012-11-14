@@ -63,7 +63,7 @@
      $('#lobby').hide();
      initGame(null, null, data);
      newGame();
-	 bggame.board.drawer.drawBoard();
+	 bggame.board.drawer.drawBoard(me.num);
 	 bggame.board.drawer.drawNakedBoard();
    });
    
@@ -77,8 +77,6 @@
    socket.on('game over', function(data) {
       console.log("game over");
 	  bggame.board.gameEnded( data.winnerNum, data.points );
-	  //$('#game-over-area').html( 'Game over... Player ' + data.winnerNum + ' won with ' + data.points + ' points!' +
-      //                           '<button id="do-play-again">play again</button><button id="dont-play-again">back to lobby</button>');
    });   
    
    //for debugging only
@@ -163,30 +161,7 @@
      selectedRoom = $(this).parent().attr('id').split('-')[1];
      socket.emit('join room', {room: selectedRoom});
    });  
-
-   /*
-   $("div").on("click", "button[id$='play-again']", function(e) {
-     var act = this.id.split('-')[0];
-	 if ( act == "do" ) {
-	   socket.emit('join room', {room: selectedRoom});
-	   $('#game-over-area').html('waiting for other player to want to play with you...');
-	 } else {
-	   socket.emit('exit game', {room: selectedRoom});
-	 }
-   });      
-   */
-   
-   $("div").on("click", "button[id='undo']", function(e) {
-      bggame.board.undoMove();
-      bggame.board.update({forPlayer : me.num});
-   });   
-   
-   /*
-   $("div").on("click", "button[id^='double-']", function(e) {
-     var act = this.id.split('-')[1]; // action is either 'accept' or 'reject'
-     socket.emit( 'double chosen', { room: selectedRoom, choosingPlayer: me.num, action: act } );
-   });
-   */
+ 
 
    // for debugging only
    $("div").on("click", "button[id='force-sub']", function(e) {

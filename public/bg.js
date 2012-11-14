@@ -12,8 +12,10 @@ function getCursorPosition(e) {
   }
   x -= bggame.board.drawer.canvasEls.canvas.offsetLeft;
   y -= bggame.board.drawer.canvasEls.canvas.offsetTop;
-  x = Math.min(x, bggame.board.specs.boardWidth * bggame.board.specs.pieceWidth);
-  y = Math.min(y, bggame.board.specs.boardHeight * bggame.board.specs.pieceHeight);
+  //x = Math.min(x, bggame.board.specs.boardWidth * bggame.board.specs.pieceWidth);
+  //y = Math.min(y, bggame.board.specs.boardHeight * bggame.board.specs.pieceHeight);
+  x = Math.min(x, bggame.board.specs.boardPixelWidth);
+  y = Math.min(y, bggame.board.specs.totalPixelHeight);
   
   // used for triangle and bar
   var checker = Object.create(Checker, { row : { value : Math.floor(y/bggame.board.specs.pieceHeight) }, column : { value : Math.floor(x/bggame.board.specs.pieceWidth) }, player : { value : 0 } });
@@ -26,20 +28,22 @@ function getCursorPosition(e) {
     doubling = true;
   }
   
-  // check if user responded with acceptance/positive button click
-  var accepted = false;
-  if ( x >= bggame.board.drawer.messageArea.getAcceptButtonStartX() && x <= bggame.board.drawer.messageArea.getAcceptButtonStartX() + bggame.board.drawer.messageArea.specs.buttonWidth &&
-       y >= bggame.board.drawer.messageArea.getButtonStartY() && y <= bggame.board.drawer.messageArea.getButtonStartY() + bggame.board.drawer.messageArea.specs.buttonHeight )
-  {
-    accepted = true;
-  }
-
-  // check if user responded with deny/negative button click
-  var denied = false;
-  if ( x >= bggame.board.drawer.messageArea.getDenyButtonStartX() && x <= bggame.board.drawer.messageArea.getDenyButtonStartX() + bggame.board.drawer.messageArea.specs.buttonWidth &&
-       y >= bggame.board.drawer.messageArea.getButtonStartY() && y <= bggame.board.drawer.messageArea.getButtonStartY() + bggame.board.drawer.messageArea.specs.buttonHeight )
-  {
-    denied = true;
+  // if applicable, check if user clicked left/right button
+  var leftButtonClicked = false;
+  var rightButtonClicked = false;
+  if ( bggame.board.drawer.messageArea.getStatus().buttons ) {
+    // accept button
+    if ( x >= bggame.board.drawer.messageArea.getLeftButtonStartX() && x <= bggame.board.drawer.messageArea.getLeftButtonStartX() + bggame.board.drawer.messageArea.specs.buttonWidth &&
+         y >= bggame.board.drawer.messageArea.getButtonStartY() && y <= bggame.board.drawer.messageArea.getButtonStartY() + bggame.board.drawer.messageArea.specs.buttonHeight )
+    {
+      leftButtonClicked = true;
+    }
+    // deny button
+    if ( x >= bggame.board.drawer.messageArea.getRightButtonStartX() && x <= bggame.board.drawer.messageArea.getRightButtonStartX() + bggame.board.drawer.messageArea.specs.buttonWidth &&
+         y >= bggame.board.drawer.messageArea.getButtonStartY() && y <= bggame.board.drawer.messageArea.getButtonStartY() + bggame.board.drawer.messageArea.specs.buttonHeight )
+    {
+      rightButtonClicked = true;
+    }
   }
   
   // check for regular dice click (either to confirm or to roll)
@@ -50,12 +54,20 @@ function getCursorPosition(e) {
     dice = true;
   }  
   
+  var undoClick = false;
+  if ( x >= bggame.board.drawer.infoMenu.specs.ubStartX && x <=  bggame.board.drawer.infoMenu.specs.ubStartX + bggame.board.drawer.infoMenu.specs.ubWidth &&
+       y >= bggame.board.drawer.infoMenu.specs.ubStartY && y <=  bggame.board.drawer.infoMenu.specs.ubStartY + bggame.board.drawer.infoMenu.specs.ubHeight )
+  {
+    undoClick = true;
+  }
+  
   return { triangle: checker.findTriangleNum(bggame.board), 
            bar: checker.findBarNum(bggame.board), 
 		   doublingDiceSend: doubling, 
 		   regularDice: dice, 
-		   messageAreaAccept: accepted, 
-		   messageAreaDeny: denied }
+		   messageAreaAccept: leftButtonClicked, 
+		   messageAreaDeny: rightButtonClicked,
+           undo: undoClick  }
 }
 
 function bgOnClick(e) {
@@ -116,6 +128,11 @@ function bgOnClick(e) {
     var meBar = bggame.board.getBarByNum(me.num);
     var triangle = bggame.board.getTriangleByNum(info.triangle); 
   
+    if (info.undo && bggame.board.playerCanUndo) {
+      bggame.board.undoMove();
+      bggame.board.update({forPlayer : me.num});	
+	}
+  
     if (meBar.isEmpty()) {
       if (bggame.board.getSelectedTriangle().num == -1 && triangle.isEmpty()) {
         console.log("Triangle " + triangle.num + " which is empty was selected"); 
@@ -156,10 +173,8 @@ function initGame(canvasElement, nakedCanvasElement, data) {
     
 	$('#game_area').html('');
     $("#game_area").append("<div id='game_area_input'></div>");
-	$("#game_area").append("<div id='game-over-area'></div>");
     
     $("#game_area_input").append( '<p id="iam">I am Player: <span id="iam-player">null</span></p>' + 
-                                  '<div id="u-button"><button id="undo">undo move</button></div>' +
                                   '<input type="text" id="f-inp" value="00" size="2"/><div id="force-dice"><button id="force-sub">force roll</button></div>');//for debugging only
                                
     $("#game_area").append(canvasElement);

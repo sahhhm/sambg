@@ -28,10 +28,10 @@ Drawable.initialize = function(specs) {
                      nakedCanvas: nakedCanvas}; 
 
   this.canvasEls.canvas.addEventListener("click", bgOnClick, false);
-  this.canvasEls.canvas.width = specs.pixelWidth;
-  this.canvasEls.canvas.height = specs.pixelHeight;
-  this.canvasEls.nakedCanvas.width = specs.pixelWidth;
-  this.canvasEls.nakedCanvas.height = specs.pixelHeight;
+  this.canvasEls.canvas.width = specs.boardPixelWidth;
+  this.canvasEls.canvas.height = specs.totalPixelHeight;
+  this.canvasEls.nakedCanvas.width = specs.boardPixelWidth;
+  this.canvasEls.nakedCanvas.height = specs.totalPixelHeight;
   
   this.drawInfo = { pieceWidth : specs.pieceWidth,
                     pieceHeight: specs.pieceHeight,
@@ -43,8 +43,10 @@ Drawable.initialize = function(specs) {
                     barColumn : specs.barColumn,
                     bearOffColumn : specs.bearOffColumn,
                     maxPiecesPerTriangle : specs.maxPiecesPerTriangle,
-					pixelHeight : specs.pixelHeight,
-					pixelWidth : specs.pixelWidth       
+					boardPixelHeight : specs.boardPixelHeight,
+					boardPixelWidth : specs.boardPixelWidth,
+                    infoMenuPixelHeight : specs.infoMenuPixelHeight,
+                    totalPixelHeight : specs.totalPixelHeight				
                    };
 
   this.settings = {
@@ -99,13 +101,17 @@ var DrawableBoard = Object.create(Drawable);
 
 DrawableBoard.drawBoard = function(ctx, triangles, bars, bearoffs) {
   ctx.fillStyle = ctx.createPattern(this.patterns.bg.image,'repeat');
-  ctx.fillRect(0, 0, this.drawInfo.pixelWidth, this.drawInfo.pixelHeight);	      
+  ctx.fillRect(0, 0, this.drawInfo.boardPixelWidth, this.drawInfo.boardPixelHeight);	      
 		
   var spaces = triangles.concat( bars ).concat( bearoffs );
   for ( var i = 0; i < spaces.length; i++ ) {
     spaces[i].draw(ctx);
   }
-}
+  
+  
+
+} 
+
 
 DrawableBoard.patterns.bg = { image: new Image(), loaded: false};
 DrawableBoard.patterns.bg.image.src = 'woodbg.jpg';
@@ -247,7 +253,7 @@ var Space = Object.create(Drawable, {  num          :   { value : -1 },
                                        player       :   { value : -1, writable : true },
                                        numCheckers  :   { value : -1, writable : true },
                                        column       :   { value : -1 },
-                     highlighted  :   { value : false },
+                                       highlighted  :   { value : false, writable : true },
                                        type         :   { value : "Space" } });
                       
 Space.isTop = function() {}
@@ -309,7 +315,7 @@ Selectable.highlight = function(ctx) {
   // same for bar, triange... different for bearOff
   var base, x;
   x = this.column * this.drawInfo.pieceWidth;
-  base = this.isTop() ? 0 : this.drawInfo.pixelHeight;
+  base = this.isTop() ? 0 : this.drawInfo.boardPixelHeight;
 
   ctx.beginPath();
   ctx.moveTo(x, base);
@@ -342,7 +348,7 @@ Bar.drawShape = function(ctx) {
     ctx.fillStyle = 'white';
   }
 
-  var top = this.isTop() ? 0 : this.drawInfo.pixelHeight - ( this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight );
+  var top = this.isTop() ? 0 : this.drawInfo.boardPixelHeight - ( this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight );
   if ( this.isTop() ) {
     ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.barColumn , top, this.drawInfo.pieceWidth, this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight);
   } else {
@@ -366,7 +372,7 @@ Triangle.entry = function() { return this.num };
 Triangle.drawShape = function(ctx) {
   ctx.save();
   var x = this.column * this.drawInfo.pieceWidth;
-  var base = this.isTop() ? 0 : this.drawInfo.pixelHeight;
+  var base = this.isTop() ? 0 : this.drawInfo.boardPixelHeight;
 
   var height = (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight) ;
   var topPixel = this.isTop() ? 0 : base -  height;  
@@ -419,13 +425,13 @@ Bearoff.draw = function(ctx) {
 
 Bearoff.drawShape = function(ctx) {
   ctx.save();
-  var top = this.isTop() ? 0 : this.drawInfo.pixelHeight/2;
+  var top = this.isTop() ? 0 : this.drawInfo.boardPixelHeight/2;
   if ( this.patterns.bearoff.loaded ) {
     ctx.fillStyle = ctx.createPattern(this.patterns.bearoff.image,'repeat');
   } else {
     ctx.fillStyle = 'white';
   }
-  ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.bearOffColumn , top, this.drawInfo.bearOffWidth, this.drawInfo.pixelHeight / 2);
+  ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.bearOffColumn , top, this.drawInfo.bearOffWidth, this.drawInfo.boardPixelHeight / 2);
   ctx.restore();
 }  
 
@@ -434,7 +440,7 @@ Bearoff.highlight = function(ctx) {
   
   var base, x, offset;
   x = this.column * this.drawInfo.pieceWidth;
-  base = this.isTop() ? 0 : this.drawInfo.pixelHeight;
+  base = this.isTop() ? 0 : this.drawInfo.boardPixelHeight;
   offset = 2;
   
   ctx.save();

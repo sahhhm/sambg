@@ -9,6 +9,7 @@ function Board(opts) {
   this.waitingForNextTurn = false;
   this.anyMovesLeft = false;
   this.doubleRequested = false;
+  this.playerCanUndo = false;
   this.numMoves = 0;
   this.gameOverValue = -1; // -1, not over; otherwise, multiplier for doubling dice
 
@@ -27,8 +28,10 @@ function Board(opts) {
     bearOffWidth : 65,
     bearOffHeight: 15,
   };
-  this.specs.pixelWidth = this.specs.boardWidth * this.specs.pieceWidth + 1 + this.specs.bearOffWidth;
-  this.specs.pixelHeight = this.specs.boardHeight * this.specs.pieceHeight + 1;
+  this.specs.boardPixelWidth = this.specs.boardWidth * this.specs.pieceWidth + 1 + this.specs.bearOffWidth;
+  this.specs.boardPixelHeight = this.specs.boardHeight * this.specs.pieceHeight + 1;
+  this.specs.infoMenuPixelHeight = 25;
+  this.specs.totalPixelHeight = this.specs.boardPixelHeight + this.specs.infoMenuPixelHeight;
   this.specs.p1color = opts.p1color;
   this.specs.p2color = opts.p2color;
   
@@ -151,22 +154,31 @@ function Board(opts) {
   }
   
   this.checkElements = function(forPlayer) {
-    this.turns.currentTurn.length ? this.drawer.undoButtonElement.disabled = false : this.drawer.undoButtonElement.disabled = true;
-    this.checkAnyMovesLeft();
+	this.playerCanUndo = this.canPlayerUndo(forPlayer);
+	this.checkAnyMovesLeft();
 	this.canConfirm(forPlayer) ? this.playerCanConfirm = true : this.playerCanConfirm = false;
     this.canRoll(forPlayer) ? this.playerCanRoll = true : this.playerCanRoll = false;
     this.drawDice(forPlayer);
     this.drawDoublingDice(forPlayer);  
+	this.drawInfoMenu(forPlayer);
+  }
+  
+  this.canPlayerUndo = function( forPlayerNum ) {
+    // need to update to prevent from returning true when
+	// the player is just watching the moves
+    return this.turns.currentTurn.length > 0;
   }
 
+  this.drawInfoMenu = function(forPlayerNum) {
+    this.drawer.drawInfoMenu( this.getPlayerByNum(forPlayerNum), this.playerCanUndo );
+  }
+  
   this.drawDice = function(forPlayerNum) {
-    //this.drawer.drawDice( { dice: this.dice, currentPlayer: this.getPlayerByNum(this.playerTurn()), mePlayer: this.getPlayerByNum(forPlayerNum), otherPlayer: this.getPlayerByNum((this.playerTurn() % 2 + 1)), pCanConfirm: this.canConfirm(forPlayerNum), pCanRoll: this.canRoll(forPlayerNum) }  );
     this.drawer.drawDice( this.getPlayerByNum(this.playerTurn()), this.getPlayerByNum(forPlayerNum), this.getPlayerByNum((this.playerTurn() % 2 + 1)), this.canConfirm(forPlayerNum), this.canRoll(forPlayerNum), this.anyMovesLeft );
   }    
   
   this.drawDoublingDice = function(playerNum) {
     this.canDouble = (playerNum == this.playerTurn() && !this.dice.isRolled && this.doublingDice.lastPlayerToDoubleNum != playerNum) ? true : false;
-    //this.drawer.drawDoublingDice( { isActive: this.canDouble, value: this.doublingDice.value } );
 	this.drawer.drawDoublingDice();
   }
   
@@ -215,7 +227,6 @@ function Board(opts) {
       } 
     }
     this.drawer.drawPotentials(from, pots);
-	//this.drawer.drawBoard(from, pots);
   }
   
   this.findPotentialMoves = function(from) {

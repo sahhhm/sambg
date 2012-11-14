@@ -1,9 +1,9 @@
 function createDrawer() {
   var draw = Object.create(Drawer);  
   
-  draw.undoButtonElement = document.getElementById('undo');
   draw.db = Object.create(DrawableBoard); 
   draw.messageArea = createMessageArea();
+  draw.infoMenu = createInfoMenu();
   
   // settings that should eventually be customizable by palyer
   draw.settings.animationTimeout = 8;
@@ -26,12 +26,12 @@ Drawer.setDoublingDice = function( dd ) {
 }		
 
 Drawer.drawNakedBoard = function() {
-  this.ctxs.nctx.clearRect(0, 0, this.drawInfo.pixelWidth, this.drawInfo.pixelHeight);
+  this.ctxs.nctx.clearRect(0, 0, this.drawInfo.boardPixelWidth, this.drawInfo.totalPixelHeight);
   this.db.drawBoard(this.ctxs.nctx, this.triangles, this.bars, this.bearoffs);
 }
   
-Drawer.drawBoard = function() {
-  this.ctxs.ctx.clearRect(0, 0, this.drawInfo.pixelWidth, this.drawInfo.pixelHeight);
+Drawer.drawBoard = function(forPlayer) {
+  this.ctxs.ctx.clearRect(0, 0, this.drawInfo.boardPixelWidth, this.drawInfo.totalPixelHeight);
   this.db.drawBoard(this.ctxs.ctx, this.triangles, this.bars, this.bearoffs);
 }
 
@@ -115,7 +115,7 @@ Drawer.movePiece = function(x, dx, y, dy, off, side, playerNum, from, to, count)
   var tx, ty;
   tx = x - off < 0 ? 0 : x - off; 
   ty = y - off < 0 ? 0 : y - off;
-  if ( ty + side > this.drawInfo.pixelHeight ) ty = this.drawInfo.pixelHeight - side;
+  if ( ty + side > this.drawInfo.boardPixelHeight ) ty = this.drawInfo.boardPixelHeight - side;
 
   this.ctxs.ctx.drawImage(this.canvasEls.nakedCanvas, tx, ty, side, side, tx, ty, side, side);        	
   xAnim = x + dx;
@@ -136,6 +136,26 @@ Drawer.movePiece = function(x, dx, y, dy, off, side, playerNum, from, to, count)
     }, this.settings.animationTimeout );
   }	
 }
+
+function createInfoMenu() {
+  var im = Object.create(InfoMenu);
+  
+  im.specs.startX = 0; 
+  im.specs.startY = im.drawInfo.boardPixelHeight;
+  im.specs.width = im.drawInfo.boardPixelWidth
+  im.specs.height = im.drawInfo.infoMenuPixelHeight;
+
+  im.specs.ubMargin = 5;
+  im.specs.ubWidth = 55;
+  im.specs.ubHeight = im.specs.height - im.specs.ubMargin * 2;
+  im.specs.ubStartX = im.specs.width - im.specs.ubWidth - im.specs.ubMargin;
+  im.specs.ubStartY = im.specs.startY + im.specs.ubMargin;
+
+  return im;
+}
+
+
+
 
 function createMessageArea() {
   var ma = Object.create(MessageArea);
@@ -178,8 +198,57 @@ Drawer.drawMessage = function( aMessage, buttonInfo ) {
   }
 }
 
+Drawer.drawInfoMenu = function( forPlayer, canUndo ) {
+  // function that takes in a message and an array of options
+  // pertaining to whether or not buttons are needed or not
+  // forPlayer  - player - player object                    
+  // canUndo - boolean - true if the player can undo, false otherwise
+  this.infoMenu.drawFirst( this.ctxs.ctx );
+  this.infoMenu.drawUndo( this.ctxs.ctx, canUndo );
+}
 
-var MessageArea = Object.create( Interactable, {	 specs  : { value: {}, enumerable: true, writable: true }} );
+
+var InfoMenu = Object.create( Drawable, { specs  : { value: {}, enumerable: true, writable: true } } );
+
+
+InfoMenu.drawFirst = function( aCtx ) {
+  
+  aCtx.save();
+  
+  // info menu bar 
+  aCtx.fillStyle = "brown";
+  aCtx.fillRect(this.specs.startX, this.specs.startY, this.specs.width, this.specs.height);
+  
+  aCtx.restore();
+
+}
+
+InfoMenu.drawUndo = function ( aCtx, canUndo ) {
+
+  aCtx.save();
+
+  if ( canUndo ) { 
+    aCtx.gloabAlpha = 1;
+  } else {
+    aCtx.globalAlpha = .5;
+  }
+  
+  aCtx.fillStyle = "white";
+  aCtx.fillRect(this.specs.ubStartX , this.specs.ubStartY, this.specs.ubWidth, this.specs.ubHeight); 
+
+  aCtx.fillStyle = "black";
+  aCtx.font = '15px Calibri';
+  aCtx.textBaseline = "middle";
+  aCtx.textAlign = "center";
+  aCtx.fillText( "UNDO", 
+                 this.specs.ubStartX + this.specs.ubWidth/2, 
+				 this.specs.ubStartY + this.specs.ubHeight/2 );    
+
+  aCtx.restore();
+
+} 
+
+var MessageArea = Object.create( Interactable, { specs  : { value: {}, enumerable: true, writable: true } } );
 
 MessageArea.drawMessage = function(aCtx, message) {
   this.messagesDrawn = true;
@@ -208,6 +277,13 @@ MessageArea.clearArea = function(aCtx) {
 
 }
 
+MessageArea.getStatus = function() { 
+  return { messages : this.messagesDrawn,
+           buttons  : this.buttonsDrawn
+		 };
+}
+  
+
 MessageArea.drawButtons = function( aCtx, acceptText, denyText ) {
   this.buttonsDrawn = true;
   
@@ -215,11 +291,11 @@ MessageArea.drawButtons = function( aCtx, acceptText, denyText ) {
   
   // draw button boxes
   aCtx.fillStyle = "#347C17";  
-  aCtx.fillRect( this.getAcceptButtonStartX(), 
+  aCtx.fillRect( this.getLeftButtonStartX(), 
                  this.getButtonStartY(), 
 				 this.specs.buttonWidth, 
 				 this.specs.buttonHeight );
-  aCtx.fillRect( this.getDenyButtonStartX(), 
+  aCtx.fillRect( this.getRightButtonStartX(), 
                  this.getButtonStartY(), 
 				 this.specs.buttonWidth, 
 				 this.specs.buttonHeight );
@@ -230,19 +306,19 @@ MessageArea.drawButtons = function( aCtx, acceptText, denyText ) {
   aCtx.textBaseline = "top";
   aCtx.textAlign = "center";
   aCtx.fillText( acceptText, 
-                 this.getAcceptButtonStartX() + ( this.specs.buttonWidth / 2 ), 
+                 this.getLeftButtonStartX() + ( this.specs.buttonWidth / 2 ), 
 				 this.getButtonStartY() );
   aCtx.fillText( denyText, 
-                 this.getDenyButtonStartX() + ( this.specs.buttonWidth / 2 ), 
+                 this.getRightButtonStartX() + ( this.specs.buttonWidth / 2 ), 
 				 this.getButtonStartY() );  
   aCtx.restore();
 }
 
-MessageArea.getAcceptButtonStartX = function () {
+MessageArea.getLeftButtonStartX = function () {
   return this.specs.startX;
 }
 
-MessageArea.getDenyButtonStartX = function () {
+MessageArea.getRightButtonStartX = function () {
   return this.specs.startX + this.specs.fontSize + this.specs.buttonWidth
 }
 
