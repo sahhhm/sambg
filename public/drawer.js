@@ -145,12 +145,19 @@ function createInfoMenu() {
   im.specs.width = im.drawInfo.boardPixelWidth
   im.specs.height = im.drawInfo.infoMenuPixelHeight;
 
-  im.specs.ubMargin = 5;
-  im.specs.ubWidth = 55;
-  im.specs.ubHeight = im.specs.height - im.specs.ubMargin * 2;
-  im.specs.ubStartX = im.specs.width - im.specs.ubWidth - im.specs.ubMargin;
-  im.specs.ubStartY = im.specs.startY + im.specs.ubMargin;
+  // undo botton
+  im.specs.ub = {};
+  im.specs.ub.margin = 5;
+  im.specs.ub.width = 55;
+  im.specs.ub.height = im.specs.height - im.specs.ub.margin * 2;
+  im.specs.ub.startX = im.specs.width - im.specs.ub.width - im.specs.ub.margin;
+  im.specs.ub.startY = im.specs.startY + im.specs.ub.margin;
 
+  // player text
+  im.specs.pt = {};
+  im.specs.pt.startX = 5;
+  im.specs.pt.startY = im.specs.startY + im.specs.height/2;
+  
   return im;
 }
 
@@ -203,7 +210,7 @@ Drawer.drawInfoMenu = function( forPlayer, canUndo ) {
   // pertaining to whether or not buttons are needed or not
   // forPlayer  - player - player object                    
   // canUndo - boolean - true if the player can undo, false otherwise
-  this.infoMenu.drawFirst( this.ctxs.ctx );
+  this.infoMenu.drawFirst( this.ctxs.ctx, forPlayer );
   this.infoMenu.drawUndo( this.ctxs.ctx, canUndo );
 }
 
@@ -211,7 +218,7 @@ Drawer.drawInfoMenu = function( forPlayer, canUndo ) {
 var InfoMenu = Object.create( Drawable, { specs  : { value: {}, enumerable: true, writable: true } } );
 
 
-InfoMenu.drawFirst = function( aCtx ) {
+InfoMenu.drawFirst = function( aCtx, player ) {
   
   aCtx.save();
   
@@ -219,6 +226,15 @@ InfoMenu.drawFirst = function( aCtx ) {
   aCtx.fillStyle = "brown";
   aCtx.fillRect(this.specs.startX, this.specs.startY, this.specs.width, this.specs.height);
   
+  if (player) {
+    aCtx.fillStyle = player.color;
+    aCtx.font = '15px Calibri';
+    aCtx.textBaseline = "middle";
+    aCtx.textAlign = "left";	
+    aCtx.fillText( "PLAYER " + player.num, 
+                 this.specs.pt.startX, 
+				 this.specs.pt.startY );  
+  }
   aCtx.restore();
 
 }
@@ -234,15 +250,15 @@ InfoMenu.drawUndo = function ( aCtx, canUndo ) {
   }
   
   aCtx.fillStyle = "white";
-  aCtx.fillRect(this.specs.ubStartX , this.specs.ubStartY, this.specs.ubWidth, this.specs.ubHeight); 
+  aCtx.fillRect(this.specs.ub.startX , this.specs.ub.startY, this.specs.ub.width, this.specs.ub.height); 
 
   aCtx.fillStyle = "black";
   aCtx.font = '15px Calibri';
   aCtx.textBaseline = "middle";
   aCtx.textAlign = "center";
   aCtx.fillText( "UNDO", 
-                 this.specs.ubStartX + this.specs.ubWidth/2, 
-				 this.specs.ubStartY + this.specs.ubHeight/2 );    
+                 this.specs.ub.startX + this.specs.ub.width/2, 
+				 this.specs.ub.startY + this.specs.ub.height/2 );    
 
   aCtx.restore();
 

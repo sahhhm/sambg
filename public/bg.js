@@ -55,8 +55,8 @@ function getCursorPosition(e) {
   }  
   
   var undoClick = false;
-  if ( x >= bggame.board.drawer.infoMenu.specs.ubStartX && x <=  bggame.board.drawer.infoMenu.specs.ubStartX + bggame.board.drawer.infoMenu.specs.ubWidth &&
-       y >= bggame.board.drawer.infoMenu.specs.ubStartY && y <=  bggame.board.drawer.infoMenu.specs.ubStartY + bggame.board.drawer.infoMenu.specs.ubHeight )
+  if ( x >= bggame.board.drawer.infoMenu.specs.ub.startX && x <=  bggame.board.drawer.infoMenu.specs.ub.startX + bggame.board.drawer.infoMenu.specs.ub.width &&
+       y >= bggame.board.drawer.infoMenu.specs.ub.startY && y <=  bggame.board.drawer.infoMenu.specs.ub.startY + bggame.board.drawer.infoMenu.specs.ub.height )
   {
     undoClick = true;
   }
@@ -174,8 +174,7 @@ function initGame(canvasElement, nakedCanvasElement, data) {
 	$('#game_area').html('');
     $("#game_area").append("<div id='game_area_input'></div>");
     
-    $("#game_area_input").append( '<p id="iam">I am Player: <span id="iam-player">null</span></p>' + 
-                                  '<input type="text" id="f-inp" value="00" size="2"/><div id="force-dice"><button id="force-sub">force roll</button></div>');//for debugging only
+    $("#game_area_input").append( '<input type="text" id="f-inp" value="00" size="2"/><div id="force-dice"><button id="force-sub">force roll</button></div>');//for debugging only
                                
     $("#game_area").append(canvasElement);
     
