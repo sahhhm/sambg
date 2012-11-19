@@ -263,7 +263,7 @@ Space.isEmpty = function() {return this.numCheckers <= 0 };
 //**** Selectable
 //****
 var Selectable = Object.create(Space, { type     : { value : "Selectable" },
-                                        selected : { value : false, writeable: true } } );
+                                        selected : { value : false, writable: true } } );
 
 Selectable.validMoveTo = function(to) {
   var isValid = false;
