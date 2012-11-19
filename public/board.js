@@ -3,6 +3,7 @@ function Board(opts) {
   this.selectedBarNum = -1;
   this.selectedTriangleNum = -1;
   
+  this.boardPlayerNum = -1;
   this.canDouble = false;
   this.playerCanConfirm = false;
   this.playerCanRoll = false;
@@ -160,13 +161,13 @@ function Board(opts) {
     this.canRoll(forPlayer) ? this.playerCanRoll = true : this.playerCanRoll = false;
     this.drawDice(forPlayer);
     this.drawDoublingDice(forPlayer);  
-	this.drawInfoMenu(forPlayer);
+	this.drawInfoMenu(this.boardPlayerNum);
   }
   
   this.canPlayerUndo = function( forPlayerNum ) {
     // need to update to prevent from returning true when
 	// the player is just watching the moves
-    return this.turns.currentTurn.length > 0;
+    return this.turns.currentTurn.length > 0 && this.boardPlayerNum == this.playerTurn();
   }
 
   this.drawInfoMenu = function(forPlayerNum) {

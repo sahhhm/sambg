@@ -148,6 +148,7 @@
      } else {
        console.log("my id -- error finding player id by socket: ", data.myid);
      }
+	 bggame.board.boardPlayerNum = me.num;
      console.log("my id", me.id, "- player number:", me.num);
      $("#iam-player").html(me.num);
    });

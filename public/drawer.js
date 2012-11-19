@@ -157,7 +157,6 @@ function createInfoMenu() {
   im.specs.pt = {};
   im.specs.pt.startX = 5;
   im.specs.pt.startY = im.specs.startY + im.specs.height/2;
-  
   return im;
 }
 
@@ -221,7 +220,7 @@ var InfoMenu = Object.create( Drawable, { specs  : { value: {}, enumerable: true
 InfoMenu.drawFirst = function( aCtx, player ) {
   
   aCtx.save();
-  
+
   // info menu bar 
   aCtx.fillStyle = "brown";
   aCtx.fillRect(this.specs.startX, this.specs.startY, this.specs.width, this.specs.height);
