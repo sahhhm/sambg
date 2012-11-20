@@ -258,7 +258,7 @@ var Space = Object.create(Drawable, {  num          :   { value : -1 },
                       
 Space.isTop = function() {}
 Space.isEmpty = function() {return this.numCheckers <= 0 };
-
+Space.pipCount = function() { return 0; }
 //****
 //**** Selectable
 //****
@@ -356,6 +356,9 @@ Bar.drawShape = function(ctx) {
   }
   ctx.restore();
 }
+Bar.pipCount = function() {
+  return this.numCheckers * 24;
+}
 
 //**** triangle
 function createTriangle( pnum, pcolumn, pplayer, pnumCheckers) {
@@ -401,6 +404,19 @@ Triangle.drawShape = function(ctx) {
   ctx.globalAlpha = .3;
   ctx.stroke();
   ctx.restore();  
+}
+Triangle.pipCount = function() {
+  var count = 0; 
+  if ( this.numCheckers ) {
+    if ( this.player == 1 ) {
+      count = this.numCheckers * ( 24 - this.num + 1 );	
+	} else if ( this.player == 2 ) {
+	  count = this.numCheckers * this.num;
+	} else {
+	  console.log("pipCount: Invalid player number");
+	}
+  }
+  return count;
 }
 
 //**** bearoff

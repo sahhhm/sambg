@@ -151,7 +151,6 @@ function Board(opts) {
 
     this.updateDraw();
 	this.checkElements(opts.forPlayer);
-    
   }
   
   this.checkElements = function(forPlayer) {
@@ -171,7 +170,7 @@ function Board(opts) {
   }
 
   this.drawInfoMenu = function(forPlayerNum) {
-    this.drawer.drawInfoMenu( this.getPlayerByNum(forPlayerNum), this.playerCanUndo );
+    this.drawer.drawInfoMenu( this.getPlayerByNum(forPlayerNum), this.calculatePipCounts(), this.playerCanUndo );
   }
   
   this.drawDice = function(forPlayerNum) {
@@ -583,4 +582,31 @@ function Board(opts) {
     return this.gameOverValue > 0;
   }
   
+  this.calculatePipCounts = function() {
+    // function to iterate against all board spaces 
+	// and calculate the number of pips left per player
+	// in addition, make sure all checkers are accounted for
+	// returns: { pip1: integer, pip2: integer }
+    var pip1count = 0;
+	var pip2count = 0;
+	var checkersCounted = 0;
+	
+	var spaces = this.getTriangles().concat( this.getBars() ).concat( this.getBearOffs() );
+	for ( var s = 0; s < spaces.length; s++ ) {
+	  if ( spaces[s].player == 1 ) {
+	    pip1count += spaces[s].pipCount();
+	  } else if ( spaces[s].player == 2 ) {
+	    pip2count += spaces[s].pipCount();
+	  }
+	  checkersCounted += spaces[s].numCheckers;
+	}
+	
+	// sanity check
+    if ( checkersCounted != this.specs.totalPiecesPerPlayer * 2 ) {
+	  console.log("not all checkers accounted for in pipcount");
+	}
+	
+	return { pip1: pip1count, 
+	         pip2: pip2count }
+  }
 }

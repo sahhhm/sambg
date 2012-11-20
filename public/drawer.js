@@ -153,6 +153,12 @@ function createInfoMenu() {
   im.specs.ub.startX = im.specs.width - im.specs.ub.width - im.specs.ub.margin;
   im.specs.ub.startY = im.specs.startY + im.specs.ub.margin;
 
+  // pip count
+  im.specs.pc = {};
+  im.specs.pc.startX = (im.drawInfo.boardPixelWidth-im.drawInfo.bearOffWidth)/2;//im.specs.width / 2;
+  im.specs.pc.startY = im.specs.startY + im.specs.height/2;
+  im.specs.pc.fontPx = 15;
+  
   // player text
   im.specs.pt = {};
   im.specs.pt.startX = 5;
@@ -204,12 +210,12 @@ Drawer.drawMessage = function( aMessage, buttonInfo ) {
   }
 }
 
-Drawer.drawInfoMenu = function( forPlayer, canUndo ) {
+Drawer.drawInfoMenu = function( forPlayer, pipCounts, canUndo ) {
   // function that takes in a message and an array of options
   // pertaining to whether or not buttons are needed or not
   // forPlayer  - player - player object                    
   // canUndo - boolean - true if the player can undo, false otherwise
-  this.infoMenu.drawFirst( this.ctxs.ctx, forPlayer );
+  this.infoMenu.drawFirst( this.ctxs.ctx, forPlayer, pipCounts );
   this.infoMenu.drawUndo( this.ctxs.ctx, canUndo );
 }
 
@@ -217,7 +223,7 @@ Drawer.drawInfoMenu = function( forPlayer, canUndo ) {
 var InfoMenu = Object.create( Drawable, { specs  : { value: {}, enumerable: true, writable: true } } );
 
 
-InfoMenu.drawFirst = function( aCtx, player ) {
+InfoMenu.drawFirst = function( aCtx, player, pipInfo ) {
   
   aCtx.save();
 
@@ -226,13 +232,32 @@ InfoMenu.drawFirst = function( aCtx, player ) {
   aCtx.fillRect(this.specs.startX, this.specs.startY, this.specs.width, this.specs.height);
   
   if (player) {
+    // player number
     aCtx.fillStyle = player.color;
     aCtx.font = '15px Calibri';
     aCtx.textBaseline = "middle";
     aCtx.textAlign = "left";	
     aCtx.fillText( "PLAYER " + player.num, 
                  this.specs.pt.startX, 
-				 this.specs.pt.startY );  
+				 this.specs.pt.startY );
+
+	// pip counts
+	// player 1
+	aCtx.font = this.specs.pc.fontPx + 'px Calibri';
+    aCtx.textBaseline = "bottom";
+    aCtx.textAlign = "center";
+    aCtx.fillStyle = this.drawInfo.p1color;		
+	aCtx.fillText( pipInfo.pip1,
+                   this.specs.pc.startX,
+                   this.specs.pc.startY + 2 );
+	// player 2
+	aCtx.fillStyle = this.drawInfo.p2color;
+	aCtx.font = this.specs.pc.fontPx + 'px Calibri';
+    aCtx.textBaseline = "top";
+    aCtx.textAlign = "center";    
+	aCtx.fillText( pipInfo.pip2,
+                   this.specs.pc.startX,
+                   this.specs.pc.startY - 2 );				   
   }
   aCtx.restore();
 
