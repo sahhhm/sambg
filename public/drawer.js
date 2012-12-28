@@ -227,10 +227,12 @@ InfoMenu.drawFirst = function( aCtx, player, pipInfo ) {
   
   aCtx.save();
 
+  aCtx.clearRect(this.specs.startX, this.specs.startY, this.specs.width, this.specs.height);
   // info menu bar 
-  aCtx.fillStyle = "brown";
+  aCtx.fillStyle = "#8a4117";
+  aCtx.globalAlpha = .6;
   aCtx.fillRect(this.specs.startX, this.specs.startY, this.specs.width, this.specs.height);
-  
+  aCtx.globalAlpha = 1;
   if (player) {
     // player number
     aCtx.fillStyle = player.color;
