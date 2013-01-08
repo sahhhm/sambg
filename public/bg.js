@@ -127,38 +127,45 @@ function bgOnClick(e) {
   if (me.num == bggame.board.playerTurn() && bggame.board.dice.isRolled) {
     var meBar = bggame.board.getBarByNum(me.num);
     var triangle = bggame.board.getTriangleByNum(info.triangle); 
-  
+    var moveset;
+	var from;
+	var to;
+	
     if (info.undo && bggame.board.playerCanUndo) {
-      bggame.board.undoMove();
+      bggame.board.undoMove(true);
       bggame.board.update({forPlayer : me.num});	
 	}
   
     if (meBar.isEmpty()) {
       if (bggame.board.getSelectedTriangle().num == -1 && triangle.isEmpty()) {
         console.log("Triangle " + triangle.num + " which is empty was selected"); 
-		bggame.board.update({ forPlayer : me.num });
       } else {
         if (bggame.board.getSelectedTriangle().num == -1 && triangle.player == me.num) {
           bggame.board.selectedTriangleNum = triangle.num;
-          bggame.board.update({ forPlayer : me.num });
         } else if (bggame.board.getSelectedTriangle().num != -1 && triangle.num != -1) {
-          bggame.board.updateSpace(bggame.board.getSelectedTriangle(), triangle);
+          from = bggame.board.getSelectedTriangle();
+		  to = triangle;
         } else if (bggame.board.getSelectedTriangle().num != -1) {
-          bggame.board.updateSpace(bggame.board.getSelectedTriangle(), bggame.board.getBearOffByPlayerNum(me.num));
+		  from = bggame.board.getSelectedTriangle();
+		  to = bggame.board.getBearOffByPlayerNum(me.num);
         } else {
-          bggame.board.update({ forPlayer : me.num });
         }
       }
     } else {
       if (bggame.board.getSelectedBar().num == -1) {
         bggame.board.selectedBarNum = me.num;
-		bggame.board.update({ forPlayer : me.num });
       } else if (bggame.board.getSelectedBar().num != -1 && triangle.num >= 1) {
-        bggame.board.updateSpace(bggame.board.getSelectedBar(), triangle);
+		from = bggame.board.getSelectedBar(); 
+		to = triangle;
       } else {
-	    bggame.board.update({ forPlayer : me.num });
 	  }
-    } 
+    }
+	if (from && to) {
+     moveset = bggame.players[me.num-1].move(from, to, bggame.board);
+	 console.log("bullshit!!");
+     bggame.board.move(moveset, true);
+    }
+    bggame.board.update({ forPlayer : me.num });		  
   } 
 }
 

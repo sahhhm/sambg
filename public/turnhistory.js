@@ -21,6 +21,15 @@ function TurnHistory() {
     this.currentTurn.push(m);
   }
   
+  this.cloneCurrentTurn = function() {
+    var cloned = [];
+	for (var i = 0; i < this.currentTurn.length; i++) {
+	  var temp = this.currentTurn[i];
+	  cloned.push(new AMove(temp.turnNo, temp.player, temp.fromNo, temp.fromType, temp.toNo, temp.toType, temp.isToHit, temp.diceValue));
+	}
+	return cloned;
+  }
+  
   this.clearCurrentToHistory = function() {
     this.history.push(this.currentTurn);
     this.currentTurn = [];

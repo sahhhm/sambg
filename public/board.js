@@ -229,6 +229,24 @@ function Board(opts) {
     this.drawer.drawPotentials(from, pots);
   }
   
+  this.findAllPotentialMoves = function(pNum) {
+    var from;
+	var allTheMoves = new Array();
+	var playerBar = this.getBarByNum(pNum);
+
+	if ( playerBar.isEmpty() ) {
+      for (var i = 0; i < this.getTriangles().length; i++) {
+	    from = this.gTriangles[i];
+        if ( from.player == pNum && !from.isEmpty() ){ 
+          allTheMoves = allTheMoves.concat(this.findPotentialMoves(from));
+        }	  
+	  }
+	} else {
+	  allTheMoves = this.findPotentialMoves(playerBar);
+	}
+    return allTheMoves;
+  }
+  
   this.findPotentialMoves = function(from) {
     //Given a triangle or bar, finds all (direct and combined) valid moves for the given board.
     //returns a list with entries defined like: {moves : list of AMove's }
@@ -344,33 +362,8 @@ function Board(opts) {
  
   }  
   
-  this.updateSpace = function(from, to) {
-    var foundPotential;
-	var moves = [];
-    
-    // search potential moves to find the move that ends at to.num
-    var potentials = this.findPotentialMoves(from);
-    for (var i = 0; i < potentials.length; i++ ) {
-      if (potentials[i].moves[potentials[i].moves.length -1].toNo == to.num) {
-        // found it!
-        foundPotential = potentials[i];
-        break;
-      }   
-    } 
-	
-    if (foundPotential) {
-      for (var j = 0; j < foundPotential.moves.length; j++) {
-		    moves.push(foundPotential.moves[j]);
-      }
-    } else {
-      this.selectedTriangleNum = -1;
-      this.selectedBarNum = -1;
-    }
-
-	  this.move(moves);
-  }  
-
-  this.move = function(moves) {
+  this.move = function(moves, draw) {
+    console.log("!! board.move " + moves.length + " moves");
     var aMove = moves[0];
 	moves.shift();
 	
@@ -405,8 +398,10 @@ function Board(opts) {
     
     // ensure player type is correct
     to.player = from.player;    
- 
-    this.drawer.animateMove(from, to);	
+    
+	if (draw) {
+      this.drawer.animateMove(from, to);
+	}
 	
     // since we just moved, nothing should be active
     this.selectedBarNum = -1;
@@ -423,7 +418,13 @@ function Board(opts) {
 	
     if (moves.length) {
       var self = this;
-	  setTimeout( function() { self.move(moves); }, ( ( this.drawer.settings.animationTimeout * 100 ) /2 ) );
+	  var time = draw ? ( ( this.drawer.settings.animationTimeout * 100 ) /2 ) : 0;
+	  if ( draw ) {
+	  setTimeout( function() { console.log("self.move " + moves.length + " moves with time: " + time); self.move(moves, draw); }, time );	  
+	  } else {
+	    self.move(moves, draw);
+	  }
+
     } else {
 	  // determine number of points if game is over
       if ( this.getBearOffByPlayerNum( aMove.player ).numCheckers == this.specs.totalPiecesPerPlayer ) {
@@ -433,7 +434,7 @@ function Board(opts) {
     
   }
   
-  this.undoMove = function() {
+  this.undoMove = function(draw) {
     var otherPlayer;
     var theMove = this.turns.currentTurn.pop();
     
@@ -458,8 +459,11 @@ function Board(opts) {
       //from.numCheckers += 1;
       from.player = otherPlayer;
     }   
-
-    this.drawer.animateMove(from, to);	
+     
+	if (draw) {
+      this.drawer.animateMove(from, to);	
+	}
+	
 	// this moves for hit moves because by the time the drawer draws
 	// the from space, the below incremement will have taken place
 	if ( theMove.isToHit ) from.numCheckers += 1;
@@ -608,5 +612,15 @@ function Board(opts) {
 	
 	return { pip1: pip1count, 
 	         pip2: pip2count }
+  }
+  
+  this.printBoardInfo = function() {
+    var tris = this.getTriangles();
+	var tri;
+	var string = "";
+    for (var i = 0; i < tris.length; i++) {
+	  tri = tris[i];
+	  console.log(tri.num, tri.player, tri.numCheckers);
+	}
   }
 }

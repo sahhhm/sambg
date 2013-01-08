@@ -8,6 +8,7 @@
 <body>
   <div id="lobby">
     <button id="create_button"> create room </button>
+	<button id="play_robot"> play against robot</button>
     <div id="list_of_rooms"></div>
   </div>
   
@@ -68,11 +69,59 @@
    });
    
    socket.on('dice', function(data) {
-     console.log("got dice event");
+     console.log("got dice event", data.die1, data.die2);
      bggame.board.roll( { die1: data.die1, die2 : data.die2 } );
      bggame.board.update( { forPlayer : me.num } );
-     bggame.board.waitingForNextTurn = false;
+     bggame.board.waitingForNextTurn = false; 
+	 
+	 
+	 if ( bggame.gameHasRobotPlayer() && bggame.board.playerTurn() == 2 ) { 
+       console.log("play robot move...");
+	   playRobotMove2();
+	 }
+	 
+	 //socket.emit('robot move request', { room: selectedRoom});
+	 
    });
+   
+   /*
+   function playRobotMove() {
+     var moveset = bggame.players[1].move(undefined, undefined, bggame.board);
+	 while( moveset.length) {
+	   bggame.board.move(moveset, false);
+	   moveset = bggame.players[1].move(undefined, undefined, bggame.board);
+	 }
+	 var holdTurn = bggame.board.turns.cloneCurrentTurn();
+	 while ( bggame.board.turns.currentTurn.length ) {
+	   bggame.board.undoMove( false );
+	   if ( !bggame.board.turns.currentTurn.length ) {
+	     console.log("time to move robot...");
+		 console.log("sending " + holdTurn.length + " moves");
+	     socket.emit('robot moved', { room: selectedRoom, moves:holdTurn} ); 
+	   }
+	 }
+   }   
+   */
+   
+   function playRobotMove2() {
+     var moveset = bggame.players[1].move(undefined, undefined, bggame.board);
+	 if ( moveset.length ) {
+	   var time = ( ( bggame.board.drawer.settings.animationTimeout  * 100 ) / 2 ) * moveset.length;
+       bggame.board.move(moveset, false);	   
+	   console.log("playRobotMove2", time);
+	   setTimeout( playRobotMove2(), time);   
+	 } else { 
+       var holdTurn = bggame.board.turns.cloneCurrentTurn();
+	   while ( bggame.board.turns.currentTurn.length ) {
+	     bggame.board.undoMove( false );
+	     if ( !bggame.board.turns.currentTurn.length ) {
+	       console.log("time to move robot...");
+		   console.log("sending " + holdTurn.length + " moves");
+	       socket.emit('robot moved', { room: selectedRoom, moves:holdTurn} ); 
+	     }
+	   }	 
+	 }
+   }
    
    socket.on('game over', function(data) {
       console.log("game over");
@@ -92,16 +141,26 @@
      var moves = data.moves;
      var aMoves = [];
 	 
-     for (i = 0; i < moves.length; i++) {
-       var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].toType, moves[i].isToHit, moves[i].diceValue);
-	   aMoves.push(tempMove);
-     }
-	 bggame.board.move(aMoves);
-	 bggame.board.waitingForNextTurn = false;
+	 console.log("updating " + moves.length + " moves");
+	 
+	 if (moves) {
+       for (i = 0; i < moves.length; i++) {
+         var tempMove = new AMove(moves[i].turnNo, moves[i].player, moves[i].fromNo, moves[i].fromType, moves[i].toNo, moves[i].toType, moves[i].isToHit, moves[i].diceValue);
+	     aMoves.push(tempMove);
+       }
+	   console.log("updating -- about to move " + aMoves.length + " moves");
+	   bggame.board.move(aMoves, true);
+	   bggame.board.waitingForNextTurn = false;
+	 } 
+
    });
    
    socket.on( 'double request', function( data ) {
-	   bggame.board.doubleRequest ( me.num, data.requestingPlayer )
+	   bggame.board.doubleRequest ( me.num, data.requestingPlayer );
+	   
+	   if ( bggame.gameHasRobotPlayer()) {
+	     socket.emit( 'double chosen', { room: selectedRoom, choosingPlayer: 2, action: "accept" } );
+	   }
    });
    
    socket.on( 'double action', function( data ) {
@@ -124,12 +183,23 @@
    
    socket.on('update turns', function(data) {
      console.log("got update turns event");
+	 //console.log(">> player turn:", bggame.board.playerTurn());
+	 if ( bggame.gameHasRobotPlayer() && bggame.board.playerTurn() == 1 ) {
+		 bggame.board.updateTurn();  
+         bggame.board.update({ forPlayer: me.num });
+         console.log("rolling dice on robot's behalf...");
+         socket.emit( 'dice request', { room: selectedRoom } );
+         bggame.board.playerCanRoll = false;
+	 } else {
 	   var time = ( ( bggame.board.drawer.settings.animationTimeout  * 100 ) / 2 ) * data.numMoves;
 	   setTimeout( function() {
-	    console.log(time);
-        bggame.board.updateTurn();  
-        bggame.board.update({ forPlayer: me.num });
+	     console.log(time, data.numMoves);
+         bggame.board.updateTurn();  
+         bggame.board.update({ forPlayer: me.num });
+		 	 //console.log(">> player turn:", bggame.board.playerTurn());	
 	   }, time);
+	 }
+	 //console.log(">> player turn:", bggame.board.playerTurn());	
    });
    
    socket.on('leave room', function() {
@@ -176,6 +246,12 @@
    $("#create_button").click(function() {
     roomID = Math.floor(Math.random()*999999999);
     socket.emit('new room', { room: roomID });
+  });
+
+   
+   $("#play_robot").click(function() {
+    roomID = Math.floor(Math.random()*999999999);
+    socket.emit('play robot', { room: roomID });
   });
 
   function resetClient() {
