@@ -9,25 +9,18 @@ app.configure(function(){
   app.use(express.static(__dirname + '/public/images'));
 });
 
-
 var io = require('socket.io').listen(app);
-io.configure(function () { 
+/*io.configure(function () { 
   io.set("transports", ["xhr-polling"]); 
   io.set("polling duration", 10); 
 });
+*/
 
 var port = process.env.PORT || 8080;
 app.listen(port, function() {
   console.log("Listening on " + port);
 });
 
-function room(roomId, roomType) {
-  this.roomId = roomId;
-  this.roomType = roomType;
-  this.playerSockets = [];
-  this.status = "open";
-  this.rng = new mrng.RNG();
-};
 var rooms = [];
 io.sockets.on('connection', function (socket) {
   
@@ -37,7 +30,7 @@ io.sockets.on('connection', function (socket) {
   
   socket.on("play robot", function(data){
     console.log("play robot: " + data.room);
-	rooms.push(new room(data.room, "single"));
+	  rooms.push(new room(data.room, "single"));
 	
     // find room id
     var foundRoomIdx = null;
@@ -56,21 +49,20 @@ io.sockets.on('connection', function (socket) {
     // add socket to list of room sockets
     rooms[foundRoomIdx].playerSockets.push(socket);	
 	
-rooms[foundRoomIdx].status = "closed";
+    rooms[foundRoomIdx].status = "closed";
 		
-        // send initial load information/request 
-        io.sockets.in(rooms[foundRoomIdx].roomId).emit('load game', {room: rooms[foundRoomIdx].roomId, 
-                                                            player1: rooms[foundRoomIdx].playerSockets[0].id, 
-                                                            player2: "robot",
-															type: rooms[foundRoomIdx].roomType});
+    // send initial load information/request 
+    io.sockets.in(rooms[foundRoomIdx].roomId).emit('load game', {room: rooms[foundRoomIdx].roomId, 
+                                                                 player1: rooms[foundRoomIdx].playerSockets[0].id, 
+                                                                 player2: "robot",
+															                                   type: rooms[foundRoomIdx].roomType});
 
-        // send each individual player their unique id
-        rooms[foundRoomIdx].playerSockets[0].emit('my id', {myid: rooms[foundRoomIdx].playerSockets[0].id});
- 
-                                                            
-        // send initial dice roll
-        io.sockets.in(rooms[foundRoomIdx].roomId).emit('dice', {die1: rooms[foundRoomIdx].rng.getADie(),
-                                                                die2: rooms[foundRoomIdx].rng.getADie()}); 	
+    // send each individual player their unique id
+    rooms[foundRoomIdx].playerSockets[0].emit('my id', {myid: rooms[foundRoomIdx].playerSockets[0].id});
+                                                 
+    // send initial dice roll
+    io.sockets.in(rooms[foundRoomIdx].roomId).emit('dice', {die1: rooms[foundRoomIdx].rng.getADie(),
+                                                            die2: rooms[foundRoomIdx].rng.getADie()}); 	
   });
   
   socket.on("new room", function(data){
@@ -118,7 +110,7 @@ rooms[foundRoomIdx].status = "closed";
         io.sockets.in(rooms[idx].roomId).emit('load game', {room: rooms[idx].roomId, 
                                                             player1: rooms[idx].playerSockets[0].id, 
                                                             player2: rooms[idx].playerSockets[1].id,
-															type: rooms[idx].roomType});
+				                       											        type: rooms[idx].roomType});
 
         // send each individual player their unique id
         rooms[idx].playerSockets[0].emit('my id', {myid: rooms[idx].playerSockets[0].id});
@@ -136,13 +128,13 @@ rooms[foundRoomIdx].status = "closed";
   
   socket.on("rejoin room", function(data) {
     // event processed when player rejoins room 
-	var playerNum = data.playerNum;
-	var idx = get_room_index(data.room);
-	if (idx != -1) {
-	  socket.emit('display message', { message: "waiting on other player to rejoin", button: false, buttonL: "", buttonR: "" });
-	  if (rooms[idx].playerSockets.length != 1)
-	    socket.broadcast.to(rooms[idx].roomId).emit('display message', { message: "other player has already rejoined", button: true, buttonL: "rematch", buttonR: "lobby"});
-	}
+	  var playerNum = data.playerNum;
+	  var idx = get_room_index(data.room);
+	  if (idx != -1) {
+	    socket.emit('display message', { message: "waiting on other player to rejoin", button: false, buttonL: "", buttonR: "" });
+	    if (rooms[idx].playerSockets.length != 1)
+	      socket.broadcast.to(rooms[idx].roomId).emit('display message', { message: "other player has already rejoined", button: true, buttonL: "rematch", buttonR: "lobby"});
+	  }
   });
   
   socket.on("robot moved", function(data) {
@@ -150,9 +142,8 @@ rooms[foundRoomIdx].status = "closed";
     
     // pass the turn data to other player in the room
     if (idx != -1) {
-	  io.sockets.in(rooms[idx].roomId).emit("update", data);  
-    
-    
+	    io.sockets.in(rooms[idx].roomId).emit("update", data);  
+
       // tell players to update turn history
       io.sockets.in(rooms[idx].roomId).emit("update turns", { numMoves: data.moves.length });  
     }	
@@ -181,7 +172,6 @@ rooms[foundRoomIdx].status = "closed";
   
   socket.on("double sent", function(data) {
     var idx = get_room_index(data.room);
-
     if (idx != -1) {     
       io.sockets.in(rooms[idx].roomId).emit("double request", { requestingPlayer: data.requestingPlayer });
     }
@@ -189,7 +179,6 @@ rooms[foundRoomIdx].status = "closed";
 
   socket.on("double chosen", function(data) {
     var idx = get_room_index(data.room);
-
     if (idx != -1) {     
       io.sockets.in(rooms[idx].roomId).emit("double action", { choosingPlayer: data.choosingPlayer, action: data.action });
     }
@@ -209,9 +198,7 @@ rooms[foundRoomIdx].status = "closed";
      io.sockets.in(data.room).emit('fdice', {die1: parseInt(data.str[0]),
                                              die2: parseInt(data.str[1])}); 
   });
-  
 
-  
   socket.on("leave room", function(n, fn) {
 
     socket.get('room', function (err, name) {
@@ -259,13 +246,11 @@ rooms[foundRoomIdx].status = "closed";
       idx = get_room_index(name);
     });
     if (idx != -1)  {
-    
        // let other player in the room know that the room is gone
        io.sockets.in(rooms[idx].roomId).emit("leave room");
     
        // remove room from the rooms list
        rooms.splice(idx, 1);
-       
     }
     io.sockets.in('lobby').emit('room refresh',  get_room_names());
     console.log("user disconnected - room index:", idx);
@@ -291,3 +276,10 @@ function get_room_names() {
   return names;
 }
 
+function room(roomId, roomType) {
+  this.roomId = roomId;
+  this.roomType = roomType;
+  this.playerSockets = [];
+  this.status = "open";
+  this.rng = new mrng.RNG();
+};

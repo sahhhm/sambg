@@ -1,480 +1,384 @@
 /*
--drawable (draw info) 
-  -checker
-  -dice    (dice shit)
-  -space  (draw, highlight, numCheckers, player, etc.)
-    - selectable (select)
-      - triangle 
-      - bar
-    - bearoff (draw, highlight)
+* -------------------------------------------
+* CHECKER CLASS
+* -------------------------------------------
 */
-
-var Drawable = { drawInfo: {}, 
-                 patterns: {},
-                 ctxs: {},
-                 canvasEls: {} };
-				 
-Drawable.initialize = function(specs) {
-
-  var bgCanvas = document.getElementById('bg_canvas')
-  var nakedCanvas = document.getElementById('bg_naked')
-  var bgCtx = document.getElementById('bg_canvas').getContext("2d")
-  var nakedCtx = document.getElementById('bg_naked').getContext("2d")
+var Checker = Drawable.extend({
+    init: function(row, column, player) {
+      this._super();
+      this.row = row;
+      this.column = column;
+      this.player = player;
+    },
+    findTriangleNum: function(b) {
+      var x = this.column;
+      var y = this.row;
+      var tnum = -1;
+      if (x != b.drawInfo.barColumn) { 
+        if (y < b.drawInfo.maxPiecesPerTriangle) { // top 
+          tnum = (b.drawInfo.totalTriangles/2) - x + 1;
+          if (x < b.drawInfo.barColumn) tnum -= 1;
+        } else if (y > b.drawInfo.boardHeight - b.drawInfo.maxPiecesPerTriangle - 1) { // bottom
+          tnum = (b.drawInfo.totalTriangles/2) + x + 1;
+          if (x > b.drawInfo.barColumn) tnum -=1;
+        } else {
+          tnum = -1;
+        }  
+      } else {
+        tnum = -1;
+      } 
+      return tnum;  
+    },
+    findBarNum: function (b) {
+      var x = this.column;
+      var y = this.row;
+      var bnum = -1;
+      if (x == b.drawInfo.barColumn) {
+        if (y < b.drawInfo.maxPiecesPerTriangle) bnum = 1;
+        else if (y > b.drawInfo.boardHeight - b.drawInfo.maxPiecesPerTriangle - 1) bnum = 2;
+        else bnum = -1;
+      } else {
+        bnum = -1;
+      }
+      return bnum;	 
+    },
+    getX: function() {
+      return (this.column * this.drawInfo.pieceWidth) + (this.drawInfo.pieceWidth/2);
+    },
+    getY: function() {
+      return (this.row * this.drawInfo.pieceHeight) + (this.drawInfo.pieceHeight/2);
+    },
+    draw: function(ctx, selected) {
+      ctx.save();
+      var x = this.getX();
+      var y = this.getY();
+      var radius = (this.drawInfo.pieceWidth/2) - (this.drawInfo.pieceWidth/9);
+      var color = this.player == 1 ? this.drawInfo.p1color : this.drawInfo.p2color;
+      
+      // draw circle
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI*2, false);
+      ctx.closePath();
+      
+      ctx.fillStyle = color;
+      ctx.fill();
   
-  this.ctxs = { ctx  : bgCtx,
-                nctx : nakedCtx };
-					
-  this.canvasEls = { canvas		: bgCanvas,
-                     nakedCanvas: nakedCanvas}; 
+      if ( selected ) {
+        ctx.lineWidth = this.settings.selectWidth;
+        ctx.strokeStyle = this.settings.selectColor; 
+        ctx.stroke();
+      }
+      ctx.restore();
+    },     
+    drawBear: function(ctx) {
+      var kappa = .5522848;
+      var x = this.drawInfo.pieceWidth * this.column;
+      var y = this.row;
+      var w = this.drawInfo.bearOffWidth;
+      var h = this.drawInfo.bearOffHeight;
+      ox = (w / 2) * kappa, // control point offset horizontal
+      oy = (h / 2) * kappa, // control point offset vertical
+      xe = x + w,           // x-end
+      ye = y + h,           // y-end
+      xm = x + w / 2,       // x-middle
+      ym = y + h / 2;       // y-middle
 
-  this.canvasEls.canvas.addEventListener("click", bgOnClick, false);
-  this.canvasEls.canvas.width = specs.boardPixelWidth;
-  this.canvasEls.canvas.height = specs.totalPixelHeight;
-  this.canvasEls.nakedCanvas.width = specs.boardPixelWidth;
-  this.canvasEls.nakedCanvas.height = specs.totalPixelHeight;
+      ctx.save(); 
+      ctx.beginPath();
+      ctx.moveTo(x, ym);
+      ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+      ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+      ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+      ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+      ctx.closePath();
+      ctx.stroke();    
   
-  this.drawInfo = { pieceWidth : specs.pieceWidth,
-                    pieceHeight: specs.pieceHeight,
-                    p1color: specs.p1color,
-                    p2color: specs.p2color,
-                    bearOffWidth : specs.bearOffWidth,
-                    bearOffHeight : specs.bearOffHeight,
-                    boardHeight: specs.boardHeight,
-                    barColumn : specs.barColumn,
-                    bearOffColumn : specs.bearOffColumn,
-                    maxPiecesPerTriangle : specs.maxPiecesPerTriangle,
-					boardPixelHeight : specs.boardPixelHeight,
-					boardPixelWidth : specs.boardPixelWidth,
-                    infoMenuPixelHeight : specs.infoMenuPixelHeight,
-                    totalPixelHeight : specs.totalPixelHeight				
-                   };
+      ctx.fillStyle = this.player == 1 ?  this.drawInfo.p1color : this.drawInfo.p2color;
+      ctx.strokeStyle = ctx.fillStyle;
+      ctx.fill(); 
 
-  this.settings = {
-    highlightWidth : 3,
-	selectWidth : 3,
-	selectColor : "#75c938",
-    highlightColor : "#8D38C9"
-  };
-}
-
-Drawable.drawCircle = function(ctx, x, y, radius) {
-  ctx.beginPath();
-  ctx.arc(x, y, radius, 0, Math.PI*2, false);
-  ctx.closePath();
-}
-
-var Interactable = Object.create(Drawable, { interact : { 
-                                                          value: 
-                                                            {
-                                                              row: 6,
-															  columns: 13,
-															  padding: 7,
-                                                              doublingColumn: 6,
-															  diceColumn: 8, 
-														      diceColumns: 4,
-															  messageColumn: 1,
-															  messageColumns: 4
-														    },
-														   writable: true, 
-														   enumerable: true, 
-														   configurable: false 
-														  }});
-														  
-Interactable.getBaseX = function() {
-  return 0;
-}
-
-Interactable.getBaseY = function() {
-  return this.interact.row * this.drawInfo.pieceHeight  - this.drawInfo.pieceHeight/2;
-}
-
-Interactable.getTotalWidthPix = function() {
-  return this.drawInfo.pieceWidth * 13;
-}
-
-Interactable.getTotalHeightPix = function() {
-  return this.drawInfo.pieceHeight;
-}
+      ctx.restore();  
+    },   
+});
 
 
-var DrawableBoard = Object.create(Drawable);
+/*
+* -------------------------------------------
+* CHECKERXY CLASS
+* -------------------------------------------
+*/
+var CheckerXY = Checker.extend({
+    init: function(x, y, player) {
+      this._super(-1, -1, player);
+      this.x = x;
+      this.y = y;
+    },
+    getX: function() {
+      return this.x;
+    },
+    getY: function() { 
+      return this.y;
+    },			
+});								  
 
-DrawableBoard.drawBoard = function(ctx, triangles, bars, bearoffs) {
-  ctx.fillStyle = ctx.createPattern(this.patterns.bg.image,'repeat');
-  ctx.fillRect(0, 0, this.drawInfo.boardPixelWidth, this.drawInfo.boardPixelHeight);	      
-		
-  var spaces = triangles.concat( bars ).concat( bearoffs );
-  for ( var i = 0; i < spaces.length; i++ ) {
-    spaces[i].draw(ctx);
-  }
-  
-  
-
-} 
-
-
-DrawableBoard.patterns.bg = { image: new Image(), loaded: false};
-DrawableBoard.patterns.bg.image.src = 'woodbg.jpg';
-DrawableBoard.patterns.bg.image.onload = function() {
-  DrawableBoard.patterns.bg.loaded = true;
-}
-DrawableBoard.patterns.oddTri = { image: new Image(), loaded: false};
-DrawableBoard.patterns.oddTri.image.src = 'woodlight-min.gif';
-DrawableBoard.patterns.oddTri.image.onload = function() {
-  DrawableBoard.patterns.oddTri.loaded = true;
-}
-DrawableBoard.patterns.evenTri = { image: new Image(), loaded: false};
-DrawableBoard.patterns.evenTri.image.src = 'wooddark-min.gif';
-DrawableBoard.patterns.evenTri.image.onload = function() {
-  DrawableBoard.patterns.evenTri.loaded = true;
-}
-DrawableBoard.patterns.bearoff = { image: new Image(), loaded: false};
-DrawableBoard.patterns.bearoff.image.src = 'woodbar.gif';
-DrawableBoard.patterns.bearoff.image.onload = function() {
-  DrawableBoard.patterns.bearoff.loaded = true;
-}
+/*
+* -------------------------------------------
+* SPACE CLASS
+* -------------------------------------------
+*/
+var Space = Drawable.extend({
+    init: function(num, player, numCheckers, column, highlighted ) {
+      this._super();
+      this.num = num; 
+      this.player = player;
+      this.numCheckers = numCheckers;
+      this.column = column;
+      this.highlighted = highlighted;
+      this.type = "space";
+    },
+    isTop: function() {},
+    isEmpty: function() {return this.numCheckers <= 0 },
+    pipCount: function() { return 0; },
+});								 
 
 
-var Checker = Object.create(Drawable, { row    :  { value :  -1 }, 
-                                        column :  { value :  -1 },
-                                        player :  { value :  -1 } });
+/*
+* -------------------------------------------
+* SELECTABLE CLASS
+* -------------------------------------------
+*/
+var Selectable = Space.extend({
+    init: function(num, player, numCheckers, column, highlighted ) {
+      this._super(num, player, numCheckers, column, highlighted);
+      this.type = "Selectable";
+      this.selected = false;     
+    },
+    validMoveTo: function(to) {
+      var isValid = false;
+      if (to && to.num > 0) {
+        if (to.numCheckers == 0) isValid = true;
+        if (to.numCheckers == 1) isValid = true;
+        if (to.numCheckers >= 2) {
+          if (this.player == to.player) isValid = true;
+        } 
+      }
+      return isValid;  
+    },
+    select: function(ctx) {
+      this.selected = true;
+      this.draw( ctx );
+    },
+    draw: function(ctx) { 
+      var ch;
+      var thresh = this.drawInfo.maxPiecesPerTriangle; // limit number of actual checkers drawn
+      var num = (this.numCheckers <= thresh) ? this.numCheckers : thresh;
+     
+      this.drawShape(ctx);
+     
+      for (var i = 0; i <= num - 1; i++) {
+        var r = this.isTop() ? i : this.drawInfo.boardHeight - i - 1;
+        ch = new Checker (r, this.column, this.player);
+        ch.draw(ctx, false);
+      }
+      if ( this.selected ) { 
+        ch.draw( ctx, true ); // will the the top most checker
+      }  
+      if ( this.numCheckers > thresh ) {
+        var row = this.isTop() ? thresh - 1 : this.drawInfo.boardHeight - thresh;
+        var x = (this.column * this.drawInfo.pieceWidth) + (this.drawInfo.pieceWidth/2) - 5;
+        var y = (row * this.drawInfo.pieceHeight) + (this.drawInfo.pieceHeight/2) + 5;  
+        ctx.font = "15pt Arial";
+        ctx.fillStyle = "#FF4040";
+        ctx.fillText(this.numCheckers, x, y);
+      }
+    },  
+    highlight: function(ctx) {
+      this.highlighted = true;
+      
+      // same for bar, triange... different for bearOff
+      var base, x;
+      x = this.column * this.drawInfo.pieceWidth;
+      base = this.isTop() ? 0 : this.drawInfo.boardPixelHeight;
 
-Checker.findTriangleNum = function(b) {
-  var x = this.column;
-  var y = this.row;
-  var tnum = -1;
-  if (x != b.specs.barColumn) { 
-    if (y < b.specs.maxPiecesPerTriangle) { // top 
-      tnum = (b.specs.totalTriangles/2) - x + 1;
-      if (x < b.specs.barColumn) tnum -= 1;
-    } else if (y > b.specs.boardHeight - b.specs.maxPiecesPerTriangle - 1) { // bottom
-      tnum = (b.specs.totalTriangles/2) + x + 1;
-      if (x > b.specs.barColumn) tnum -=1;
-    } else {
-      tnum = -1;
-    }  
-  } else {
-    tnum = -1;
-  } 
-  return tnum;  
-}
+      ctx.beginPath();
+      ctx.moveTo(x, base);
+      ctx.lineTo(x + this.drawInfo.pieceWidth/2, Math.abs(base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight)));
+      ctx.lineTo(x + this.drawInfo.pieceWidth, base);
+      ctx.lineTo(x, base);
+      ctx.stroke();
 
-Checker.findBarNum = function (b) {
-  var x = this.column;
-  var y = this.row;
-  var bnum = -1;
-  if (x == b.specs.barColumn) {
-    if (y < b.specs.maxPiecesPerTriangle) bnum = 1;
-    else if (y > b.specs.boardHeight - b.specs.maxPiecesPerTriangle - 1) bnum = 2;
-    else bnum = -1;
-  } else {
-    bnum = -1;
-  }
-  return bnum;	 
-}
-  
-Checker.getX = function() {
-  return (this.column * this.drawInfo.pieceWidth) + (this.drawInfo.pieceWidth/2);
-}   
-  
-Checker.getY = function() {
-  return (this.row * this.drawInfo.pieceHeight) + (this.drawInfo.pieceHeight/2);
-}
-  
-Checker.draw = function(ctx, selected) {
-  ctx.save();
-  var x = this.getX(); //(this.column * this.drawInfo.pieceWidth) + (this.drawInfo.pieceWidth/2);
-  var y = this.getY(); //(this.row * this.drawInfo.pieceHeight) + (this.drawInfo.pieceHeight/2);
-  var radius = (this.drawInfo.pieceWidth/2) - (this.drawInfo.pieceWidth/9);
-  this.drawCircle(ctx, x, y, radius);
-  
-  // make radial glare
-  var color = this.player == 1 ? this.drawInfo.p1color : this.drawInfo.p2color;
-  //var grd = ctx.createRadialGradient(x, y, radius, x + 3, y - 5, radius-3);
-  //grd.addColorStop(0, "white");
-  //grd.addColorStop(1, color);
-  //ctx.fillStyle = grd;
-  ctx.fillStyle = color;
-  ctx.fill();
-  
-  if ( selected ) {
-    ctx.lineWidth = this.settings.selectWidth;
-    ctx.strokeStyle = this.settings.selectColor; 
-    ctx.stroke();
-  }
-  ctx.restore();
-}
-
-Checker.drawBear = function(ctx) {
-  var kappa = .5522848;
-  var x = this.drawInfo.pieceWidth * this.column;
-  var y = this.row;
-  var w = this.drawInfo.bearOffWidth;
-  var h = this.drawInfo.bearOffHeight;
-  ox = (w / 2) * kappa, // control point offset horizontal
-  oy = (h / 2) * kappa, // control point offset vertical
-  xe = x + w,           // x-end
-  ye = y + h,           // y-end
-  xm = x + w / 2,       // x-middle
-  ym = y + h / 2;       // y-middle
-
-  ctx.save(); 
-  ctx.beginPath();
-  ctx.moveTo(x, ym);
-  ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
-  ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
-  ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
-  ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
-  ctx.closePath();
-  ctx.stroke();    
-  
-  ctx.fillStyle = this.player == 1 ?  this.drawInfo.p1color : this.drawInfo.p2color;
-  ctx.strokeStyle = ctx.fillStyle;
-  ctx.fill(); 
-
-  ctx.restore();  
-}   
-
-var CheckerXY = Object.create(Checker, { row    :  { value :  -1 }, 
-                                          column :  { value :  -1 },
-                                          player :  { value :  -1 },
-                                          x      :  { value :  -1 },
-                                          y      :  { value :  -1 } });      
-
-CheckerXY.getX = function() {
-  return this.x;
-}
-
-CheckerXY.getY = function() { 
-  return this.y;
-}										  
-                                        
-var Space = Object.create(Drawable, {  num          :   { value : -1 }, 
-                                       player       :   { value : -1, writable : true },
-                                       numCheckers  :   { value : -1, writable : true },
-                                       column       :   { value : -1 },
-                                       highlighted  :   { value : false, writable : true },
-                                       type         :   { value : "Space" } });
-                      
-Space.isTop = function() {}
-Space.isEmpty = function() {return this.numCheckers <= 0 };
-Space.pipCount = function() { return 0; }
-//****
-//**** Selectable
-//****
-var Selectable = Object.create(Space, { type     : { value : "Selectable" },
-                                        selected : { value : false, writable: true } } );
-
-Selectable.validMoveTo = function(to) {
-  var isValid = false;
-  if (to) {
-    if (to.numCheckers == 0) isValid = true;
-    if (to.numCheckers == 1) isValid = true;
-    if (to.numCheckers >= 2) {
-      if (this.player == to.player) isValid = true;
-    } 
-  }
-  return isValid;  
-}
-
-Selectable.select = function(ctx) {
-  this.selected = true;
-  this.draw( ctx );
-}    
-
-Selectable.draw = function(ctx) { 
-  var ch;
-  var thresh = this.drawInfo.maxPiecesPerTriangle; // limit number of actual checkers drawn
-  var num = (this.numCheckers <= thresh) ? this.numCheckers : thresh;
- 
-  this.drawShape(ctx);
- 
-  for (var i = 0; i <= num - 1; i++) {
-    var r = this.isTop() ? i : this.drawInfo.boardHeight - i - 1;
-    ch = Object.create(Checker, { row : { value : r }, column : { value : this.column }, player : { value : this.player } });
-    ch.draw(ctx, false);
-  }
-  
-  if ( this.selected ) { 
-    ch.draw( ctx, true ); // will the the top most checker
-  }  
-  
-  if ( this.numCheckers > thresh ) {
-    var row = this.isTop() ? thresh - 1 : this.drawInfo.boardHeight - thresh;
-    var x = (this.column * this.drawInfo.pieceWidth) + (this.drawInfo.pieceWidth/2) - 5;
-    var y = (row * this.drawInfo.pieceHeight) + (this.drawInfo.pieceHeight/2) + 5;  
-    ctx.font = "15pt Arial";
-    ctx.fillStyle = "#FF4040";
-    ctx.fillText(this.numCheckers, x, y);
-  }
-}  
-
-Selectable.highlight = function(ctx) {
-  this.highlighted = true;
-  
-  // same for bar, triange... different for bearOff
-  var base, x;
-  x = this.column * this.drawInfo.pieceWidth;
-  base = this.isTop() ? 0 : this.drawInfo.boardPixelHeight;
-
-  ctx.beginPath();
-  ctx.moveTo(x, base);
-  ctx.lineTo(x + this.drawInfo.pieceWidth/2, Math.abs(base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight)));
-  ctx.lineTo(x + this.drawInfo.pieceWidth, base);
-  ctx.lineTo(x, base);
-  ctx.stroke();
-
-  ctx.lineWidth = this.settings.highlightWidth;
-  ctx.strokeStyle = this.settings.highlightColor;
-  ctx.stroke();      
-}
+      ctx.lineWidth = this.settings.highlightWidth;
+      ctx.strokeStyle = this.settings.highlightColor;
+      ctx.stroke();      
+    },    
+});								 
 
 //**** bar
 function createBar( pplayer, pnum, pcolumn, pnumCheckers ) {
-  return Object.create( Bar, 
-                  { player      : { value : pplayer }, 
-				    num         : { value : pnum }, 
-				    column      : { value : pcolumn }, 
-				    numCheckers : { value : pnumCheckers, writable: true  } });
+  return new Bar( pnum, pplayer, pnumCheckers, pcolumn, false );
 }
-var Bar = Object.create(Selectable, { type : { value: "bar" } });
-Bar.entry = function() { return this.player == 1 ? 0 : 25; };
-Bar.isTop = function() { return this.player == 1; };
-Bar.drawShape = function(ctx) {
-  ctx.save(); 
-  if ( this.patterns.bearoff.loaded ) {
-    ctx.fillStyle = ctx.createPattern(this.patterns.bearoff.image,'repeat');
-  } else {
-    ctx.fillStyle = 'white';
-  }
 
-  var top = this.isTop() ? 0 : this.drawInfo.boardPixelHeight - ( this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight );
-  if ( this.isTop() ) {
-    ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.barColumn , top, this.drawInfo.pieceWidth, this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight);
-  } else {
-    ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.barColumn , top, this.drawInfo.pieceWidth, this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight);
-  }
-  ctx.restore();
-}
-Bar.pipCount = function() {
-  return this.numCheckers * 24;
-}
+/*
+* -------------------------------------------
+* BAR CLASS
+* -------------------------------------------
+*/
+var Bar = Selectable.extend({
+    init: function(num, player, numCheckers, column, highlighted ) {
+      this._super(num, player, numCheckers, column, highlighted);
+      this.type = "bar";    
+    },
+    entry: function() { return this.player == 1 ? 0 : 25; },
+    isTop: function() { return this.player == 1; },
+    drawShape: function(ctx) {
+      ctx.save(); 
+      if ( IMAGES.bearoff.loaded ) {
+        ctx.fillStyle = ctx.createPattern(IMAGES.bearoff.image,'repeat');
+      } else {
+        ctx.fillStyle = 'white';
+      }
+
+      var top = this.isTop() ? 0 : this.drawInfo.boardPixelHeight - ( this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight );
+      if ( this.isTop() ) {
+        ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.barColumn , top, this.drawInfo.pieceWidth, this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight);
+      } else {
+        ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.barColumn , top, this.drawInfo.pieceWidth, this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight);
+      }
+      ctx.restore();
+    },
+    pipCount: function() {
+      return this.numCheckers * 24;
+    },    
+});		
+
 
 //**** triangle
 function createTriangle( pnum, pcolumn, pplayer, pnumCheckers) {
-  return Object.create(Triangle, 
-                  { num         : { value : pnum }, 
-				    column      : { value : pcolumn } , 
-					player      : { value : pplayer, writable : true  }, 
-					numCheckers : { value : pnumCheckers, writable : true } });
+  return new Triangle(pnum, pplayer, pnumCheckers, pcolumn, false); 
 }
 
-var Triangle = Object.create(Selectable, { type : { value: "triangle" } });
-Triangle.isTop = function() { return this.num <= 12; };
-Triangle.entry = function() { return this.num };
-Triangle.drawShape = function(ctx) {
-  ctx.save();
-  var x = this.column * this.drawInfo.pieceWidth;
-  var base = this.isTop() ? 0 : this.drawInfo.boardPixelHeight;
+/*
+* -------------------------------------------
+* TRIANGLE CLASS
+* -------------------------------------------
+*/
+var Triangle = Selectable.extend({
+    init: function(num, player, numCheckers, column, highlighted ) {
+      this._super(num, player, numCheckers, column, highlighted);
+      this.type = "triangle";    
+    },
+    isTop: function() { return this.num <= 12; },
+    entry: function() { return this.num },
+    drawShape: function(ctx) {
+      ctx.save();
+      var x = this.column * this.drawInfo.pieceWidth;
+      var base = this.isTop() ? 0 : this.drawInfo.boardPixelHeight;
 
-  var height = (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight) ;
-  var topPixel = this.isTop() ? 0 : base -  height;  
+      var height = (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight) ;
+      var topPixel = this.isTop() ? 0 : base -  height;  
 
-  var off = 3;
-  ctx.drawImage(this.canvasEls.nakedCanvas, 
-                x - off, Math.max(topPixel, topPixel - off), this.drawInfo.pieceWidth + off*2, height + off*2, 
-				x - off, Math.max(topPixel, topPixel - off), this.drawInfo.pieceWidth + off*2, height + off*2)
+      var off = 3;
+      ctx.drawImage(this.canvasEls.nakedCanvas, 
+                    x - off, Math.max(topPixel, topPixel - off), this.drawInfo.pieceWidth + off*2, height + off*2, 
+                    x - off, Math.max(topPixel, topPixel - off), this.drawInfo.pieceWidth + off*2, height + off*2)
 
-  // draw triangle
-  ctx.lineWidth =  1;
-  ctx.fillStyle = "white";
-  if ( this.num % 2 == 0 && this.patterns.evenTri.loaded ) {
-    ctx.fillStyle = ctx.createPattern(this.patterns.evenTri.image,'repeat');
-  } else if (  this.num % 2 == 1 && this.patterns.oddTri.loaded ) {
-    ctx.fillStyle = ctx.createPattern(this.patterns.oddTri.image,'repeat');
-  }
-  ctx.strokeStyle = "black";
-  ctx.beginPath();
-  ctx.moveTo(x, base);
-  ctx.lineTo(x + this.drawInfo.pieceWidth/2, Math.abs( base - height ) );
-  ctx.lineTo(x + this.drawInfo.pieceWidth, base);
-  ctx.lineTo(x, base);
-  ctx.globalAlpha = 1;
-  ctx.fill();
-  ctx.globalAlpha = .3;
-  ctx.stroke();
-  ctx.restore();  
-}
-Triangle.pipCount = function() {
-  var count = 0; 
-  if ( this.numCheckers ) {
-    if ( this.player == 1 ) {
-      count = this.numCheckers * ( 24 - this.num + 1 );	
-	} else if ( this.player == 2 ) {
-	  count = this.numCheckers * this.num;
-	} else {
-	  console.log("pipCount: Invalid player number");
-	}
-  }
-  return count;
-}
+      // draw triangle
+      ctx.lineWidth =  1;
+      ctx.fillStyle = "white";
+      if ( this.num % 2 == 0 && IMAGES.evenTri.loaded ) {
+        ctx.fillStyle = ctx.createPattern(IMAGES.evenTri.image,'repeat');
+      } else if (  this.num % 2 == 1 && IMAGES.oddTri.loaded ) {
+        ctx.fillStyle = ctx.createPattern(IMAGES.oddTri.image,'repeat');
+      }
+      ctx.strokeStyle = "black";
+      ctx.beginPath();
+      ctx.moveTo(x, base);
+      ctx.lineTo(x + this.drawInfo.pieceWidth/2, Math.abs( base - height ) );
+      ctx.lineTo(x + this.drawInfo.pieceWidth, base);
+      ctx.lineTo(x, base);
+      ctx.globalAlpha = 1;
+      ctx.fill();
+      ctx.globalAlpha = .3;
+      ctx.stroke();
+      ctx.restore();  
+    },
+    pipCount: function() {
+      var count = 0; 
+      if ( this.numCheckers ) {
+        if ( this.player == 1 ) {
+          count = this.numCheckers * ( 24 - this.num + 1 );	
+        } else if ( this.player == 2 ) {
+          count = this.numCheckers * this.num;
+        } else {
+          console.log("pipCount: Invalid player number");
+        }
+      }
+      return count;
+    },
+});		
+
 
 //**** bearoff
 function createBearoff( pplayer, pnum, pcolumn, pnumCheckers) {
-  return Object.create(Bearoff, 
-                   { player      : { value : pplayer }, 
-				     num         : { value : pnum }, 
-					 column      : { value : pcolumn }, 
-					 numCheckers : { value : pnumCheckers, writable : true  } });
-}
-var Bearoff = Object.create(Space, { type : { value: "bearoff" } });
-Bearoff.entry = function() { return this.num; };
-Bearoff.isTop = function() { return this.player == 2; };
-Bearoff.isFull = function() { return false; };
-Bearoff.draw = function(ctx) { 
-  var ch;
-
-  this.drawShape(ctx);
-  for (var i = 0; i <= this.numCheckers - 1; i++) {
-    var r = this.isTop() ? i * this.drawInfo.bearOffHeight : (this.drawInfo.boardHeight * this.drawInfo.pieceHeight) - ((i+1) * this.drawInfo.bearOffHeight) - 1;
-    ch = Object.create(Checker, { row : { value : r }, column : { value : this.column }, player : { value : this.player } });
-    ch.drawBear(ctx);
-  }
+  return new Bearoff( pnum, pplayer, pnumCheckers, pcolumn, false);
 }
 
-Bearoff.drawShape = function(ctx) {
-  ctx.save();
-  var top = this.isTop() ? 0 : this.drawInfo.boardPixelHeight/2;
-  if ( this.patterns.bearoff.loaded ) {
-    ctx.fillStyle = ctx.createPattern(this.patterns.bearoff.image,'repeat');
-  } else {
-    ctx.fillStyle = 'white';
-  }
-  ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.bearOffColumn , top, this.drawInfo.bearOffWidth, this.drawInfo.boardPixelHeight / 2);
-  ctx.restore();
-}  
+/*
+* -------------------------------------------
+* BEAROFF CLASS
+* -------------------------------------------
+*/
+var Bearoff = Space.extend({
+    init: function(num, player, numCheckers, column, highlighted ) {
+      this._super(num, player, numCheckers, column, highlighted);
+      this.type = "bearoff";    
+    },
+    entry: function() { return this.num; },
+    isTop: function() { return this.player == 2; },
+    isFull: function() { return false; },
+    draw: function(ctx) { 
+      var ch;
 
-Bearoff.highlight = function(ctx) {
-  this.highlighted = true;
-  
-  var base, x, offset;
-  x = this.column * this.drawInfo.pieceWidth;
-  base = this.isTop() ? 0 : this.drawInfo.boardPixelHeight;
-  offset = 2;
-  
-  ctx.save();
-  
-  ctx.beginPath();
-  ctx.moveTo(x, base);
-  ctx.lineTo(x, Math.abs(base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight)));
-  ctx.lineTo(x + this.drawInfo.bearOffWidth - offset, Math.abs(base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight)));
-  ctx.lineTo(x + this.drawInfo.bearOffWidth - offset, base);
-  ctx.lineTo(x, base);
-  ctx.stroke();
+      this.drawShape(ctx);
+      for (var i = 0; i <= this.numCheckers - 1; i++) {
+        var r = this.isTop() ? i * this.drawInfo.bearOffHeight : (this.drawInfo.boardHeight * this.drawInfo.pieceHeight) - ((i+1) * this.drawInfo.bearOffHeight) - 1;
+        ch = new Checker(r, this.column, this.player); 
+        ch.drawBear(ctx);
+      }
+    },
+    drawShape: function(ctx) {
+      ctx.save();
+      var top = this.isTop() ? 0 : this.drawInfo.boardPixelHeight/2;
+      if ( IMAGES.bearoff.loaded ) {
+        ctx.fillStyle = ctx.createPattern(IMAGES.bearoff.image,'repeat');
+      } else {
+        ctx.fillStyle = 'white';
+      }
+      ctx.fillRect(this.drawInfo.pieceWidth * this.drawInfo.bearOffColumn , top, this.drawInfo.bearOffWidth, this.drawInfo.boardPixelHeight / 2);
+      ctx.restore();
+    },
+    highlight: function(ctx) {
+      this.highlighted = true;
+      
+      var base, x, offset;
+      x = this.column * this.drawInfo.pieceWidth;
+      base = this.isTop() ? 0 : this.drawInfo.boardPixelHeight;
+      offset = 2;
+      
+      ctx.save();
+      
+      ctx.beginPath();
+      ctx.moveTo(x, base);
+      ctx.lineTo(x, Math.abs(base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight)));
+      ctx.lineTo(x + this.drawInfo.bearOffWidth - offset, Math.abs(base - (this.drawInfo.maxPiecesPerTriangle * this.drawInfo.pieceHeight)));
+      ctx.lineTo(x + this.drawInfo.bearOffWidth - offset, base);
+      ctx.lineTo(x, base);
+      ctx.stroke();
 
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = "#a020f0";
-  ctx.stroke();
-  
-  ctx.restore();  
-}
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#a020f0";
+      ctx.stroke();
+      
+      ctx.restore();  
+    },
+});		
